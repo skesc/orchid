@@ -2,7 +2,7 @@
 
 (cd server &&
     pip3 install -r requirements.txt &&
-    python3 app.py) &
+    flask --debug run) &
 
 (cd client &&
     bun install &&
