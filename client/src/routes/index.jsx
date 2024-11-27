@@ -6,5 +6,5 @@ export const Route = createFileRoute('/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/"!</div>
+  return <div>i fucking hate my life !!</div>
 }

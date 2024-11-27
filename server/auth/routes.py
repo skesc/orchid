@@ -1,11 +1,10 @@
+from config import Config
+from extensions import db
 from flask import Blueprint, jsonify, redirect, request, session, url_for
 from flask_cors import cross_origin
 from flask_login import current_user, login_required, login_user, logout_user
-from requests_oauthlib import OAuth2Session
-
-from config import Config
-from extensions import db
 from models import OAuthConnection, User
+from requests_oauthlib import OAuth2Session
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -17,6 +16,12 @@ GOOGLE_USER_INFO = "https://www.googleapis.com/oauth2/v1/userinfo"
 GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_INFO = "https://api.github.com/user"
+
+
+@auth_bp.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+    return response
 
 
 @auth_bp.route("/api/auth/urls")
@@ -52,10 +57,11 @@ def get_user():
 
 @auth_bp.route("/api/auth/logout")
 @cross_origin()
-@login_required
 def api_logout():
-    logout_user()
-    return jsonify({"success": True})
+    if current_user.is_authenticated:
+        logout_user()
+        return jsonify({"success": True})
+    return jsonify({"success": False, "message": "No user is currently logged in"}), 200
 
 
 @auth_bp.route("/login/google")

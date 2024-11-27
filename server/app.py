@@ -6,6 +6,7 @@ import requests
 from config import Config
 from extensions import db, login_manager
 from flask import Flask, jsonify
+from flask_cors import CORS
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -21,6 +22,25 @@ login_manager.login_view = "auth.login"
 from auth.routes import auth_bp
 
 app.register_blueprint(auth_bp)
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({"error": "Unauthorized", "message": "Please log in"}), 401
+
+
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": ["http://localhost:5173"],
+            "supports_credentials": True,
+            "allow_headers": ["Content-Type", "Authorization"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        }
+    },
+    expose_headers=["Content-Range", "X-Content-Range"],
+)
 
 
 def _setup_chrome_driver():
