@@ -57,6 +57,7 @@ def _setup_chrome_driver():
 @app.route("/api/pfp/x/<username>")
 def fetch_x_profile_picture(username):
     driver = _setup_chrome_driver()
+    # this is the worst thing ever i'm so sorry
     try:
         driver.get(f"https://x.com/{username}/photo")
         time.sleep(1.5)
