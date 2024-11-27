@@ -1,14 +1,18 @@
 import os
 import re
 import time
+from os import environ
 
 import requests
 from config import Config
+from dotenv import load_dotenv
 from extensions import db, login_manager
 from flask import Flask, jsonify
 from flask_cors import CORS
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+load_dotenv()
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -32,14 +36,11 @@ def unauthorized():
 CORS(
     app,
     resources={
-        r"/api/*": {
-            "origins": ["http://localhost:5173"],
+        r"/*": {
+            "origins": [environ.get("FRONTEND_URL")],
             "supports_credentials": True,
-            "allow_headers": ["Content-Type", "Authorization"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         }
     },
-    expose_headers=["Content-Range", "X-Content-Range"],
 )
 
 
