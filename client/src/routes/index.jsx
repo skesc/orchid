@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import {createFileRoute} from "@tanstack/react-router";
+import * as React from "react";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>i fucking hate my life !!</div>
+  return <div>i fucking hate my life !!</div>;
 }

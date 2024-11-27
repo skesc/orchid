@@ -13,12 +13,12 @@ class Config:
     GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
     FRONTEND_URL = os.getenv("FRONTEND_URL")
 
-    SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+    SESSION_COOKIE_SECURE = os.getenv("ENVIRONMENT") != "dev"
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Lax"  # Use 'Strict' in production
-    REMEMBER_COOKIE_SECURE = False  # Set to True in production with HTTPS
+    SESSION_COOKIE_SAMESITE = "Lax" if os.getenv("ENVIRONMENT") == "dev" else "Strict"
+    REMEMBER_COOKIE_SECURE = os.getenv("ENVIRONMENT") != "dev"
     REMEMBER_COOKIE_HTTPONLY = True
-    REMEMBER_COOKIE_SAMESITE = "Lax"  # Use 'Strict' in production
+    REMEMBER_COOKIE_SAMESITE = "Lax" if os.getenv("ENVIRONMENT") == "dev" else "Strict"
 
     SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
