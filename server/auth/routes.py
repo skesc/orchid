@@ -80,7 +80,7 @@ def google_callback():
         state=session["oauth_state"],
         redirect_uri=url_for("auth.google_callback", _external=True),
     )
-    token = google.fetch_token(
+    token = google.fetch_token(  # noqa
         GOOGLE_TOKEN_URL,
         client_secret=Config.GOOGLE_CLIENT_SECRET,
         authorization_response=request.url,
@@ -146,7 +146,7 @@ def github_callback():
         state=session["oauth_state"],
         redirect_uri=url_for("auth.github_callback", _external=True),
     )
-    token = github.fetch_token(
+    token = github.fetch_token(  # noqa
         GITHUB_TOKEN_URL,
         client_secret=Config.GITHUB_CLIENT_SECRET,
         authorization_response=request.url,
