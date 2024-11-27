@@ -1,8 +1,9 @@
 import os
 
+from flask import Flask
+
 from config import Config
 from extensions import db, login_manager
-from flask import Flask
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 

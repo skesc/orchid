@@ -1,10 +1,11 @@
-from config import Config
-from extensions import db
 from flask import Blueprint, jsonify, redirect, request, session, url_for
 from flask_cors import cross_origin
 from flask_login import current_user, login_required, login_user, logout_user
-from models import OAuthConnection, User
 from requests_oauthlib import OAuth2Session
+
+from config import Config
+from extensions import db
+from models import OAuthConnection, User
 
 auth_bp = Blueprint("auth", __name__)
 

@@ -1,5 +1,6 @@
-from extensions import db, login_manager
 from flask_login import UserMixin
+
+from extensions import db, login_manager
 
 
 class OAuthConnection(db.Model):
@@ -15,7 +16,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     name = db.Column(db.String(120), nullable=False)
-    oauth_connections = db.relationship('OAuthConnection', backref='user', lazy=True)
+    oauth_connections = db.relationship("OAuthConnection", backref="user", lazy=True)
 
     def __repr__(self):
         return f"<User {self.email}>"
