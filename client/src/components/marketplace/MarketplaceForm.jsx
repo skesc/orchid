@@ -1,8 +1,9 @@
 import {useNavigate} from "@tanstack/react-router";
+import {Check, Upload, X} from "lucide-react";
 import React, {useState} from "react";
 
 const CATEGORIES = ["Hat", "Glasses", "Accessory", "Background"];
-const API_URL = process.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function MarketplaceForm() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ export default function MarketplaceForm() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [preview, setPreview] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleInputChange = (e) => {
     const {name, value, type, checked} = e.target;
@@ -27,10 +30,22 @@ export default function MarketplaceForm() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        setError("File size must be less than 10MB");
+        return;
+      }
+
       setFormData((prev) => ({
         ...prev,
         image: file,
       }));
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setError(""); // Clear any previous errors
     }
   };
 
@@ -61,7 +76,11 @@ export default function MarketplaceForm() {
       });
 
       if (response.ok) {
-        navigate("/marketplace");
+        setShowSuccessModal(true);
+        setTimeout(() => {
+          setShowSuccessModal(false);
+          navigate({to: "/marketplace"});
+        }, 1500);
       } else {
         const data = await response.json();
         setError(data.error || "Failed to create item");
@@ -78,54 +97,53 @@ export default function MarketplaceForm() {
       <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-8">
         <h2 className="text-3xl font-bold text-white mb-8 text-center">Create New Item</h2>
 
-        {error && (
-          <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-lg mb-6 backdrop-blur-sm">
-            {error}
-          </div>
-        )}
+        {error && <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-lg mb-6 backdrop-blur-sm">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
             <label className="block text-lg font-medium text-gray-200 mb-2">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-              className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition duration-200"
-              placeholder="Enter item name"
-            />
+            <input type="text" name="name" value={formData.name} onChange={handleInputChange} required className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition duration-200" placeholder="Enter item name" />
           </div>
 
           <div>
             <label className="block text-lg font-medium text-gray-200 mb-2">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              rows="4"
-              className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition duration-200"
-              placeholder="Describe your item..."
-            />
+            <textarea name="description" value={formData.description} onChange={handleInputChange} rows="4" className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition duration-200" placeholder="Describe your item..." />
           </div>
 
           <div>
             <label className="block text-lg font-medium text-gray-200 mb-2">Image</label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg hover:border-blue-500 transition duration-200">
-              <div className="space-y-1 text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <div className="flex text-sm text-gray-400">
-                  <label className="relative cursor-pointer rounded-md font-medium text-blue-500 hover:text-blue-400 focus-within:outline-none">
-                    <span>Upload a file</span>
-                    <input type="file" accept="image/*" onChange={handleImageChange} required className="sr-only" />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
+            <div className="mt-1 flex flex-col items-center">
+              <div className="w-full flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg hover:border-blue-500 transition duration-200 relative">
+                <div className="space-y-1 text-center">
+                  {preview ? (
+                    <div className="relative inline-block">
+                      <img src={preview} alt="Preview" className="max-h-64 rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreview(null);
+                          setFormData((prev) => ({...prev, image: null}));
+                        }}
+                        className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white hover:bg-red-600 transition-colors">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                      <div className="flex text-sm text-gray-400">
+                        <label className="relative cursor-pointer rounded-md font-medium text-blue-500 hover:text-blue-400 focus-within:outline-none">
+                          <span>Upload a file</span>
+                          <input type="file" accept="image/*" onChange={handleImageChange} required className="sr-only" />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                    </>
+                  )}
                 </div>
-                <p className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
               </div>
+              {formData.image && <p className="text-sm text-gray-300 mt-2">Selected file: {formData.image.name}</p>}
             </div>
           </div>
 
@@ -133,16 +151,7 @@ export default function MarketplaceForm() {
             <label className="block text-lg font-medium text-gray-200 mb-3">Categories</label>
             <div className="flex flex-wrap gap-3">
               {CATEGORIES.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => handleCategoryToggle(category)}
-                  className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                    formData.categories.includes(category)
-                      ? "bg-blue-500 text-white shadow-lg shadow-blue-500/50"
-                      : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"
-                  }`}
-                >
+                <button key={category} type="button" onClick={() => handleCategoryToggle(category)} className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 ${formData.categories.includes(category) ? "bg-blue-500 text-white shadow-lg shadow-blue-500/50" : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"}`}>
                   {category}
                 </button>
               ))}
@@ -151,31 +160,17 @@ export default function MarketplaceForm() {
 
           <div className="flex items-center">
             <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                name="is_private"
-                checked={formData.is_private}
-                onChange={handleInputChange}
-                className="sr-only peer"
-              />
+              <input type="checkbox" name="is_private" checked={formData.is_private} onChange={handleInputChange} className="sr-only peer" />
               <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
               <span className="ml-3 text-sm font-medium text-gray-300">Make this item private</span>
             </label>
           </div>
 
           <div className="flex justify-end gap-4 pt-4">
-            <button
-              type="button"
-              onClick={() => navigate("/marketplace")}
-              className="px-6 py-3 rounded-lg font-medium text-gray-300 bg-gray-800/50 hover:bg-gray-700/50 transition duration-200"
-            >
+            <button type="button" onClick={() => navigate("/marketplace")} className="px-6 py-3 rounded-lg font-medium text-gray-300 bg-gray-800/50 hover:bg-gray-700/50 transition duration-200">
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-3 rounded-lg font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 shadow-lg shadow-blue-500/30"
-            >
+            <button type="submit" disabled={loading} className="px-6 py-3 rounded-lg font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 shadow-lg shadow-blue-500/30">
               {loading ? (
                 <span className="flex items-center">
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -191,6 +186,24 @@ export default function MarketplaceForm() {
           </div>
         </form>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-black/50 absolute inset-0 backdrop-blur-sm"></div>
+          <div className="bg-white rounded-lg p-6 shadow-xl relative z-10 transform transition-all duration-300 scale-100">
+            <div className="flex items-center space-x-4">
+              <div className="bg-green-100 rounded-full p-2">
+                <Check className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="text-gray-900">
+                <h3 className="text-lg font-medium">Success!</h3>
+                <p className="text-sm text-gray-500">Your item has been created successfully.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
