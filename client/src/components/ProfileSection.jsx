@@ -1,11 +1,13 @@
-import {Link} from "@tanstack/react-router";
 import {LogIn, LogOut} from "lucide-react";
 import React from "react";
 import {useAuth} from "../contexts/AuthContext";
+import LoginModal from "./LoginModal";
 
 const ProfileSection = () => {
-  const {user} = useAuth();
+  const {user, logout} = useAuth();
   const [imageError, setImageError] = React.useState(false);
+  const [showLoginModal, setShowLoginModal] = React.useState(false);
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
   const initials = React.useMemo(() => {
     if (!user?.name) return "";
@@ -20,43 +22,42 @@ const ProfileSection = () => {
     setImageError(true);
   };
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+    setIsLoggingOut(false);
+  };
+
   React.useEffect(() => {
     setImageError(false);
   }, [user?.name]);
 
-  const renderAvatar = () => {
-    if (!user?.name) {
-      return (
-        <Link to="/login" className="group flex flex-col items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-neutral-700 flex items-center justify-center">
-            <LogIn size={16} className="text-neutral-300" />
-          </div>
-          <span className="text-xs text-neutral-400 group-hover:text-violet-400 transition">Login</span>
-        </Link>
-      );
-    }
-
-    if (imageError) {
-      return <div className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-500 text-white text-sm">{initials}</div>;
-    }
-
-    return <img src={`https://sakura.rex.wf/linear/${user.name}?text=${initials}`} alt={user.name} className="h-8 w-8 rounded-full object-cover" onError={handleImageError} />;
-  };
-
   return (
     <div className="w-full h-full flex flex-col items-center py-4 bg-neutral-900">
-      <div className="group flex gap-5 flex-col items-center">
-        {renderAvatar()}
-
-        {user && (
-          <>
-            <Link to="/logout" className="text-neutral-400 hover:text-violet-400 transition flex flex-col items-center gap-1">
-              <LogOut size={20} />
-              <span className="text-xs">Logout</span>
-            </Link>
-          </>
+      <div className="flex gap-5 flex-col items-center">
+        {user ? (
+          <div className="flex flex-col items-center gap-5">
+            {imageError ? <div className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-500 text-white text-sm">{initials}</div> : <img src={`https://sakura.rex.wf/linear/${user.name}?text=${initials}`} alt={user.name} className="h-8 w-8 rounded-full object-cover" onError={handleImageError} />}
+            <button onClick={handleLogout} disabled={isLoggingOut} className="text-neutral-400 hover:text-violet-400 transition-colors flex flex-col items-center gap-1">
+              <LogOut size={20} className={isLoggingOut ? "opacity-50" : ""} />
+              <span className="text-xs">{isLoggingOut ? "Signing out..." : "Logout"}</span>
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowLoginModal(true)} className="group flex flex-col items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-neutral-700 flex items-center justify-center group-hover:bg-violet-600 transition-colors">
+              <LogIn size={16} className="text-neutral-300 group-hover:text-white" />
+            </div>
+            <span className="text-xs text-neutral-400 group-hover:text-violet-400 transition-colors">Login</span>
+          </button>
         )}
       </div>
+
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };

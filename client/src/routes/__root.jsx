@@ -1,6 +1,7 @@
 import {Outlet, createRootRoute} from "@tanstack/react-router";
 import * as React from "react";
 import {useAuth} from "../contexts/AuthContext";
+
 export const Route = createRootRoute({
   component: RootComponent,
 });

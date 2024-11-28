@@ -11,27 +11,12 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LogoutImport } from './routes/logout'
-import { Route as LoginImport } from './routes/login'
 import { Route as EditorImport } from './routes/editor'
 import { Route as IndexImport } from './routes/index'
 import { Route as MarketplaceIndexImport } from './routes/marketplace/index'
 import { Route as MarketplaceNewImport } from './routes/marketplace/new'
-import { Route as AuthCallbackImport } from './routes/auth/callback'
 
 // Create/Update Routes
-
-const LogoutRoute = LogoutImport.update({
-  id: '/logout',
-  path: '/logout',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const EditorRoute = EditorImport.update({
   id: '/editor',
@@ -57,12 +42,6 @@ const MarketplaceNewRoute = MarketplaceNewImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthCallbackRoute = AuthCallbackImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
-  getParentRoute: () => rootRoute,
-} as any)
-
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -79,27 +58,6 @@ declare module '@tanstack/react-router' {
       path: '/editor'
       fullPath: '/editor'
       preLoaderRoute: typeof EditorImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/logout': {
-      id: '/logout'
-      path: '/logout'
-      fullPath: '/logout'
-      preLoaderRoute: typeof LogoutImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackImport
       parentRoute: typeof rootRoute
     }
     '/marketplace/new': {
@@ -124,9 +82,6 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
-  '/login': typeof LoginRoute
-  '/logout': typeof LogoutRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/marketplace/new': typeof MarketplaceNewRoute
   '/marketplace': typeof MarketplaceIndexRoute
 }
@@ -134,9 +89,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
-  '/login': typeof LoginRoute
-  '/logout': typeof LogoutRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/marketplace/new': typeof MarketplaceNewRoute
   '/marketplace': typeof MarketplaceIndexRoute
 }
@@ -145,50 +97,22 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
-  '/login': typeof LoginRoute
-  '/logout': typeof LogoutRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/marketplace/new': typeof MarketplaceNewRoute
   '/marketplace/': typeof MarketplaceIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/editor'
-    | '/login'
-    | '/logout'
-    | '/auth/callback'
-    | '/marketplace/new'
-    | '/marketplace'
+  fullPaths: '/' | '/editor' | '/marketplace/new' | '/marketplace'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/editor'
-    | '/login'
-    | '/logout'
-    | '/auth/callback'
-    | '/marketplace/new'
-    | '/marketplace'
-  id:
-    | '__root__'
-    | '/'
-    | '/editor'
-    | '/login'
-    | '/logout'
-    | '/auth/callback'
-    | '/marketplace/new'
-    | '/marketplace/'
+  to: '/' | '/editor' | '/marketplace/new' | '/marketplace'
+  id: '__root__' | '/' | '/editor' | '/marketplace/new' | '/marketplace/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EditorRoute: typeof EditorRoute
-  LoginRoute: typeof LoginRoute
-  LogoutRoute: typeof LogoutRoute
-  AuthCallbackRoute: typeof AuthCallbackRoute
   MarketplaceNewRoute: typeof MarketplaceNewRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
 }
@@ -196,9 +120,6 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EditorRoute: EditorRoute,
-  LoginRoute: LoginRoute,
-  LogoutRoute: LogoutRoute,
-  AuthCallbackRoute: AuthCallbackRoute,
   MarketplaceNewRoute: MarketplaceNewRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
 }
@@ -215,9 +136,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/editor",
-        "/login",
-        "/logout",
-        "/auth/callback",
         "/marketplace/new",
         "/marketplace/"
       ]
@@ -227,15 +145,6 @@ export const routeTree = rootRoute
     },
     "/editor": {
       "filePath": "editor.jsx"
-    },
-    "/login": {
-      "filePath": "login.jsx"
-    },
-    "/logout": {
-      "filePath": "logout.jsx"
-    },
-    "/auth/callback": {
-      "filePath": "auth/callback.jsx"
     },
     "/marketplace/new": {
       "filePath": "marketplace/new.jsx"

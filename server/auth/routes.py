@@ -17,6 +17,38 @@ GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_INFO = "https://api.github.com/user"
 
+after_login_html = """
+<html>
+    <head>
+        <title>Login Successful</title>
+        <style>
+            body {
+                font-family: system-ui, -apple-system, sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                background: #f3f4f6;
+            }
+            .message {
+                text-align: center;
+                color: #374151;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="message">
+            <h2>Login Successful!</h2>
+            <p>You can close this window now.</p>
+        </div>
+        <script>
+            window.close();
+        </script>
+    </body>
+</html>
+"""
+
 
 @auth_bp.after_request
 def after_request(response):
@@ -125,8 +157,7 @@ def google_callback():
 
     login_user(user)
 
-    # redirect to frontend after successful login
-    return redirect(f"{Config.FRONTEND_URL}/auth/callback")
+    return after_login_html
 
 
 @auth_bp.route("/login/github")
@@ -203,5 +234,4 @@ def github_callback():
 
     login_user(user)
 
-    # redirect to frontend after successful login
-    return redirect(f"{Config.FRONTEND_URL}/auth/callback")
+    return after_login_html
