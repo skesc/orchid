@@ -43,7 +43,7 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
       const flipX = activeObject.flipX;
       const flipY = activeObject.flipY;
 
-      const img = await FabricImage.fromURL(data.image_path);
+      const img = await FabricImage.fromURL(`${API_URL}${data.image_path}`);
 
       // Only set width/height if not cropping
       const imgProps = {

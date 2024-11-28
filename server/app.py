@@ -306,7 +306,7 @@ def remove_background():
         with open(file_path, "wb") as f:
             f.write(buffer.getvalue())
 
-        relative_path = f"http://{request.host}/uploads/{filename}"
+        relative_path = f"/uploads/{filename}"
 
         return jsonify(
             {
