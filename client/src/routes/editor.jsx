@@ -24,6 +24,7 @@ function RouteComponent() {
   const [market, setMarket] = React.useState(true);
   const [isCropping, setIsCropping] = React.useState(false);
   const cropRectRef = React.useRef(null);
+  const [error, setError] = React.useState("");
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -175,43 +176,79 @@ function RouteComponent() {
   };
 
   const handleImageUpload = (event) => {
+    setError("");
     const file = event.target.files?.[0];
     if (!file || !canvas) return;
+
+    const fileType = file.type.toLowerCase();
+    if (fileType === "image/svg+xml" || fileType === "image/gif") {
+      setError("SVG and GIF files are not supported. Please upload a static image format (PNG or JPEG).");
+      event.target.value = "";
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(fileType)) {
+      setError("Unsupported file type. Please upload a PNG, JPEG or WebP image.");
+      event.target.value = "";
+      return;
+    }
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (e) => {
       const imgSrc = e.target.result;
-      let imageElement = document.createElement("img");
+      const imageElement = new Image();
       imageElement.src = imgSrc;
       imageElement.onload = function () {
-        let image = new FabricImage(imageElement);
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = imageElement.width;
+        tempCanvas.height = imageElement.height;
+        const ctx = tempCanvas.getContext("2d");
+        ctx.drawImage(imageElement, 0, 0);
 
-        const maxWidth = window.innerWidth * 0.9;
-        const maxHeight = window.innerHeight * 0.9;
+        const convertedImage = new Image();
+        convertedImage.src = tempCanvas.toDataURL("image/png");
 
-        if (image.width > maxWidth || image.height > maxHeight) {
-          const scaleFactorWidth = maxWidth / image.width;
-          const scaleFactorHeight = maxHeight / image.height;
-          const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
-          image.scale(scaleFactor);
-        }
+        convertedImage.onload = () => {
+          let image = new FabricImage(convertedImage);
 
-        image.set({
-          selectable: true,
-          hasControls: true,
-          hoverCursor: "default",
-          lockMovementX: false,
-          lockMovementY: false,
-          evented: true,
-        });
+          const maxWidth = window.innerWidth * 0.9;
+          const maxHeight = window.innerHeight * 0.9;
 
-        canvas.add(image);
-        canvas.centerObject(image);
-        canvas.renderAll();
+          if (image.width > maxWidth || image.height > maxHeight) {
+            const scaleFactorWidth = maxWidth / image.width;
+            const scaleFactorHeight = maxHeight / image.height;
+            const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
+            image.scale(scaleFactor);
+          }
+
+          image.set({
+            selectable: true,
+            hasControls: true,
+            hoverCursor: "default",
+            lockMovementX: false,
+            lockMovementY: false,
+            evented: true,
+          });
+
+          canvas.add(image);
+          canvas.centerObject(image);
+          canvas.renderAll();
+        };
+      };
+
+      imageElement.onerror = function () {
+        setError("Failed to load image. Please try a different file.");
+        event.target.value = "";
       };
     };
-  };
 
+    reader.onerror = function () {
+      setError("Failed to read file. Please try again.");
+      event.target.value = "";
+    };
+  };
   const handleAddHat = (hatUrl) => {
     if (!canvas) return;
     let imageElement = document.createElement("img");
@@ -346,7 +383,8 @@ function RouteComponent() {
             <label htmlFor="fileinp" className="text-neutral-100 hover:text-violet-400 transition cursor-pointer">
               <Upload size={24} />
             </label>
-            <input hidden id="fileinp" type="file" accept="image/*" onChange={handleImageUpload} />
+            <input hidden id="fileinp" type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} />
+            {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
             <button className="text-neutral-100 hover:text-violet-400 transition" onClick={handleExportImage}>
               <ImageDown size={24} />
             </button>
