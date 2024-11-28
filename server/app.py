@@ -287,7 +287,6 @@ def remove_background():
         should_crop = request.args.get("crop", "").lower() == "true"
 
         if should_crop:
-            print("Cropping image")
             img = Image.open(buffer).convert("RGBA")
             alpha = img.getchannel("A")
             bbox = alpha.getbbox()
