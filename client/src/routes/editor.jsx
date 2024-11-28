@@ -1,7 +1,8 @@
 import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
-import {Crop, ImageDown, Store, Upload, UserSquare2, X} from "lucide-react";
+import {Crop, Eraser, ImageDown, Store, Upload, UserSquare2, X} from "lucide-react";
 import * as React from "react";
+import BackgroundRemovalModal from "../components/BackgroundRemovalModal";
 import HandleExportImage from "../components/HandleExportImage";
 import PFPModal from "../components/PFPModal";
 import ProfileSection from "../components/ProfileSection";
@@ -29,9 +30,15 @@ function RouteComponent() {
   const [market, setMarket] = React.useState(true);
   const [isCropping, setIsCropping] = React.useState(false);
   const [showPFPModal, setShowPFPModal] = React.useState(false);
+  const [showBgRemovalModal, setShowBgRemovalModal] = React.useState(false);
   const cropRectRef = React.useRef(null);
   const [error, setError] = React.useState("");
   const {user} = useAuth();
+  const fileInputRef = React.useRef(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -392,14 +399,13 @@ function RouteComponent() {
       <div className="fixed h-screen w-16 z-10">
         <div className="w-full h-full flex flex-col items-center justify-between py-4 bg-neutral-900">
           <div className="group flex gap-5 flex-col items-center cursor-pointer">
-            <label htmlFor="fileinp" className="cursor-pointer">
-              <ButtonWithTooltip icon={Upload} tooltip="Upload Image" />
-            </label>
-            <input hidden id="fileinp" type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} />
+            <ButtonWithTooltip icon={Upload} tooltip="Upload Image" onClick={() => fileInputRef.current?.click()} />
+            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} style={{display: "none"}} />
             <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => HandleExportImage(canvas)} />
             <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" onClick={() => setMarket(!market)} active={market} />
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
             <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" onClick={() => setShowPFPModal(true)} />
+            <ButtonWithTooltip icon={Eraser} tooltip="Remove Background" onClick={() => setShowBgRemovalModal(true)} />
           </div>
 
           <div className="flex flex-col items-center gap-5">
@@ -408,8 +414,11 @@ function RouteComponent() {
           </div>
         </div>
       </div>
+
       <canvas ref={canvasRef} className="w-full h-full" />
+
       {market && <Market handleAddHat={handleAddHat} />}
+
       {isCropping && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-neutral-900 p-4 rounded-lg flex gap-4">
           <button className="px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600 transition" onClick={applyCrop}>
@@ -420,8 +429,11 @@ function RouteComponent() {
           </button>
         </div>
       )}
+
       {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
+
       <PFPModal isOpen={showPFPModal} onClose={() => setShowPFPModal(false)} onSelect={handlePFPSelect} />
+      <BackgroundRemovalModal isOpen={showBgRemovalModal} onClose={() => setShowBgRemovalModal(false)} canvas={canvas} />
     </div>
   );
 }

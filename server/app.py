@@ -2,16 +2,19 @@ import json
 import os
 import re
 import time
+from datetime import datetime, timedelta
+from io import BytesIO
 from os import environ
 
 import requests
 from config import Config
 from dotenv import load_dotenv
 from extensions import db, login_manager
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_login import current_user, login_required
 from models import MarketplaceItem
+from rembg import remove
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from werkzeug.utils import secure_filename
@@ -31,9 +34,7 @@ from auth.routes import auth_bp
 
 app.register_blueprint(auth_bp)
 
-UPLOAD_FOLDER = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "client", "public", "uploads"
-)
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
@@ -71,6 +72,11 @@ def _setup_chrome_driver():
     return webdriver.Chrome(options=options)
 
 
+@app.route("/uploads/<path:filename>")
+def serve_uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
 @app.route("/api/pfp/x/<username>")
 def fetch_x_profile_picture(username):
     driver = _setup_chrome_driver()
@@ -85,7 +91,7 @@ def fetch_x_profile_picture(username):
                 jsonify(
                     {
                         "success": False,
-                        "message": "Profile picture not found",
+                        "message": "Could not retrieve profile picture",
                         "url": None,
                     }
                 ),
@@ -240,6 +246,68 @@ def get_marketplace_item(item_id):
         return jsonify({"error": "Not found"}), 404
 
     return jsonify(item.to_dict())
+
+
+def cleanup_old_files(directory, minutes=10):
+    current_time = datetime.now()
+    for filename in os.listdir(directory):
+        if filename.startswith("nobg_"):
+            file_path = os.path.join(directory, filename)
+            file_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
+            if current_time - file_modified > timedelta(minutes=minutes):
+                try:
+                    os.remove(file_path)
+                except OSError:
+                    pass
+
+
+@app.route("/api/remove-background", methods=["POST"])
+def remove_background():
+    if "image" not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    file = request.files["image"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+
+    if not allowed_file(file.filename):
+        return jsonify({"error": "Invalid file type"}), 400
+
+    try:
+        cleanup_old_files(app.config["UPLOAD_FOLDER"])
+
+        input_image = file.read()
+
+        output_image = remove(input_image)
+
+        buffer = BytesIO()
+        buffer.write(output_image)
+        buffer.seek(0)
+
+        timestamp = int(time.time())
+        filename = secure_filename(file.filename)
+        filename = f"nobg_{timestamp}_{filename}"
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+
+        with open(file_path, "wb") as f:
+            f.write(buffer.getvalue())
+
+        relative_path = f"http://{request.host}/uploads/{filename}"
+
+        return jsonify(
+            {
+                "success": True,
+                "message": "Background removed successfully",
+                "image_path": relative_path,
+                "expires_in": "10 minutes",
+            }
+        )
+
+    except Exception as e:
+        return (
+            jsonify({"success": False, "message": f"Error processing image: {str(e)}"}),
+            500,
+        )
 
 
 if __name__ == "__main__":
