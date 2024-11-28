@@ -10,7 +10,7 @@ import requests
 from config import Config
 from dotenv import load_dotenv
 from extensions import db, login_manager
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_login import current_user, login_required
 from models import MarketplaceItem
@@ -26,6 +26,9 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2MB limit
+app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
 
 db.init_app(app)
 login_manager.init_app(app)
@@ -75,11 +78,26 @@ def _setup_chrome_driver():
 
 @app.route("/uploads/<path:filename>")
 def serve_uploaded_file(filename):
+    filename = secure_filename(filename)
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+
+    if not file_path.startswith(os.path.abspath(app.config["UPLOAD_FOLDER"])):
+        return abort(404)
+
+    if not os.path.exists(file_path):
+        return abort(404)
+
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 
 @app.route("/api/pfp/x/<username>")
 def fetch_x_profile_picture(username):
+    if not re.match(r"^[a-zA-Z0-9_]+$", username):
+        return (
+            jsonify({"success": False, "message": "Invalid username", "url": None}),
+            400,
+        )
+
     driver = _setup_chrome_driver()
     # this is the worst thing ever i'm so sorry
     try:
@@ -159,6 +177,7 @@ def create_marketplace_item():
     if not allowed_file(file.filename):
         return jsonify({"error": "Invalid file type"}), 400
 
+    # TODO: add input validation
     filename = secure_filename(file.filename)
     timestamp = int(time.time())
     filename = f"{timestamp}_{filename}"
@@ -252,14 +271,16 @@ def get_marketplace_item(item_id):
 def cleanup_old_files(directory, minutes=10):
     current_time = datetime.now()
     for filename in os.listdir(directory):
-        if filename.startswith("nobg_"):
-            file_path = os.path.join(directory, filename)
-            file_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
-            if current_time - file_modified > timedelta(minutes=minutes):
-                try:
+        try:
+            if filename.startswith("nobg_"):
+                file_path = os.path.join(directory, filename)
+                if ".." in file_path or not os.path.exists(file_path):
+                    continue
+                file_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
+                if current_time - file_modified > timedelta(minutes=minutes):
                     os.remove(file_path)
-                except OSError:
-                    pass
+        except (OSError, IOError):
+            continue
 
 
 @app.route("/api/remove-background", methods=["POST"])
