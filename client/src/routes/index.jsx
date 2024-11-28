@@ -1,4 +1,4 @@
-import {createFileRoute} from "@tanstack/react-router";
+import {createFileRoute, Navigate} from "@tanstack/react-router";
 import * as React from "react";
 
 export const Route = createFileRoute("/")({
@@ -6,5 +6,6 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  return <div className="text-white">i fucking hate my life !!</div>;
+  // return <div className="text-white">i fucking hate my life !!</div>;
+  return <Navigate to="/editor" />;
 }
