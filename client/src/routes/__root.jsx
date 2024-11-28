@@ -11,8 +11,7 @@ function RootComponent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen top-0 flex flex-col bg-gray-950">
-      {/* <NavbarMain /> */}
+    <div className="min-h-screen top-0 flex flex-col bg-neutral-950">
       <main>
         <Outlet />
       </main>
