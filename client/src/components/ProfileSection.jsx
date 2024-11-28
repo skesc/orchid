@@ -54,7 +54,6 @@ const ProfileSection = () => {
               <LogOut size={20} />
               <span className="text-xs">Logout</span>
             </Link>
-            <div className="py-[1px] px-3 bg-neutral-700 w-full"></div>
           </>
         )}
       </div>

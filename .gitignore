@@ -43,3 +43,5 @@ venv/
 # SQLite
 *.db
 *.db-journal
+
+uploads/*
