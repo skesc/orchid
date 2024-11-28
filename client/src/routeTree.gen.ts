@@ -15,6 +15,8 @@ import { Route as LogoutImport } from './routes/logout'
 import { Route as LoginImport } from './routes/login'
 import { Route as EditorImport } from './routes/editor'
 import { Route as IndexImport } from './routes/index'
+import { Route as MarketplaceIndexImport } from './routes/marketplace/index'
+import { Route as MarketplaceNewImport } from './routes/marketplace/new'
 import { Route as AuthCallbackImport } from './routes/auth/callback'
 
 // Create/Update Routes
@@ -40,6 +42,18 @@ const EditorRoute = EditorImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MarketplaceIndexRoute = MarketplaceIndexImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MarketplaceNewRoute = MarketplaceNewImport.update({
+  id: '/marketplace/new',
+  path: '/marketplace/new',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -88,6 +102,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackImport
       parentRoute: typeof rootRoute
     }
+    '/marketplace/new': {
+      id: '/marketplace/new'
+      path: '/marketplace/new'
+      fullPath: '/marketplace/new'
+      preLoaderRoute: typeof MarketplaceNewImport
+      parentRoute: typeof rootRoute
+    }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -99,6 +127,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/marketplace/new': typeof MarketplaceNewRoute
+  '/marketplace': typeof MarketplaceIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -107,6 +137,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/marketplace/new': typeof MarketplaceNewRoute
+  '/marketplace': typeof MarketplaceIndexRoute
 }
 
 export interface FileRoutesById {
@@ -116,14 +148,38 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/marketplace/new': typeof MarketplaceNewRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/editor' | '/login' | '/logout' | '/auth/callback'
+  fullPaths:
+    | '/'
+    | '/editor'
+    | '/login'
+    | '/logout'
+    | '/auth/callback'
+    | '/marketplace/new'
+    | '/marketplace'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/editor' | '/login' | '/logout' | '/auth/callback'
-  id: '__root__' | '/' | '/editor' | '/login' | '/logout' | '/auth/callback'
+  to:
+    | '/'
+    | '/editor'
+    | '/login'
+    | '/logout'
+    | '/auth/callback'
+    | '/marketplace/new'
+    | '/marketplace'
+  id:
+    | '__root__'
+    | '/'
+    | '/editor'
+    | '/login'
+    | '/logout'
+    | '/auth/callback'
+    | '/marketplace/new'
+    | '/marketplace/'
   fileRoutesById: FileRoutesById
 }
 
@@ -133,6 +189,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  MarketplaceNewRoute: typeof MarketplaceNewRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -141,6 +199,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  MarketplaceNewRoute: MarketplaceNewRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -157,7 +217,9 @@ export const routeTree = rootRoute
         "/editor",
         "/login",
         "/logout",
-        "/auth/callback"
+        "/auth/callback",
+        "/marketplace/new",
+        "/marketplace/"
       ]
     },
     "/": {
@@ -174,6 +236,12 @@ export const routeTree = rootRoute
     },
     "/auth/callback": {
       "filePath": "auth/callback.jsx"
+    },
+    "/marketplace/new": {
+      "filePath": "marketplace/new.jsx"
+    },
+    "/marketplace/": {
+      "filePath": "marketplace/index.jsx"
     }
   }
 }
