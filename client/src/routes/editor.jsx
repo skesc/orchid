@@ -2,7 +2,7 @@ import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
 import {Crop, ImageDown, Store, Upload, UserSquare2, X} from "lucide-react";
 import * as React from "react";
-import handleExportImage from "../components/handleExportImage";
+import HandleExportImage from "../components/HandleExportImage";
 import PFPModal from "../components/PFPModal";
 import ProfileSection from "../components/ProfileSection";
 import {ButtonWithTooltip} from "../components/Tooltip";
@@ -396,7 +396,7 @@ function RouteComponent() {
               <ButtonWithTooltip icon={Upload} tooltip="Upload Image" />
             </label>
             <input hidden id="fileinp" type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} />
-            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => handleExportImage(canvas)} />
+            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => HandleExportImage(canvas)} />
             <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" onClick={() => setMarket(!market)} active={market} />
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
             <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" onClick={() => setShowPFPModal(true)} />

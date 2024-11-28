@@ -6,7 +6,7 @@ const generateFileName = (prefix, activeObject = null) => {
   return `orchid-${prefix}-${objectType}-${timestamp}.png`;
 };
 
-const handleExportImage = (canvas, prefix = "edit") => {
+const HandleExportImage = (canvas, prefix = "edit") => {
   if (!canvas) return;
 
   const activeObject = canvas.getActiveObject();
@@ -37,4 +37,4 @@ const handleExportImage = (canvas, prefix = "edit") => {
   document.body.removeChild(link);
 };
 
-export default handleExportImage;
+export default HandleExportImage;
