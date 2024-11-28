@@ -15,12 +15,10 @@ export const Tooltip = ({text, children, position = "right"}) => {
       <div onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
         {children}
       </div>
-      {show && (
-        <div className={`absolute z-50 px-2 py-1 text-sm font-medium text-white bg-gray-900 rounded-md whitespace-nowrap ${positionClasses[position]}`} role="tooltip">
-          {text}
-          <div className={`absolute w-1 h-1 bg-gray-900 transform rotate-45 ${position === "right" ? "left-0 -translate-x-1/2 top-1/2 -translate-y-1/2" : position === "left" ? "right-0 translate-x-1/2 top-1/2 -translate-y-1/2" : position === "top" ? "bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2" : "top-0 -translate-y-1/2 left-1/2 -translate-x-1/2"}`} />
-        </div>
-      )}
+      <div className={`absolute z-50 px-2 py-1 text-sm font-medium text-white bg-gray-900 rounded-md whitespace-nowrap ${positionClasses[position]} transition-opacity duration-200 ${show ? "opacity-100" : "opacity-0 pointer-events-none"}`} role="tooltip">
+        {text}
+        <div className={`absolute w-1 h-1 bg-gray-900 transform rotate-45 ${position === "right" ? "left-0 -translate-x-1/2 top-1/2 -translate-y-1/2" : position === "left" ? "right-0 translate-x-1/2 top-1/2 -translate-y-1/2" : position === "top" ? "bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2" : "top-0 -translate-y-1/2 left-1/2 -translate-x-1/2"}`} />
+      </div>
     </div>
   );
 };
