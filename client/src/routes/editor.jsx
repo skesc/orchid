@@ -3,6 +3,7 @@ import {Canvas, FabricImage, Group, Rect} from "fabric";
 import {Crop, ImageDown, Store, Upload, X} from "lucide-react";
 import * as React from "react";
 import ProfileSection from "../components/ProfileSection";
+import {ButtonWithTooltip} from "../components/Tooltip";
 import {useAuth} from "../contexts/AuthContext";
 
 export const Route = createFileRoute("/editor")({
@@ -383,28 +384,22 @@ function RouteComponent() {
       <div className="fixed h-screen w-16 z-10">
         <div className="w-full h-full flex flex-col items-center justify-between py-4 bg-neutral-900">
           <div className="group flex gap-5 flex-col items-center cursor-pointer">
-            <label htmlFor="fileinp" className="text-neutral-100 hover:text-violet-400 transition cursor-pointer">
-              <Upload size={24} />
+            <label htmlFor="fileinp" className="cursor-pointer">
+              <ButtonWithTooltip icon={Upload} tooltip="Upload Image" />
             </label>
             <input hidden id="fileinp" type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} />
-            {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
-            <button className="text-neutral-100 hover:text-violet-400 transition" onClick={handleExportImage}>
-              <ImageDown size={24} />
-            </button>
-            <button onClick={() => setMarket(!market)} className="text-neutral-100 hover:text-violet-400 transition">
-              <Store size={24} />
-            </button>
-            <button className={`text-neutral-100 hover:text-violet-400 transition ${isCropping ? "text-violet-400" : ""}`} onClick={isCropping ? cancelCrop : startCropping}>
-              <Crop size={24} />
-            </button>
+            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={handleExportImage} />
+            <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" onClick={() => setMarket(!market)} active={market} />
+            <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
           </div>
+
           <div className="flex flex-col items-center gap-5">
             <div className="py-[1px] px-3 bg-neutral-700 w-full"></div>
             <ProfileSection />
           </div>
         </div>
       </div>
-      <canvas ref={canvasRef} className="w-full h-full"></canvas>
+      <canvas ref={canvasRef} className="w-full h-full" />
       {market && <Market handleAddHat={handleAddHat} />}
       {isCropping && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-neutral-900 p-4 rounded-lg flex gap-4">
@@ -416,6 +411,7 @@ function RouteComponent() {
           </button>
         </div>
       )}
+      {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
     </div>
   );
 }
