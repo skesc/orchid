@@ -12,7 +12,7 @@ function RootComponent() {
 
   return (
     <div className="min-h-screen top-0 flex flex-col bg-gray-950">
-      <NavbarMain />
+      {/* <NavbarMain /> */}
       <main>
         <Outlet />
       </main>
