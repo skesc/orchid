@@ -2,6 +2,7 @@ import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
 import {Crop, ImageDown, Store, Upload, X} from "lucide-react";
 import * as React from "react";
+import ProfileSection from "../components/ProfileSection";
 import {useAuth} from "../contexts/AuthContext";
 
 export const Route = createFileRoute("/editor")({
@@ -27,37 +28,6 @@ function RouteComponent() {
   const cropRectRef = React.useRef(null);
   const [error, setError] = React.useState("");
   const {user} = useAuth();
-
-  const ProfilePicture = ({user}) => {
-    const [imageError, setImageError] = React.useState(false);
-
-    const initials = React.useMemo(() => {
-      if (!user?.name) return "";
-      return user.name
-        .split(" ")
-        .map((n) => n.slice(0, 2))
-        .join("")
-        .toUpperCase();
-    }, [user?.name]);
-
-    const handleImageError = () => {
-      setImageError(true);
-    };
-
-    React.useEffect(() => {
-      setImageError(false);
-    }, [user?.name]);
-
-    if (!user?.name) {
-      return <img src="https://sakura.rex.wf/linear/orchird" alt="default" className="h-8 rounded-full" />;
-    }
-
-    if (imageError) {
-      return <div className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-500 text-white text-sm">{initials}</div>;
-    }
-
-    return <img src={`https://sakura.rex.wf/linear/${user.name}?text=${initials}`} alt={user.name} className="h-8 w-8 rounded-full object-cover" onError={handleImageError} />;
-  };
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -411,9 +381,8 @@ function RouteComponent() {
   return (
     <div className="w-screen h-screen overflow-hidden">
       <div className="fixed h-screen w-16 z-10">
-        <div className="w-full h-full flex flex-col items-center py-4  bg-neutral-900">
-          <div className="group flex gap-5 flex-col items-center  cursor-pointer">
-            <ProfilePicture user={user} />
+        <div className="w-full h-full flex flex-col items-center justify-between py-4 bg-neutral-900">
+          <div className="group flex gap-5 flex-col items-center cursor-pointer">
             <label htmlFor="fileinp" className="text-neutral-100 hover:text-violet-400 transition cursor-pointer">
               <Upload size={24} />
             </label>
@@ -425,10 +394,13 @@ function RouteComponent() {
             <button onClick={() => setMarket(!market)} className="text-neutral-100 hover:text-violet-400 transition">
               <Store size={24} />
             </button>
-            <div className="py-[1px] px-3 bg-neutral-700 w-full "></div>
             <button className={`text-neutral-100 hover:text-violet-400 transition ${isCropping ? "text-violet-400" : ""}`} onClick={isCropping ? cancelCrop : startCropping}>
               <Crop size={24} />
             </button>
+          </div>
+          <div className="flex flex-col items-center gap-5">
+            <div className="py-[1px] px-3 bg-neutral-700 w-full"></div>
+            <ProfileSection />
           </div>
         </div>
       </div>

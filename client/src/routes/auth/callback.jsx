@@ -14,7 +14,7 @@ function AuthCallbackComponent() {
     const handleCallback = async () => {
       try {
         await checkAuth();
-        navigate({to: "/"});
+        navigate({to: "/editor"});
       } catch (error) {
         console.error("Auth callback error:", error);
         navigate({to: "/login"});
