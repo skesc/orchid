@@ -1,8 +1,9 @@
 import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
-import {Crop, ImageDown, Store, Upload, X} from "lucide-react";
+import {Crop, ImageDown, Store, Upload, UserSquare2, X} from "lucide-react";
 import * as React from "react";
 import handleExportImage from "../components/handleExportImage";
+import PFPModal from "../components/PFPModal";
 import ProfileSection from "../components/ProfileSection";
 import {ButtonWithTooltip} from "../components/Tooltip";
 import {useAuth} from "../contexts/AuthContext";
@@ -27,6 +28,7 @@ function RouteComponent() {
   const [canvas, setCanvas] = React.useState(null);
   const [market, setMarket] = React.useState(true);
   const [isCropping, setIsCropping] = React.useState(false);
+  const [showPFPModal, setShowPFPModal] = React.useState(false);
   const cropRectRef = React.useRef(null);
   const [error, setError] = React.useState("");
   const {user} = useAuth();
@@ -354,6 +356,37 @@ function RouteComponent() {
     canvas.renderAll();
   };
 
+  const handlePFPSelect = async (url) => {
+    if (!canvas || !url) return;
+
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const imgElement = new Image();
+        imgElement.src = e.target.result;
+
+        imgElement.onload = () => {
+          const fabricImage = new FabricImage(imgElement, {
+            scaleX: 0.5,
+            scaleY: 0.5,
+          });
+
+          canvas.add(fabricImage);
+          canvas.centerObject(fabricImage);
+          canvas.setActiveObject(fabricImage);
+          canvas.renderAll();
+        };
+      };
+
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      setError("Failed to load profile picture. Please try again.");
+    }
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden">
       <div className="fixed h-screen w-16 z-10">
@@ -366,6 +399,7 @@ function RouteComponent() {
             <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => handleExportImage(canvas)} />
             <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" onClick={() => setMarket(!market)} active={market} />
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
+            <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" onClick={() => setShowPFPModal(true)} />
           </div>
 
           <div className="flex flex-col items-center gap-5">
@@ -387,6 +421,7 @@ function RouteComponent() {
         </div>
       )}
       {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
+      <PFPModal isOpen={showPFPModal} onClose={() => setShowPFPModal(false)} onSelect={handlePFPSelect} />
     </div>
   );
 }

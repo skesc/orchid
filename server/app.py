@@ -77,7 +77,7 @@ def fetch_x_profile_picture(username):
     # this is the worst thing ever i'm so sorry
     try:
         driver.get(f"https://x.com/{username}/photo")
-        time.sleep(1.5)
+        time.sleep(2)
         pattern = r"https://pbs\.twimg\.com/profile_images/.*?\.jpg"
         match = re.search(pattern, driver.page_source)
         if not match:
