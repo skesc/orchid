@@ -36,17 +36,25 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
         throw new Error(data.message || "Failed to remove background");
       }
 
-      const {scaleX, scaleY, left, top, angle} = activeObject;
+      const originalWidth = activeObject.width;
+      const originalHeight = activeObject.height;
+      const currentAngle = activeObject.angle || 0;
+      const currentScaleX = activeObject.scaleX || 1;
+      const currentScaleY = activeObject.scaleY || 1;
+      const flipX = activeObject.flipX;
+      const flipY = activeObject.flipY;
 
-      const img = await FabricImage.fromURL(data.image_path, {
-        crossOrigin: "anonymous",
-        originX: "center",
-        originY: "center",
-        left,
-        top,
-        angle,
-        scaleX,
-        scaleY,
+      const img = await FabricImage.fromURL(data.image_path);
+      img.set({
+        left: activeObject.left,
+        top: activeObject.top,
+        angle: currentAngle,
+        scaleX: currentScaleX,
+        scaleY: currentScaleY,
+        flipX: flipX,
+        flipY: flipY,
+        width: originalWidth,
+        height: originalHeight,
       });
 
       canvas.remove(activeObject);
