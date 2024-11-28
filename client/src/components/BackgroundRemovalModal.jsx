@@ -6,6 +6,7 @@ import {API_URL} from "../utils/fetchConfig";
 export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [shouldCrop, setShouldCrop] = React.useState(false);
 
   const handleRemoveBackground = async () => {
     const activeObject = canvas?.getActiveObject();
@@ -24,7 +25,7 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
       const formData = new FormData();
       formData.append("image", blob, "image.png");
 
-      const response = await fetch(`${API_URL}/api/remove-background`, {
+      const response = await fetch(`${API_URL}/api/remove-background?crop=${shouldCrop}`, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -36,8 +37,6 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
         throw new Error(data.message || "Failed to remove background");
       }
 
-      const originalWidth = activeObject.width;
-      const originalHeight = activeObject.height;
       const currentAngle = activeObject.angle || 0;
       const currentScaleX = activeObject.scaleX || 1;
       const currentScaleY = activeObject.scaleY || 1;
@@ -45,7 +44,9 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
       const flipY = activeObject.flipY;
 
       const img = await FabricImage.fromURL(data.image_path);
-      img.set({
+
+      // Only set width/height if not cropping
+      const imgProps = {
         left: activeObject.left,
         top: activeObject.top,
         angle: currentAngle,
@@ -53,9 +54,14 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
         scaleY: currentScaleY,
         flipX: flipX,
         flipY: flipY,
-        width: originalWidth,
-        height: originalHeight,
-      });
+      };
+
+      if (!shouldCrop) {
+        imgProps.width = activeObject.width;
+        imgProps.height = activeObject.height;
+      }
+
+      img.set(imgProps);
 
       canvas.remove(activeObject);
       canvas.add(img);
@@ -75,24 +81,35 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 m-4">
+      <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-8">
         <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
           <X size={24} />
         </button>
 
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-purple-500">Remove Background</h2>
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-purple-500">Remove Background</h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Select an image first, then click remove background</p>
         </div>
 
-        {error && <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 sm:mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400 text-sm">{error}</div>}
+
+        <div className="mb-4 sm:mb-6">
+          <label className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 cursor-pointer group transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-300">Crop to content</span>
+            <div className="relative">
+              <input type="checkbox" checked={shouldCrop} onChange={(e) => setShouldCrop(e.target.checked)} className="sr-only peer" />
+              <div className="w-10 h-6 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-violet-500 transition-colors"></div>
+              <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-all peer-checked:translate-x-4"></div>
+            </div>
+          </label>
+        </div>
 
         <div className="flex gap-4">
-          <button onClick={onClose} className="flex-1 px-4 py-3 rounded-xl font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          <button onClick={onClose} className="flex-1 px-4 py-3 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
             Cancel
           </button>
 
-          <button onClick={handleRemoveBackground} disabled={loading} className="flex-1 px-4 py-3 rounded-xl font-medium bg-violet-500 text-white hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
+          <button onClick={handleRemoveBackground} disabled={loading} className="flex-1 px-4 py-3 rounded-lg font-medium bg-violet-500 text-white hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
             {loading ? (
               <>
                 <Loader2 size={20} className="animate-spin" />

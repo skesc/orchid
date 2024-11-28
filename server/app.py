@@ -14,6 +14,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_login import current_user, login_required
 from models import MarketplaceItem
+from PIL import Image
 from rembg import remove
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -277,12 +278,26 @@ def remove_background():
         cleanup_old_files(app.config["UPLOAD_FOLDER"])
 
         input_image = file.read()
-
         output_image = remove(input_image)
 
         buffer = BytesIO()
         buffer.write(output_image)
         buffer.seek(0)
+
+        should_crop = request.args.get("crop", "").lower() == "true"
+
+        if should_crop:
+            print("Cropping image")
+            img = Image.open(buffer).convert("RGBA")
+            alpha = img.getchannel("A")
+            bbox = alpha.getbbox()
+
+            if bbox:
+                img = img.crop(bbox)
+
+            buffer = BytesIO()
+            img.save(buffer, format="PNG")
+            buffer.seek(0)
 
         timestamp = int(time.time())
         filename = secure_filename(file.filename)
