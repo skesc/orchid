@@ -234,10 +234,8 @@ function RouteComponent() {
     }
 
     setIsCropping(true);
-
     canvas.imageToClip = activeObject;
 
-    // create crop rectangle
     const bounds = activeObject.getBoundingRect();
     const cropRect = new Rect({
       left: bounds.left,
@@ -266,46 +264,67 @@ function RouteComponent() {
     const imageObject = canvas.imageToClip;
     const cropRect = cropRectRef.current;
 
-    // store the current image properties
+    const originalWidth = imageObject.width;
+    const originalHeight = imageObject.height;
+    const currentAngle = imageObject.angle || 0;
     const currentScaleX = imageObject.scaleX || 1;
     const currentScaleY = imageObject.scaleY || 1;
-    const currentLeft = imageObject.left;
-    const currentTop = imageObject.top;
+    const flipX = imageObject.flipX;
+    const flipY = imageObject.flipY;
+
+    imageObject.set({angle: 0});
+    canvas.renderAll();
 
     const rect = cropRect.getBoundingRect();
     const imageRect = imageObject.getBoundingRect();
 
-    const relativeLeft = rect.left - imageRect.left;
-    const relativeTop = rect.top - imageRect.top;
+    const relativeLeft = (rect.left - imageRect.left) / currentScaleX;
+    const relativeTop = (rect.top - imageRect.top) / currentScaleY;
+    const relativeWidth = rect.width / currentScaleX;
+    const relativeHeight = rect.height / currentScaleY;
 
-    const normalizedLeft = relativeLeft / imageRect.width;
-    const normalizedTop = relativeTop / imageRect.height;
-    const normalizedWidth = rect.width / imageRect.width;
-    const normalizedHeight = rect.height / imageRect.height;
+    const cropX = (relativeLeft / imageRect.width) * originalWidth;
+    const cropY = (relativeTop / imageRect.height) * originalHeight;
+    const cropWidth = (relativeWidth / imageRect.width) * originalWidth;
+    const cropHeight = (relativeHeight / imageRect.height) * originalHeight;
 
-    // create clip path using the normalized coordinates
-    const clipPath = new Rect({
-      left: -imageObject.width / 2 + normalizedLeft * imageObject.width,
-      top: -imageObject.height / 2 + normalizedTop * imageObject.height,
-      width: normalizedWidth * imageObject.width,
-      height: normalizedHeight * imageObject.height,
-      absolutePositioned: false,
-    });
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = cropWidth;
+    tempCanvas.height = cropHeight;
+    const tempCtx = tempCanvas.getContext("2d");
 
-    // apply the clip path while preserving scale and position
-    imageObject.clipPath = clipPath;
-    imageObject.set({
-      scaleX: currentScaleX,
-      scaleY: currentScaleY,
-      left: currentLeft,
-      top: currentTop,
-    });
+    const img = imageObject.getElement();
+    tempCtx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
 
-    canvas.remove(cropRect);
-    cropRectRef.current = null;
-    delete canvas.imageToClip;
-    setIsCropping(false);
-    canvas.renderAll();
+    const croppedImg = new Image();
+    croppedImg.src = tempCanvas.toDataURL("image/png");
+
+    croppedImg.onload = () => {
+      const croppedFabricImage = new FabricImage(croppedImg);
+
+      croppedFabricImage.set({
+        left: rect.left + rect.width / 2,
+        top: rect.top + rect.height / 2,
+        originX: "center",
+        originY: "center",
+        angle: currentAngle,
+        flipX: flipX,
+        flipY: flipY,
+        scaleX: 1,
+        scaleY: 1,
+      });
+
+      canvas.remove(imageObject);
+      canvas.remove(cropRect);
+
+      canvas.add(croppedFabricImage);
+      canvas.setActiveObject(croppedFabricImage);
+
+      cropRectRef.current = null;
+      delete canvas.imageToClip;
+      setIsCropping(false);
+      canvas.renderAll();
+    };
   };
 
   const cancelCrop = () => {
@@ -335,7 +354,7 @@ function RouteComponent() {
               <Store size={24} />
             </button>
             <div className="py-[1px] px-3 bg-neutral-700 w-full "></div>
-            <button className="text-neutral-100 hover:text-violet-400 transition">
+            <button className={`text-neutral-100 hover:text-violet-400 transition ${isCropping ? "text-violet-400" : ""}`} onClick={isCropping ? cancelCrop : startCropping}>
               <Crop size={24} />
             </button>
           </div>
@@ -344,11 +363,11 @@ function RouteComponent() {
       <canvas ref={canvasRef} className="w-full h-full"></canvas>
       {market && <Market handleAddHat={handleAddHat} />}
       {isCropping && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-900 p-4 rounded-lg flex gap-4">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition" onClick={applyCrop}>
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-neutral-900 p-4 rounded-lg flex gap-4">
+          <button className="px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600 transition" onClick={applyCrop}>
             Apply Crop
           </button>
-          <button className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 transition" onClick={cancelCrop}>
+          <button className="px-4 py-2 bg-neutral-700 text-white rounded hover:bg-neutral-800 transition" onClick={cancelCrop}>
             <X size={24} />
           </button>
         </div>
