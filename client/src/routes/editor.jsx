@@ -2,6 +2,7 @@ import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
 import {Crop, ImageDown, Store, Upload, X} from "lucide-react";
 import * as React from "react";
+import handleExportImage from "../components/handleExportImage";
 import ProfileSection from "../components/ProfileSection";
 import {ButtonWithTooltip} from "../components/Tooltip";
 import {useAuth} from "../contexts/AuthContext";
@@ -152,32 +153,6 @@ function RouteComponent() {
       };
     }
   }, []);
-
-  const handleExportImage = () => {
-    if (!canvas) return;
-    const activeObject = canvas.getActiveObject();
-    if (activeObject) {
-      const dataURL = activeObject.toDataURL({
-        format: "png",
-        quality: 1.0,
-      });
-      const link = document.createElement("a");
-      link.download = "selected-object.png";
-      link.href = dataURL;
-      link.click();
-    } else {
-      canvas.discardActiveObject();
-      canvas.renderAll();
-      const dataURL = canvas.toDataURL({
-        format: "png",
-        quality: 1.0,
-      });
-      const link = document.createElement("a");
-      link.download = "canvas-image.png";
-      link.href = dataURL;
-      link.click();
-    }
-  };
 
   const handleImageUpload = (event) => {
     setError("");
@@ -388,7 +363,7 @@ function RouteComponent() {
               <ButtonWithTooltip icon={Upload} tooltip="Upload Image" />
             </label>
             <input hidden id="fileinp" type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} />
-            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={handleExportImage} />
+            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => handleExportImage(canvas)} />
             <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" onClick={() => setMarket(!market)} active={market} />
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
           </div>
