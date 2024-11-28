@@ -131,7 +131,6 @@ def google_callback():
 
 @auth_bp.route("/login/github")
 def github_login():
-    """Start GitHub OAuth flow"""
     github = OAuth2Session(
         Config.GITHUB_CLIENT_ID,
         redirect_uri=url_for("auth.github_callback", _external=True),
