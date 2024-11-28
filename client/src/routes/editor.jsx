@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Canvas, FabricImage, Group } from "fabric";
-import { ImageDown, Store, Upload } from "lucide-react";
+import { Crop, ImageDown, Store, Upload } from "lucide-react";
 import * as React from "react";
 
 export const Route = createFileRoute("/editor")({
@@ -37,7 +37,6 @@ function RouteComponent() {
         preserveObjectStacking: true,
       });
 
-
       const handleResize = () => {
         initCanvas.setWidth(window.innerWidth);
         initCanvas.setHeight(window.innerHeight);
@@ -47,26 +46,37 @@ function RouteComponent() {
 
       // Key event handlers
       const handleKeyDown = (event) => {
-        // Delete selected object
+        // Delete selected object (including groups)
+          
         if ((event.key === "Backspace" || event.key === "Delete") && initCanvas) {
-
-          const activeObjects = initCanvas.getActiveObjects();
-
-          if (activeObjects.length > 0) {
-            activeObjects.forEach(obj => initCanvas.remove(obj));
-
+          const activeObject = initCanvas.getActiveObject();
+          if (activeObject) {
+            const parentGroup = activeObject.group;
+            
+            if (parentGroup) {
+              parentGroup.remove(activeObject);
+              
+              if (parentGroup.getObjects().length === 0) {
+                initCanvas.remove(parentGroup);
+              }
+            } else {
+              initCanvas.remove(activeObject);
+            }
+            
             initCanvas.discardActiveObject();
             initCanvas.renderAll();
           }
         }
-        // TODO: Grouping and UnGrouping
+        
         // Group objects with Ctrl + G
         if (event.ctrlKey && event.key === "g") {
           event.preventDefault();
           const selectedObjects = initCanvas.getActiveObjects();
           if (selectedObjects.length > 1) {
             const group = new Group(selectedObjects, {
-              interactive: true, subTargetCheck: true, backgroundColor: '#f00f0022'
+              interactive: true, 
+              subTargetCheck: true, 
+              backgroundColor: '#f00f0022'
             });
 
             selectedObjects.forEach(obj => initCanvas.remove(obj));
@@ -75,8 +85,32 @@ function RouteComponent() {
             initCanvas.renderAll();
           }
         }
-      };
 
+        // Ungroup with Ctrl + Shift + G
+        if (event.ctrlKey &&  event.key === "u") {
+          event.preventDefault();
+          const activeObject = initCanvas.getActiveObject();
+          
+          if (activeObject && activeObject.type === 'group') {
+            // Ungroup the objects
+            const items = activeObject.getObjects();
+            initCanvas.remove(activeObject);
+            
+            // Add each item back to the canvas
+            items.forEach(item => {
+              initCanvas.add(item);
+            });
+            
+            // Select the ungrouped items
+            initCanvas.discardActiveObject();
+            const sel = new fabric.ActiveSelection(items, {
+              canvas: initCanvas
+            });
+            initCanvas.setActiveObject(sel);
+            initCanvas.renderAll();
+          }
+        }
+      };
 
       document.addEventListener("keydown", handleKeyDown);
 
@@ -85,7 +119,8 @@ function RouteComponent() {
 
       return () => {
         initCanvas.dispose();
-        // Previous cleanup code
+        window.removeEventListener('resize', handleResize);
+        document.removeEventListener("keydown", handleKeyDown);
       };
     }
   }, []);
@@ -148,9 +183,6 @@ function RouteComponent() {
           evented: true,  // Prevent interaction that would change its position
         });
 
-        // Ensure the image is at the bottom of the canvas
-        // canvas.sendToBack(image);
-
         canvas.add(image);
         canvas.centerObject(image);
         canvas.renderAll();
@@ -191,6 +223,10 @@ function RouteComponent() {
             </button>
             <button onClick={() => setMarket(!market)} className="text-gray-100 hover:text-blue-400 transition">
               <Store size={24}/>
+            </button>
+            <div className="py-[1px] px-3 bg-gray-700 rounded-md"></div>
+            <button  className="text-gray-100 hover:text-blue-400 transition">
+              <Crop size={24}/>
             </button>
           </div>
         </div>
