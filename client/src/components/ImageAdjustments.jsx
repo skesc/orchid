@@ -14,6 +14,11 @@ const ImageAdjustments = ({canvas}) => {
   useEffect(() => {
     if (!canvas) return;
 
+    const selected = canvas.getActiveObject();
+    if (selected && selected.type === "image") {
+      setActiveObject(selected);
+    }
+
     const handleSelection = () => {
       const selected = canvas.getActiveObject();
       if (selected && selected.type === "image") {
