@@ -37,7 +37,7 @@ const ProfileSection = () => {
       <div className="flex gap-5 flex-col items-center">
         {user ? (
           <div className="flex flex-col items-center gap-5">
-            {imageError ? <div className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-500 text-white text-sm">{initials}</div> : <img src={`https://sakura.rex.wf/linear/${user.name}?text=${initials}`} alt={user.name} className="h-8 w-8 rounded-full object-cover" onError={handleImageError} />}
+            {imageError ? <div className="h-8 w-8 flex items-center justify-center rounded-full bg-neutral-500 text-white text-sm">{initials}</div> : <img src={`https://sakura.rex.wf/linear/${user.name}?text=${initials.toUpperCase()}`} alt={user.name} className="h-8 w-8 rounded-full object-cover" onError={handleImageError} />}
             <button onClick={handleLogout} disabled={isLoggingOut} className="text-neutral-900 hover:text-violet-600 transition-colors flex flex-col items-center gap-1">
               <LogOut size={20} className={isLoggingOut ? "opacity-50" : ""} />
               <span className="text-xs">{isLoggingOut ? "Signing out..." : "Logout"}</span>
