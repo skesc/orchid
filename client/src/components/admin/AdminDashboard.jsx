@@ -59,7 +59,7 @@ export default function AdminDashboard() {
         const [statsData, itemsData] = await Promise.all([apiFetch("/api/admin/stats"), apiFetch("/api/admin/marketplace")]);
 
         setStats(statsData);
-        // Sort items by creation date and take the 5 most recent
+        // sort items by creation date and take the 5 most recent
         const sortedItems = itemsData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
         setRecentItems(sortedItems);
       } catch (error) {
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
 
     fetchData();
 
-    // Set up auto-refresh every 30 seconds
+    // auto-refresh every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -134,17 +134,16 @@ export default function AdminDashboard() {
                     )}
                   </div>
                 </div>
+                {/* TODO: timezone */}
                 <div className="text-sm text-neutral-400">{new Date(item.created_at).toLocaleDateString()}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Platform Stats */}
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-lg font-medium mb-4">Platform Overview</h2>
           <div className="space-y-6">
-            {/* Authentication Methods */}
             <div className="p-4 rounded-lg bg-neutral-50">
               <h3 className="text-sm font-medium text-neutral-600 mb-3">Authentication Methods</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -174,7 +173,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Content Distribution */}
             <div className="p-4 rounded-lg bg-neutral-50">
               <h3 className="text-sm font-medium text-neutral-600 mb-3">Content Distribution</h3>
               <div className="space-y-3">
