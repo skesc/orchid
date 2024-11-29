@@ -1,6 +1,6 @@
 import {Github, Loader2, Search, Twitter, X} from "lucide-react";
 import React from "react";
-import {API_URL} from "../utils/fetchConfig";
+import {API_URL} from "../../utils/fetchConfig";
 
 export default function PFPModal({isOpen, onClose, onSelect}) {
   const [platform, setPlatform] = React.useState("github");

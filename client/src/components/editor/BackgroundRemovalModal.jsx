@@ -1,7 +1,7 @@
 import {FabricImage} from "fabric";
 import {Loader2, X} from "lucide-react";
 import React from "react";
-import {API_URL} from "../utils/fetchConfig";
+import {API_URL} from "../../utils/fetchConfig";
 
 export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
   const [loading, setLoading] = React.useState(false);

@@ -1,7 +1,7 @@
 import {X} from "lucide-react";
 import React from "react";
-import {useAuth} from "../contexts/AuthContext";
-import {apiFetch} from "../utils/fetchConfig";
+import {useAuth} from "../../contexts/AuthContext";
+import {apiFetch} from "../../utils/fetchConfig";
 
 export default function LoginModal({isOpen, onClose}) {
   const [authUrls, setAuthUrls] = React.useState(null);

@@ -2,15 +2,15 @@ import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
 import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2, X} from "lucide-react";
 import * as React from "react";
-import BackgroundRemovalModal from "../components/BackgroundRemovalModal";
-import HandleExportImage from "../components/HandleExportImage";
-import ImageAdjustments from "../components/ImageAdjustments";
-import LayerPanel from "../components/LayerPanel";
-import Market from "../components/Market";
-import PFPModal from "../components/PFPModal";
-import ProfileSection from "../components/ProfileSection";
-import TextEditor from "../components/TextEditor";
-import {ButtonWithTooltip} from "../components/Tooltip";
+import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
+import HandleExportImage from "../components/editor/HandleExportImage";
+import ImageAdjustments from "../components/editor/ImageAdjustments";
+import LayerPanel from "../components/editor/LayerPanel";
+import Market from "../components/editor/Market";
+import PFPModal from "../components/editor/PFPModal";
+import ProfileSection from "../components/editor/ProfileSection";
+import TextEditor from "../components/editor/TextEditor";
+import {ButtonWithTooltip} from "../components/editor/Tooltip";
 import {useAuth} from "../contexts/AuthContext";
 
 export const Route = createFileRoute("/editor")({

@@ -1,6 +1,6 @@
 import {LogIn, LogOut} from "lucide-react";
 import React from "react";
-import {useAuth} from "../contexts/AuthContext";
+import {useAuth} from "../../contexts/AuthContext";
 import LoginModal from "./LoginModal";
 
 const ProfileSection = () => {

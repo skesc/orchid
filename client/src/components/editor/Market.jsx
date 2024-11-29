@@ -1,8 +1,8 @@
 import {Plus, X} from "lucide-react";
 import React, {useState} from "react";
-import {useAuth} from "../contexts/AuthContext";
-import MarketplaceForm from "./marketplace/MarketplaceForm";
-import MarketplaceList from "./marketplace/MarketplaceList";
+import {useAuth} from "../../contexts/AuthContext";
+import MarketplaceForm from "../marketplace/MarketplaceForm";
+import MarketplaceList from "../marketplace/MarketplaceList";
 
 function Market({handleAddHat, canvas}) {
   const [showForm, setShowForm] = useState(false);
