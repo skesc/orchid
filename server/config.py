@@ -13,6 +13,12 @@ class Config:
     GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
     FRONTEND_URL = os.getenv("FRONTEND_URL")
 
+    ADMIN_EMAILS = [
+        email.strip()
+        for email in os.getenv("ADMIN_EMAILS", "").split(",")
+        if email.strip()
+    ]
+
     SESSION_COOKIE_SECURE = os.getenv("ENVIRONMENT") != "dev"
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax" if os.getenv("ENVIRONMENT") == "dev" else "Strict"
