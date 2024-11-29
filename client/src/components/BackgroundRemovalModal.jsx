@@ -79,33 +79,33 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-8">
-        <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+      <div className="relative w-full max-w-md bg-neutral-200 rounded-xl shadow-xl p-6 sm:p-8">
+        <button onClick={onClose} className="absolute right-4 top-4 text-neutral-400 hover:text-violet-600 transition-colors">
           <X size={24} />
         </button>
 
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-purple-500">Remove Background</h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Select an image first, then click remove background</p>
+          <p className="mt-2 text-sm text-neutral-600">Select an image first, then click remove background</p>
         </div>
 
-        {error && <div className="mb-4 sm:mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 sm:mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">{error}</div>}
 
         <div className="mb-4 sm:mb-6">
-          <label className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 cursor-pointer group transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-300">Crop to content</span>
+          <label className="flex items-center justify-between p-4 rounded-lg bg-neutral-300/80 cursor-pointer group transition-colors hover:bg-gray-300/50">
+            <span className="text-sm font-medium text-neutral-600">Crop to content</span>
             <div className="relative">
               <input type="checkbox" checked={shouldCrop} onChange={(e) => setShouldCrop(e.target.checked)} className="sr-only peer" />
-              <div className="w-10 h-6 rounded-full bg-gray-200 dark:bg-gray-600 peer-checked:bg-violet-500 transition-colors"></div>
+              <div className="w-10 h-6 rounded-full bg-gray-200 dark:bg-neutral-500 peer-checked:bg-violet-500 transition-colors"></div>
               <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-all peer-checked:translate-x-4"></div>
             </div>
           </label>
         </div>
 
         <div className="flex gap-4">
-          <button onClick={onClose} className="flex-1 px-4 py-3 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          <button onClick={onClose} className="flex-1 px-4 py-3 rounded-lg font-medium bg-neutral-300/80  text-gray-600  hover:bg-neutral-300/50  transition-colors">
             Cancel
           </button>
 
