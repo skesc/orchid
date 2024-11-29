@@ -6,6 +6,9 @@ load_dotenv()
 
 
 class Config:
+    MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2MB limit
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
     SECRET_KEY = os.getenv("SECRET_KEY")
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")

@@ -285,7 +285,7 @@ const LayerPanel = ({canvas}) => {
 
   return (
     <div className="fixed right-0 top-0 p-6 h-screen w-96 text-white">
-      <div class="h-full w-full bg-neutral-900 rounded-md p-6 overflow-y-auto">
+      <div className="h-full w-full bg-neutral-900 rounded-md p-6 overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Layers ({layers.length})</h2>
           {selectedLayers.size >= 2 && (

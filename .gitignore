@@ -44,4 +44,5 @@ venv/
 *.db
 *.db-journal
 
+server/instance/
 server/uploads/

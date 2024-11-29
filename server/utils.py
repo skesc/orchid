@@ -1,6 +1,14 @@
 from typing import List, Optional, Tuple, Union
 
+from config import Config
 from werkzeug.datastructures import FileStorage
+
+
+def allowed_file(filename):
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in Config.ALLOWED_EXTENSIONS
+    )
 
 
 def validate_marketplace_item(
