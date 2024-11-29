@@ -224,28 +224,37 @@ const LayerPanel = ({canvas}) => {
   };
 
   const renderLayer = (layer, index, depth = 0) => (
-    <div key={layer.id}>
+    <div key={layer.id} className={`relative ${depth > 0 ? "ml-6" : ""}`}>
+      {depth > 0 && <div className="absolute left-[-24px] top-0 w-px h-full bg-neutral-700" />}
+      {depth > 0 && <div className="absolute left-[-24px] top-[20px] w-6 h-px bg-neutral-700" />}
+
       <div
-        className={`flex items-center justify-between p-2 rounded transition-colors
-          ${canvas && canvas.getActiveObject() === layer.object ? "bg-violet-800" : "bg-neutral-800 hover:bg-neutral-700"}
-          ${selectedLayers.has(layer.id) ? "ring-2 ring-violet-500" : ""}
-          ${depth > 0 ? "ml-6" : ""}`}
+        className={`flex items-center justify-between p-2 rounded-lg transition-all duration-200
+          ${canvas && canvas.getActiveObject() === layer.object ? "bg-violet-800/80 shadow-lg shadow-violet-500/20" : layer.type === "group" ? "bg-neutral-800/80 hover:bg-neutral-700/80" : "bg-neutral-800/40 hover:bg-neutral-700/40"}
+          ${selectedLayers.has(layer.id) ? "ring-2 ring-violet-500 ring-opacity-50" : ""}
+          ${layer.type === "group" ? "border border-neutral-700" : ""}`}
         onClick={(e) => handleLayerClick(layer, e)}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <button onClick={(e) => toggleVisibility(layer, e)} className="hover:bg-neutral-600 p-1 rounded">
-            {layer.visible ? <Eye size={16} /> : <EyeOff size={16} />}
-          </button>
-          <button onClick={(e) => toggleLock(layer, e)} className="hover:bg-neutral-600 p-1 rounded">
-            {layer.locked ? <Lock size={16} /> : <Unlock size={16} />}
-          </button>
+          <div className="flex items-center gap-1">
+            <button onClick={(e) => toggleVisibility(layer, e)} className="hover:bg-neutral-600/50 p-1 rounded transition-colors">
+              {layer.visible ? <Eye size={16} /> : <EyeOff size={16} />}
+            </button>
+            <button onClick={(e) => toggleLock(layer, e)} className="hover:bg-neutral-600/50 p-1 rounded transition-colors">
+              {layer.locked ? <Lock size={16} /> : <Unlock size={16} />}
+            </button>
+          </div>
 
           {editingLayerId === layer.id ? (
-            <input type="text" defaultValue={layer.name} onClick={(e) => e.stopPropagation()} onBlur={(e) => handleNameSave(layer, e.target.value)} onKeyPress={(e) => handleKeyPress(e, layer)} className="bg-neutral-700 text-white px-2 py-1 rounded text-sm flex-1 min-w-0" autoFocus />
+            <input type="text" defaultValue={layer.name} onClick={(e) => e.stopPropagation()} onBlur={(e) => handleNameSave(layer, e.target.value)} onKeyPress={(e) => handleKeyPress(e, layer)} className="bg-neutral-700 text-white px-2 py-1 rounded-md text-sm flex-1 min-w-0 focus:ring-2 focus:ring-violet-500 focus:outline-none" autoFocus />
           ) : (
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              {layer.type === "group" && <GroupIcon size={14} className="text-violet-400" />}
-              <span className="text-sm truncate flex-1">{layer.name}</span>
-              <button onClick={(e) => handleNameEdit(layer, e)} className="hover:bg-neutral-600 p-1 rounded opacity-0 group-hover:opacity-100">
+              {layer.type === "group" && (
+                <div className="p-1 rounded bg-violet-500/20">
+                  <GroupIcon size={14} className="text-violet-400" />
+                </div>
+              )}
+              <span className={`text-sm truncate flex-1 ${layer.type === "group" ? "font-medium text-violet-200" : "text-neutral-200"}`}>{layer.name}</span>
+              <button onClick={(e) => handleNameEdit(layer, e)} className="hover:bg-neutral-600/50 p-1 rounded opacity-0 group-hover:opacity-100 transition-all">
                 <Edit2 size={14} />
               </button>
             </div>
@@ -254,22 +263,23 @@ const LayerPanel = ({canvas}) => {
 
         <div className="flex items-center gap-1">
           {layer.type === "group" && (
-            <button className="p-1 hover:bg-violet-600 rounded" onClick={(e) => ungroupLayer(layer, e)} title="Ungroup">
+            <button className="p-1 hover:bg-violet-600/50 rounded transition-colors" onClick={(e) => ungroupLayer(layer, e)} title="Ungroup">
               <Ungroup size={16} />
             </button>
           )}
-          <button className="p-1 hover:bg-neutral-600 rounded" onClick={(e) => moveLayer(index, "up", e)} disabled={index === 0}>
+          <button className="p-1 hover:bg-neutral-600/50 rounded transition-colors" onClick={(e) => moveLayer(index, "up", e)} disabled={index === 0}>
             <ChevronUp size={16} className={index === 0 ? "opacity-50" : ""} />
           </button>
-          <button className="p-1 hover:bg-neutral-600 rounded" onClick={(e) => moveLayer(index, "down", e)} disabled={index === layers.length - 1}>
+          <button className="p-1 hover:bg-neutral-600/50 rounded transition-colors" onClick={(e) => moveLayer(index, "down", e)} disabled={index === layers.length - 1}>
             <ChevronDown size={16} className={index === layers.length - 1 ? "opacity-50" : ""} />
           </button>
-          <button className="p-1 hover:bg-red-600 rounded" onClick={(e) => deleteLayer(layer, e)}>
+          <button className="p-1 hover:bg-red-600/50 rounded transition-colors" onClick={(e) => deleteLayer(layer, e)}>
             <Trash2 size={16} />
           </button>
         </div>
       </div>
-      {layer.type === "group" && layer.items?.map((item, i) => renderLayer(item, i, depth + 1))}
+
+      {layer.type === "group" && layer.items?.length > 0 && <div className="mt-1 space-y-1">{layer.items.map((item, i) => renderLayer(item, i, depth + 1))}</div>}
     </div>
   );
 
