@@ -153,8 +153,10 @@ function RouteComponent() {
           }
         }
 
-        // Paste image with Ctrl + V
-        if (event.ctrlKey && event.key === "v") {
+        const activeElement = document.activeElement;
+        const isInputField = activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA";
+
+        if (event.ctrlKey && event.key === "v" && !isInputField) {
           event.preventDefault();
           navigator.clipboard
             .read()
