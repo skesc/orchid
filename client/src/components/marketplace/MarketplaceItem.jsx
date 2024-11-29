@@ -1,4 +1,5 @@
 import {FabricImage} from "fabric";
+import {Tag, Trash2} from "lucide-react";
 import React from "react";
 import {useAuth} from "../../contexts/AuthContext";
 import {API_URL} from "../../utils/fetchConfig";
@@ -39,7 +40,6 @@ export default function MarketplaceItem({item, onUpdate, canvas}) {
         name: item.name,
       });
 
-      // Scale the image if it's too large
       const maxWidth = window.innerWidth * 0.9;
       const maxHeight = window.innerHeight * 0.9;
 
@@ -60,21 +60,42 @@ export default function MarketplaceItem({item, onUpdate, canvas}) {
   };
 
   return (
-    <div className="bg-neutral-300 rounded-lg shadow-lg flex flex-col items-center overflow-hidden p-4">
-      <img src={`${API_URL}${item.image_path}`} alt={item.name} className="h-[8rem] object-cover" />
-      <div className="p-2 w-full">
-        <div className="flex justify-between items-start">
-          <h3 className="text-lg font-semibold text-black">{item.name}</h3>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={handleUse} className="bg-violet-600 w-full text-white px-4 py-[4px] rounded hover:bg-violet-700 transition">
-            Use
-          </button>
+    <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group">
+      <div className="relative">
+        <img src={`${API_URL}${item.image_path}`} alt={item.name} className="h-32 w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
+      </div>
+
+      <div className="p-3">
+        <div className="flex justify-between items-start gap-2 mb-1.5">
+          <h3 className="text-base font-medium text-neutral-900 line-clamp-1">{item.name}</h3>
           {isAuthor && (
-            <button onClick={handleDelete} className="bg-red-600/10 text-red-600 rounded px-4 hover:text-red-500">
-              Delete
+            <button onClick={handleDelete} className="p-1 rounded-full hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors">
+              <Trash2 size={16} />
             </button>
           )}
+        </div>
+
+        {item.description && <p className="text-sm text-neutral-600 mb-2 line-clamp-2">{item.description}</p>}
+
+        {item.categories && item.categories.length > 0 && (
+          <div className="flex items-center gap-1.5 mb-2">
+            <Tag size={14} className="text-neutral-500" />
+            <div className="flex gap-1 flex-wrap">
+              {item.categories.map((category, index) => (
+                <span key={index} className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-600 rounded-md">
+                  {category}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] text-neutral-500">by {item.author.name}</span>
+          <button onClick={handleUse} className="px-3 py-1 bg-violet-500 text-white text-sm rounded-md hover:bg-violet-600 transition-colors">
+            Use
+          </button>
         </div>
       </div>
     </div>
