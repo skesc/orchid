@@ -45,6 +45,8 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
       italic: false,
       underline: false,
     });
+
+    onClose();
   };
 
   const handleTextAreaKeyDown = (e) => {

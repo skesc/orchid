@@ -14,12 +14,12 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 app = Flask(__name__)
 app.config.from_object(Config)
 
-from admin import admin_bp
-from auth import auth_bp
-from bgremove import bgremove_bp
-from marketplace import marketplace_bp
-from pfp import pfp_bp
-from uploads import uploads_bp
+from routes.admin import admin_bp
+from routes.auth import auth_bp
+from routes.bgremove import bgremove_bp
+from routes.marketplace import marketplace_bp
+from routes.pfp import pfp_bp
+from routes.uploads import uploads_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(pfp_bp)
