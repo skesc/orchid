@@ -395,10 +395,10 @@ function RouteComponent() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden">
-      <div className="fixed h-screen w-16 z-10">
-        <div className="w-full h-full flex flex-col items-center justify-between py-4 bg-neutral-900">
-          <div className="group flex gap-5 flex-col items-center cursor-pointer">
+    <div className="w-screen h-screen overflow-hidden bg-violet-400 bg-[linear-gradient(to_right,#80808042_1px,transparent_1px),linear-gradient(to_bottom,#80808042_1px,transparent_1px)] bg-[size:48px_48px] inset-0">
+      <div className="fixed h-screen w-24 z-10 p-5">
+        <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
+              <div className="group flex gap-5 flex-col items-center cursor-pointer">
             <ButtonWithTooltip icon={Upload} tooltip="Upload Image" onClick={() => fileInputRef.current?.click()} />
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} style={{display: "none"}} />
             <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => HandleExportImage(canvas)} />
@@ -409,7 +409,7 @@ function RouteComponent() {
           </div>
 
           <div className="flex flex-col items-center gap-5">
-            <div className="py-[1px] px-3 bg-neutral-700 w-full"></div>
+            <div className="py-[1px] px-3 bg-neutral-300 w-full"></div>
             <ProfileSection />
           </div>
         </div>
@@ -434,6 +434,7 @@ function RouteComponent() {
 
       <PFPModal isOpen={showPFPModal} onClose={() => setShowPFPModal(false)} onSelect={handlePFPSelect} />
       <BackgroundRemovalModal isOpen={showBgRemovalModal} onClose={() => setShowBgRemovalModal(false)} canvas={canvas} />
+
     </div>
   );
 }

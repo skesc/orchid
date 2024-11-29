@@ -10,7 +10,7 @@ function RootComponent() {
   const {user, loading} = useAuth();
 
   return (
-    <div className="min-h-screen top-0 flex flex-col bg-neutral-950">
+    <div className="min-h-screen top-0 flex flex-col">
       <main>
         <Outlet />
       </main>
