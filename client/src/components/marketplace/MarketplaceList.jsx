@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import MarketplaceItem from './MarketplaceItem';
+import {useNavigate} from "@tanstack/react-router";
+import React, {useEffect, useState} from "react";
+import MarketplaceItem from "./MarketplaceItem";
 
-const CATEGORIES = ['Hat', 'Glasses', 'Accessory', 'Background'];
+const CATEGORIES = ["Hat", "Glasses", "Accessory", "Background"];
 const API_URL = process.env.VITE_API_URL;
 
 export default function MarketplaceList() {
   const [items, setItems] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -19,13 +19,13 @@ export default function MarketplaceList() {
     try {
       const url = new URL(`${API_URL}/api/marketplace/items`);
       if (selectedCategory) {
-        url.searchParams.append('category', selectedCategory);
+        url.searchParams.append("category", selectedCategory);
       }
       const response = await fetch(url);
       const data = await response.json();
       setItems(data);
     } catch (error) {
-      console.error('Error fetching marketplace items:', error);
+      console.error("Error fetching marketplace items:", error);
     } finally {
       setLoading(false);
     }
@@ -41,29 +41,13 @@ export default function MarketplaceList() {
 
   return (
     <div className="overflow-y-scroll">
-
       <div className="mb-8">
         <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => setSelectedCategory('')}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-              selectedCategory === '' 
-                ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25' 
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
-          >
+          <button onClick={() => setSelectedCategory("")} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${selectedCategory === "" ? "bg-violet-500 text-white shadow-lg shadow-violet-500/25" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}>
             All
           </button>
           {CATEGORIES.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                selectedCategory === category
-                  ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
+            <button key={category} onClick={() => setSelectedCategory(category)} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${selectedCategory === category ? "bg-violet-500 text-white shadow-lg shadow-violet-500/25" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}>
               {category}
             </button>
           ))}
@@ -76,9 +60,7 @@ export default function MarketplaceList() {
             <p className="text-gray-400 text-lg">No items found</p>
           </div>
         ) : (
-          items.map((item) => (
-            <MarketplaceItem key={item.id} item={item} onUpdate={fetchItems} />
-          ))
+          items.map((item) => <MarketplaceItem key={item.id} item={item} onUpdate={fetchItems} />)
         )}
       </div>
     </div>

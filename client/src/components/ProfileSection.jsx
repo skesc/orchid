@@ -11,7 +11,7 @@ const ProfileSection = () => {
 
   const initials = React.useMemo(() => {
     if (!user?.name) return "";
-    return user.name[0] 
+    return user.name[0];
   }, [user?.name]);
 
   const handleImageError = () => {

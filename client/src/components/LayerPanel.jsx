@@ -286,19 +286,19 @@ const LayerPanel = ({canvas}) => {
   return (
     <div className="fixed right-0 top-0 p-6 h-screen w-96 text-white">
       <div class="h-full w-full bg-neutral-900 rounded-md p-6 overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Layers ({layers.length})</h2>
-        {selectedLayers.size >= 2 && (
-          <button onClick={groupSelectedLayers} className="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-lg flex items-center gap-2 text-sm">
-            <GroupIcon size={14} />
-            Group Selected
-          </button>
-        )}
-      </div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">Layers ({layers.length})</h2>
+          {selectedLayers.size >= 2 && (
+            <button onClick={groupSelectedLayers} className="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-lg flex items-center gap-2 text-sm">
+              <GroupIcon size={14} />
+              Group Selected
+            </button>
+          )}
+        </div>
 
-      <div className="space-y-2">{layers.map((layer, index) => renderLayer(layer, index))}</div>
+        <div className="space-y-2">{layers.map((layer, index) => renderLayer(layer, index))}</div>
 
-      {layers.length === 0 && <div className="text-neutral-400 text-sm text-center mt-8">No layers yet. Try uploading an image or adding elements to your canvas.</div>}
+        {layers.length === 0 && <div className="text-neutral-400 text-sm text-center mt-8">No layers yet. Try uploading an image or adding elements to your canvas.</div>}
       </div>
     </div>
   );
