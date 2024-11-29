@@ -66,16 +66,6 @@ CORS(
 )
 
 
-def _setup_chrome_driver():
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--log-level=3")
-    options.add_experimental_option("excludeSwitches", ["enable-logging"])
-    options.set_capability("browserVersion", "117")
-    return webdriver.Chrome(options=options)
-
-
 @app.route("/uploads/<path:filename>")
 def serve_uploaded_file(filename):
     filename = secure_filename(filename)
@@ -88,6 +78,16 @@ def serve_uploaded_file(filename):
         return abort(404)
 
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
+def _setup_chrome_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--log-level=3")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    options.set_capability("browserVersion", "117")
+    return webdriver.Chrome(options=options)
 
 
 @app.route("/api/pfp/x/<username>")
