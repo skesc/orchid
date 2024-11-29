@@ -7,6 +7,7 @@ import {API_URL} from "../../utils/fetchConfig";
 export default function MarketplaceItem({item, onUpdate, canvas}) {
   const {user} = useAuth();
   const isAuthor = user && user.id === item.author.id;
+  const hasCategories = item.categories && Array.isArray(item.categories) && item.categories.length > 0;
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this item?")) return;
@@ -60,14 +61,14 @@ export default function MarketplaceItem({item, onUpdate, canvas}) {
   };
 
   return (
-    <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group">
+    <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group h-full flex flex-col">
       <div className="relative">
         <img src={`${API_URL}${item.image_path}`} alt={item.name} className="h-32 w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 
-      <div className="p-3">
-        <div className="flex justify-between items-start gap-2 mb-1.5">
+      <div className="p-3 flex flex-col flex-1">
+        <div className="flex justify-between items-start gap-2">
           <h3 className="text-base font-medium text-neutral-900 line-clamp-1">{item.name}</h3>
           {isAuthor && (
             <button onClick={handleDelete} className="p-1 rounded-full hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors">
@@ -76,22 +77,24 @@ export default function MarketplaceItem({item, onUpdate, canvas}) {
           )}
         </div>
 
-        {item.description && <p className="text-sm text-neutral-600 mb-2 line-clamp-2">{item.description}</p>}
+        <div className="flex-1 flex flex-col min-h-0">
+          {item.description && <p className="text-sm text-neutral-600 mt-1.5 line-clamp-2">{item.description}</p>}
 
-        {item.categories && item.categories.length > 0 && (
-          <div className="flex items-center gap-1.5 mb-2">
-            <Tag size={14} className="text-neutral-500" />
-            <div className="flex gap-1 flex-wrap">
-              {item.categories.map((category, index) => (
-                <span key={index} className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-600 rounded-md">
-                  {category}
-                </span>
-              ))}
+          {hasCategories && (
+            <div className="flex items-center gap-1.5 mt-2">
+              <Tag size={14} className="text-neutral-500 shrink-0" />
+              <div className="flex gap-1 flex-wrap">
+                {item.categories.map((category, index) => (
+                  <span key={index} className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-600 rounded-md">
+                    {category}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-neutral-400/20">
           <span className="text-[10px] text-neutral-500">by {item.author.name}</span>
           <button onClick={handleUse} className="px-3 py-1 bg-violet-500 text-white text-sm rounded-md hover:bg-violet-600 transition-colors">
             Use
