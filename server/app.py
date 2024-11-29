@@ -18,6 +18,7 @@ from PIL import Image
 from rembg import remove
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from utils import sanitize_marketplace_input, validate_marketplace_item
 from werkzeug.utils import secure_filename
 
 load_dotenv()
@@ -177,22 +178,42 @@ def create_marketplace_item():
     if not allowed_file(file.filename):
         return jsonify({"error": "Invalid file type"}), 400
 
-    # TODO: add input validation
-    filename = secure_filename(file.filename)
-    timestamp = int(time.time())
-    filename = f"{timestamp}_{filename}"
-    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    file.save(file_path)
-
-    relative_path = f"/uploads/{filename}"
-
     try:
+        item_data = {
+            "name": request.form.get("name"),
+            "description": request.form.get("description", ""),
+            "categories": json.loads(request.form.get("categories", "[]")),
+            "is_private": request.form.get("is_private", "false"),
+            "image": file,
+        }
+
+        sanitized_data = sanitize_marketplace_input(item_data)
+
+        is_valid, error_message = validate_marketplace_item(
+            name=sanitized_data.get("name"),
+            description=sanitized_data.get("description"),
+            image=file,
+            categories=sanitized_data.get("categories"),
+            is_private=sanitized_data.get("is_private"),
+        )
+
+        if not is_valid:
+            return jsonify({"error": error_message}), 400
+
+        filename = secure_filename(file.filename)
+        timestamp = int(time.time())
+        filename = f"{timestamp}_{filename}"
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(file_path)
+
+        relative_path = f"/uploads/{filename}"
+
         new_item = MarketplaceItem(
-            name=request.form["name"],
-            description=request.form.get("description", ""),
+            name=sanitized_data["name"],
+            description=sanitized_data["description"],
             image_path=relative_path,
-            categories=json.loads(request.form.get("categories", "[]")),
-            is_private=request.form.get("is_private", "false").lower() == "true",
+            categories=sanitized_data["categories"],
+            is_private=sanitized_data["is_private"],
             author_id=current_user.id,
         )
 
@@ -200,8 +221,11 @@ def create_marketplace_item():
         db.session.commit()
 
         return jsonify(new_item.to_dict()), 201
+
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid categories format"}), 400
     except Exception as e:
-        if os.path.exists(file_path):
+        if "file_path" in locals() and os.path.exists(file_path):
             os.remove(file_path)
         return jsonify({"error": str(e)}), 500
 
@@ -214,23 +238,41 @@ def update_marketplace_item(item_id):
     if item.author_id != current_user.id:
         return jsonify({"error": "Unauthorized"}), 403
 
-    data = request.get_json()
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
 
-    if "name" in data:
-        item.name = data["name"]
-    if "description" in data:
-        item.description = data["description"]
-    if "price" in data:
-        item.price = float(data["price"])
-    if "image_path" in data:
-        item.image_path = data["image_path"]
-    if "categories" in data:
-        item.categories = data["categories"]
-    if "is_private" in data:
-        item.is_private = data["is_private"]
+        sanitized_data = sanitize_marketplace_input(data)
 
-    db.session.commit()
-    return jsonify(item.to_dict())
+        is_valid, error_message = validate_marketplace_item(
+            name=sanitized_data.get("name"),
+            description=sanitized_data.get("description"),
+            categories=sanitized_data.get("categories"),
+            is_private=sanitized_data.get("is_private"),
+            is_update=True,
+        )
+
+        if not is_valid:
+            return jsonify({"error": error_message}), 400
+
+        if "name" in sanitized_data:
+            item.name = sanitized_data["name"]
+        if "description" in sanitized_data:
+            item.description = sanitized_data["description"]
+        if "categories" in sanitized_data:
+            item.categories = sanitized_data["categories"]
+        if "is_private" in sanitized_data:
+            item.is_private = sanitized_data["is_private"]
+
+        db.session.commit()
+        return jsonify(item.to_dict())
+
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON data"}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/marketplace/items/<int:item_id>", methods=["DELETE"])
