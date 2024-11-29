@@ -1,6 +1,6 @@
 import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
-import {Crop, Eraser, ImageDown, Store, Type, Upload, UserSquare2, X} from "lucide-react";
+import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2, X} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/BackgroundRemovalModal";
 import HandleExportImage from "../components/HandleExportImage";
@@ -29,6 +29,8 @@ function RouteComponent() {
   const [error, setError] = React.useState("");
   const {user} = useAuth();
   const fileInputRef = React.useRef(null);
+  const [showAdjustments, setShowAdjustments] = React.useState(false);
+  const [showLayers, setShowLayers] = React.useState(false);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -427,6 +429,8 @@ function RouteComponent() {
             <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" onClick={() => setShowPFPModal(true)} />
             <ButtonWithTooltip icon={Eraser} tooltip="Remove Background" onClick={() => setShowBgRemovalModal(true)} />
             <ButtonWithTooltip icon={Type} tooltip="Add Text" onClick={() => setShowTextPanel(true)} active={showTextPanel} />
+            <ButtonWithTooltip icon={Sliders} tooltip="Adjustments" onClick={() => setShowAdjustments(!showAdjustments)} active={showAdjustments} />
+            <ButtonWithTooltip icon={Layers} tooltip="Layers" onClick={() => setShowLayers(!showLayers)} active={showLayers} />
           </div>
 
           <div className="flex flex-col items-center gap-5">
@@ -438,8 +442,8 @@ function RouteComponent() {
 
       <canvas ref={canvasRef} className="w-full h-full" />
 
-      <LayerPanel canvas={canvas} />
-      <ImageAdjustments canvas={canvas} />
+      {showLayers && <LayerPanel canvas={canvas} />}
+      {showAdjustments && <ImageAdjustments canvas={canvas} />}
       <TextEditor canvas={canvas} isOpen={showTextPanel} onClose={() => setShowTextPanel(false)} />
       {market && <Market handleAddHat={handleAddHat} />}
 
