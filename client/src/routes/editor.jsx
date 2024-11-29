@@ -290,11 +290,10 @@ function RouteComponent() {
     const imageObject = canvas.imageToClip;
     const cropRect = cropRectRef.current;
 
-    const originalWidth = imageObject.width;
-    const originalHeight = imageObject.height;
+    const originalWidth = imageObject.width * (imageObject.scaleX || 1);
+    const originalHeight = imageObject.height * (imageObject.scaleY || 1);
+
     const currentAngle = imageObject.angle || 0;
-    const currentScaleX = imageObject.scaleX || 1;
-    const currentScaleY = imageObject.scaleY || 1;
     const flipX = imageObject.flipX;
     const flipY = imageObject.flipY;
 
@@ -304,10 +303,10 @@ function RouteComponent() {
     const rect = cropRect.getBoundingRect();
     const imageRect = imageObject.getBoundingRect();
 
-    const relativeLeft = (rect.left - imageRect.left) / currentScaleX;
-    const relativeTop = (rect.top - imageRect.top) / currentScaleY;
-    const relativeWidth = rect.width / currentScaleX;
-    const relativeHeight = rect.height / currentScaleY;
+    const relativeLeft = rect.left - imageRect.left;
+    const relativeTop = rect.top - imageRect.top;
+    const relativeWidth = rect.width;
+    const relativeHeight = rect.height;
 
     const cropX = (relativeLeft / imageRect.width) * originalWidth;
     const cropY = (relativeTop / imageRect.height) * originalHeight;
@@ -320,7 +319,18 @@ function RouteComponent() {
     const tempCtx = tempCanvas.getContext("2d");
 
     const img = imageObject.getElement();
-    tempCtx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+    tempCtx.drawImage(
+      img,
+      cropX / (imageObject.scaleX || 1), // Adjust for scale
+      cropY / (imageObject.scaleY || 1),
+      cropWidth / (imageObject.scaleX || 1),
+      cropHeight / (imageObject.scaleY || 1),
+      0,
+      0,
+      cropWidth,
+      cropHeight
+    );
 
     const croppedImg = new Image();
     croppedImg.src = tempCanvas.toDataURL("image/png");
@@ -342,7 +352,6 @@ function RouteComponent() {
 
       canvas.remove(imageObject);
       canvas.remove(cropRect);
-
       canvas.add(croppedFabricImage);
       canvas.setActiveObject(croppedFabricImage);
 
