@@ -1,16 +1,15 @@
-import os
-from os import environ
+from os import environ, makedirs
 
 from config import Config
 from dotenv import load_dotenv
 from extensions import db, login_manager
-from flask import Flask, jsonify
+from flask import Flask
 from flask_cors import CORS
 
 load_dotenv()
 
 if Config.ENV == "dev":
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -21,6 +20,7 @@ from routes.bgremove import bgremove_bp
 from routes.marketplace import marketplace_bp
 from routes.pfp import pfp_bp
 from routes.uploads import uploads_bp
+from utils import unauthorized
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(pfp_bp)
@@ -32,23 +32,18 @@ app.register_blueprint(uploads_bp)
 db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = "auth.login"
-
-os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+login_manager.unauthorized_handler = unauthorized
+makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 
 CORS(
     app,
     resources={
         r"/*": {
-            "origins": [environ.get("FRONTEND_URL")],
+            "origins": [Config.FRONTEND_URL],
             "supports_credentials": True,
         }
     },
 )
-
-
-@login_manager.unauthorized_handler
-def unauthorized():
-    return jsonify({"error": "Unauthorized", "message": "Please log in"}), 401
 
 
 with app.app_context():

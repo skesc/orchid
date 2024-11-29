@@ -1,7 +1,12 @@
 from typing import List, Optional, Tuple, Union
 
 from config import Config
+from flask import jsonify
 from werkzeug.datastructures import FileStorage
+
+
+def unauthorized():
+    return jsonify({"error": "Unauthorized", "message": "Please log in"}), 401
 
 
 def allowed_file(filename):
