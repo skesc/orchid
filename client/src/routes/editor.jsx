@@ -153,6 +153,48 @@ function RouteComponent() {
           }
         }
 
+        // Paste image with Ctrl + V
+        if (event.ctrlKey && event.key === "v") {
+          event.preventDefault();
+          navigator.clipboard.read().then((data) => {
+            data.forEach((item) => {
+              if (item.types.includes("image/png") || item.types.includes("image/jpeg")) {
+                item.getType(item.types[0]).then((blob) => {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const imgElement = new Image();
+                    imgElement.src = e.target.result;
+                    imgElement.onload = () => {
+                      const fabricImage = new FabricImage(imgElement, {
+                        id: `image-${Date.now()}`,
+                        name: `Pasted Image ${initCanvas.getObjects().length + 1}`,
+                      });
+
+                      const maxWidth = window.innerWidth * 0.9;
+                      const maxHeight = window.innerHeight * 0.9;
+
+                      if (fabricImage.width > maxWidth || fabricImage.height > maxHeight) {
+                        const scaleFactorWidth = maxWidth / fabricImage.width;
+                        const scaleFactorHeight = maxHeight / fabricImage.height;
+                        const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
+                        fabricImage.scale(scaleFactor);
+                      }
+
+                      initCanvas.add(fabricImage);
+                      initCanvas.centerObject(fabricImage);
+                      initCanvas.setActiveObject(fabricImage);
+                      initCanvas.renderAll();
+                    };
+                  };
+                  reader.readAsDataURL(blob);
+                });
+              }
+            });
+          }).catch(err => {
+            console.error("Failed to read clipboard:", err);
+          });
+        }
+
         // Ungroup with Ctrl + U
         if (event.ctrlKey && event.key === "u") {
           event.preventDefault();
