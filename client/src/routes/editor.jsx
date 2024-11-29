@@ -4,12 +4,13 @@ import {Crop, Eraser, ImageDown, Store, Upload, UserSquare2, X} from "lucide-rea
 import * as React from "react";
 import BackgroundRemovalModal from "../components/BackgroundRemovalModal";
 import HandleExportImage from "../components/HandleExportImage";
+import ImageAdjustments from "../components/ImageAdjustments";
+import LayerPanel from "../components/LayerPanel";
+import Market from "../components/Market";
 import PFPModal from "../components/PFPModal";
 import ProfileSection from "../components/ProfileSection";
 import {ButtonWithTooltip} from "../components/Tooltip";
 import {useAuth} from "../contexts/AuthContext";
-
-import Market from "../components/Market";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
@@ -190,7 +191,16 @@ function RouteComponent() {
         convertedImage.src = tempCanvas.toDataURL("image/png");
 
         convertedImage.onload = () => {
-          let image = new FabricImage(convertedImage);
+          let image = new FabricImage(convertedImage, {
+            id: `image-${Date.now()}`,
+            name: file.name || `Image ${canvas.getObjects().length + 1}`,
+            selectable: true,
+            hasControls: true,
+            hoverCursor: "default",
+            lockMovementX: false,
+            lockMovementY: false,
+            evented: true,
+          });
 
           const maxWidth = window.innerWidth * 0.9;
           const maxHeight = window.innerHeight * 0.9;
@@ -234,9 +244,17 @@ function RouteComponent() {
     let imageElement = document.createElement("img");
     imageElement.src = hatUrl;
     imageElement.onload = function () {
-      let image = new FabricImage(imageElement);
+      let image = new FabricImage(imageElement, {
+        id: `hat-${Date.now()}`,
+        name: `Hat ${canvas.getObjects().length + 1}`,
+        selectable: true,
+        hasControls: true,
+        evented: true,
+      });
+
       canvas.add(image);
       canvas.centerObject(image);
+      canvas.setActiveObject(image);
       canvas.renderAll();
     };
   };
@@ -398,7 +416,7 @@ function RouteComponent() {
     <div className="w-screen h-screen overflow-hidden bg-violet-400 bg-[linear-gradient(to_right,#80808042_1px,transparent_1px),linear-gradient(to_bottom,#80808042_1px,transparent_1px)] bg-[size:48px_48px] inset-0">
       <div className="fixed h-screen w-24 z-10 p-5">
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
-              <div className="group flex gap-5 flex-col items-center cursor-pointer">
+          <div className="group flex gap-5 flex-col items-center cursor-pointer">
             <ButtonWithTooltip icon={Upload} tooltip="Upload Image" onClick={() => fileInputRef.current?.click()} />
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} style={{display: "none"}} />
             <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => HandleExportImage(canvas)} />
@@ -417,6 +435,8 @@ function RouteComponent() {
 
       <canvas ref={canvasRef} className="w-full h-full" />
 
+      <LayerPanel canvas={canvas} />
+      <ImageAdjustments canvas={canvas} />
       {market && <Market handleAddHat={handleAddHat} />}
 
       {isCropping && (
@@ -434,7 +454,6 @@ function RouteComponent() {
 
       <PFPModal isOpen={showPFPModal} onClose={() => setShowPFPModal(false)} onSelect={handlePFPSelect} />
       <BackgroundRemovalModal isOpen={showBgRemovalModal} onClose={() => setShowBgRemovalModal(false)} canvas={canvas} />
-
     </div>
   );
 }
