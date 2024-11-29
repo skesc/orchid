@@ -11,11 +11,7 @@ const ProfileSection = () => {
 
   const initials = React.useMemo(() => {
     if (!user?.name) return "";
-    return user.name
-      .split(" ")
-      .map((n) => n.slice(0, 2))
-      .join("")
-      .toUpperCase();
+    return user.name[0] 
   }, [user?.name]);
 
   const handleImageError = () => {

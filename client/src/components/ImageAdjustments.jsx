@@ -117,14 +117,14 @@ const ImageAdjustments = ({canvas}) => {
 
   if (!activeObject) {
     return (
-      <div className="fixed left-32 top-4 bg-neutral-900 text-white p-4 rounded-lg">
+      <div className="fixed left-24 top-6 bg-neutral-200 box-shadow-3d text-neutral-900 p-4 rounded-lg">
         <p className="text-sm">Select an image to adjust</p>
       </div>
     );
   }
 
   return (
-    <div className="fixed left-32 top-4 bg-neutral-900 text-white p-4 rounded-lg w-72">
+    <div className="fixed left-24 top-6 bg-neutral-200 text-neutral-900 box-shadow-3d p-4 rounded-lg w-72">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sliders size={16} />
@@ -139,7 +139,7 @@ const ImageAdjustments = ({canvas}) => {
         <div className="space-y-2">
           <div className="flex justify-between">
             <label className="text-sm">Brightness</label>
-            <span className="text-sm text-neutral-400">{adjustments.brightness}</span>
+            <span className="text-sm text-neutral-500">{adjustments.brightness}</span>
           </div>
           <input type="range" min="-100" max="100" value={adjustments.brightness} onChange={(e) => applyFilter("brightness", parseInt(e.target.value))} className="w-full accent-violet-500" />
         </div>
@@ -147,7 +147,7 @@ const ImageAdjustments = ({canvas}) => {
         <div className="space-y-2">
           <div className="flex justify-between">
             <label className="text-sm">Contrast</label>
-            <span className="text-sm text-neutral-400">{adjustments.contrast}</span>
+            <span className="text-sm text-neutral-500">{adjustments.contrast}</span>
           </div>
           <input type="range" min="-100" max="100" value={adjustments.contrast} onChange={(e) => applyFilter("contrast", parseInt(e.target.value))} className="w-full accent-violet-500" />
         </div>
@@ -155,7 +155,7 @@ const ImageAdjustments = ({canvas}) => {
         <div className="space-y-2">
           <div className="flex justify-between">
             <label className="text-sm">Saturation</label>
-            <span className="text-sm text-neutral-400">{adjustments.saturation}</span>
+            <span className="text-sm text-neutral-500">{adjustments.saturation}</span>
           </div>
           <input type="range" min="-100" max="100" value={adjustments.saturation} onChange={(e) => applyFilter("saturation", parseInt(e.target.value))} className="w-full accent-violet-500" />
         </div>
@@ -163,21 +163,21 @@ const ImageAdjustments = ({canvas}) => {
         <div className="space-y-2">
           <div className="flex justify-between">
             <label className="text-sm">Blur</label>
-            <span className="text-sm text-neutral-400">{adjustments.blur}</span>
+            <span className="text-sm text-neutral-500">{adjustments.blur}</span>
           </div>
           <input type="range" min="0" max="100" value={adjustments.blur} onChange={(e) => applyFilter("blur", parseInt(e.target.value))} className="w-full accent-violet-500" />
         </div>
 
         <div className="flex justify-between pt-2 gap-2">
-          <button onClick={handleRotate} className="flex-1 p-2 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2">
+          <button onClick={handleRotate} className="flex-1 p-2 bg-neutral-300 rounded hover:bg-neutral-400 transition-colors flex items-center justify-center gap-2">
             <RotateCw size={16} />
             <span className="text-sm">Rotate</span>
           </button>
-          <button onClick={() => handleFlip("horizontal")} className="flex-1 p-2 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2">
+          <button onClick={() => handleFlip("horizontal")} className="flex-1 p-2 bg-neutral-300 rounded hover:bg-neutral-400 transition-colors flex items-center justify-center gap-2">
             <FlipHorizontal size={16} />
             <span className="text-sm">Flip H</span>
           </button>
-          <button onClick={() => handleFlip("vertical")} className="flex-1 p-2 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2">
+          <button onClick={() => handleFlip("vertical")} className="flex-1 p-2 bg-neutral-300 rounded hover:bg-neutral-400 transition-colors flex items-center justify-center gap-2">
             <FlipVertical size={16} />
             <span className="text-sm">Flip V</span>
           </button>

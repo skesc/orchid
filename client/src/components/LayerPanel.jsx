@@ -284,7 +284,8 @@ const LayerPanel = ({canvas}) => {
   );
 
   return (
-    <div className="fixed right-0 top-0 h-screen w-96 bg-neutral-900 text-white p-4 overflow-y-auto">
+    <div className="fixed right-0 top-0 p-6 h-screen w-96 text-white">
+      <div class="h-full w-full bg-neutral-900 rounded-md p-6 overflow-y-auto">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">Layers ({layers.length})</h2>
         {selectedLayers.size >= 2 && (
@@ -298,6 +299,7 @@ const LayerPanel = ({canvas}) => {
       <div className="space-y-2">{layers.map((layer, index) => renderLayer(layer, index))}</div>
 
       {layers.length === 0 && <div className="text-neutral-400 text-sm text-center mt-8">No layers yet. Try uploading an image or adding elements to your canvas.</div>}
+      </div>
     </div>
   );
 };

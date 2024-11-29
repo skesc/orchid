@@ -428,8 +428,8 @@ function RouteComponent() {
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
             <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" onClick={() => setShowPFPModal(true)} />
             <ButtonWithTooltip icon={Eraser} tooltip="Remove Background" onClick={() => setShowBgRemovalModal(true)} />
-            <ButtonWithTooltip icon={Type} tooltip="Add Text" onClick={() => setShowTextPanel(true)} active={showTextPanel} />
             <ButtonWithTooltip icon={Sliders} tooltip="Adjustments" onClick={() => setShowAdjustments(!showAdjustments)} active={showAdjustments} />
+            <ButtonWithTooltip icon={Type} tooltip="Add Text" onClick={() => setShowTextPanel(true)} active={showTextPanel} />
             <ButtonWithTooltip icon={Layers} tooltip="Layers" onClick={() => setShowLayers(!showLayers)} active={showLayers} />
           </div>
 
