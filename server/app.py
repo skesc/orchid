@@ -1,5 +1,6 @@
 from os import environ, makedirs
 
+from cleanup import CleanupScheduler
 from config import Config
 from dotenv import load_dotenv
 from extensions import db, login_manager
@@ -13,6 +14,7 @@ if Config.ENV == "dev":
 
 app = Flask(__name__)
 app.config.from_object(Config)
+cleanup = CleanupScheduler(app)
 
 from routes.admin import admin_bp
 from routes.auth import auth_bp
