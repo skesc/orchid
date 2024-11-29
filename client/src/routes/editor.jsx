@@ -9,25 +9,16 @@ import ProfileSection from "../components/ProfileSection";
 import {ButtonWithTooltip} from "../components/Tooltip";
 import {useAuth} from "../contexts/AuthContext";
 
+import Market from "../components/Market";
+
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
 });
 
-function Market({handleAddHat}) {
-  const HATS = ["/hat-1.png", "/hat-2.png", "/hat-3.png"];
-  return (
-    <div className="fixed right-0 h-screen w-[30rem] top-0 bg-neutral-900 transform  z-10  flex-wrap gap-4 p-4 flex space-x-2">
-      {HATS.map((hat, i) => (
-        <img key={i} src={hat} alt={`Hat ${i + 1}`} className="h-20 z-10 cursor-pointer hover:opacity-70" onClick={() => handleAddHat(hat)} />
-      ))}
-    </div>
-  );
-}
-
 function RouteComponent() {
   const canvasRef = React.useRef(null);
   const [canvas, setCanvas] = React.useState(null);
-  const [market, setMarket] = React.useState(true);
+  const [market, setMarket] = React.useState(false);
   const [isCropping, setIsCropping] = React.useState(false);
   const [showPFPModal, setShowPFPModal] = React.useState(false);
   const [showBgRemovalModal, setShowBgRemovalModal] = React.useState(false);
