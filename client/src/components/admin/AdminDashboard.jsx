@@ -1,6 +1,6 @@
 import {BarChart3, EyeOff, FileImage, Github, Image, UserCheck, Users} from "lucide-react";
 import React from "react";
-import {apiFetch} from "../../utils/fetchConfig";
+import {API_URL, apiFetch} from "../../utils/fetchConfig";
 
 const statsConfig = [
   {
