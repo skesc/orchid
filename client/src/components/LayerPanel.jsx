@@ -1,3 +1,4 @@
+import {ActiveSelection, Group} from "fabric";
 import {ChevronDown, ChevronUp, Edit2, Eye, EyeOff, Group as GroupIcon, Lock, Trash2, Ungroup, Unlock} from "lucide-react";
 import React, {useEffect, useState} from "react";
 
@@ -146,7 +147,7 @@ const LayerPanel = ({canvas}) => {
           .map((id) => layers.find((l) => l.id === id)?.object)
           .filter(Boolean);
 
-        const activeSelection = new fabric.ActiveSelection(selectedObjects, {
+        const activeSelection = new ActiveSelection(selectedObjects, {
           canvas: canvas,
         });
         canvas.setActiveObject(activeSelection);
@@ -190,21 +191,16 @@ const LayerPanel = ({canvas}) => {
 
     if (objectsToGroup.length < 2) return;
 
-    // Remove old active selection if it exists
-    canvas.discardActiveObject();
-
-    // Create a new ActiveSelection with the objects
-    const activeSelection = new fabric.ActiveSelection(objectsToGroup, {
-      canvas: canvas,
+    const group = new Group(objectsToGroup, {
+      interactive: true,
+      subTargetCheck: true,
+      backgroundColor: "#f00f0022",
     });
-    canvas.setActiveObject(activeSelection);
 
-    // Convert the ActiveSelection to a Group
-    const group = activeSelection.toGroup();
-    group.name = `Group ${canvas.getObjects().length + 1}`;
-
+    objectsToGroup.forEach((obj) => canvas.remove(obj));
+    canvas.add(group);
     canvas.setActiveObject(group);
-    canvas.requestRenderAll();
+    canvas.renderAll();
     setSelectedLayers(new Set());
   };
 
@@ -220,7 +216,7 @@ const LayerPanel = ({canvas}) => {
     });
 
     canvas.discardActiveObject();
-    const sel = new fabric.ActiveSelection(items, {
+    const sel = new ActiveSelection(items, {
       canvas: canvas,
     });
     canvas.setActiveObject(sel);
