@@ -2,7 +2,7 @@ import {Check, Upload, X} from "lucide-react";
 import React, {useState} from "react";
 import {API_URL} from "../../utils/fetchConfig";
 
-export default function MarketplaceForm({setMod}) {
+export default function MarketplaceForm({setMod, onSuccess}) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -93,7 +93,8 @@ export default function MarketplaceForm({setMod}) {
       setShowSuccessModal(true);
       setTimeout(() => {
         setShowSuccessModal(false);
-        setMod(false); // Close the form
+        if (onSuccess) onSuccess();
+        setMod(false);
       }, 1000);
     } catch (error) {
       console.error("Error:", error);

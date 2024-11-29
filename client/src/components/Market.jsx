@@ -1,5 +1,5 @@
 import {Plus, X} from "lucide-react";
-import {useState} from "react";
+import React, {useState} from "react";
 import {useAuth} from "../contexts/AuthContext";
 import MarketplaceForm from "./marketplace/MarketplaceForm";
 import MarketplaceList from "./marketplace/MarketplaceList";
@@ -8,6 +8,7 @@ function Market({handleAddHat, canvas}) {
   const [showForm, setShowForm] = useState(false);
   const HATS = ["/hat-1.png", "/hat-2.png", "/hat-3.png"];
   const {user} = useAuth();
+  const listRef = React.useRef();
 
   return (
     <>
@@ -19,7 +20,7 @@ function Market({handleAddHat, canvas}) {
               <X size={24} />
             </button>
             <div className="overflow-y-auto max-h-[90vh] scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300 px-8 py-6">
-              <MarketplaceForm setMod={setShowForm} />
+              <MarketplaceForm setMod={setShowForm} onSuccess={() => listRef.current?.fetchItems()} />
             </div>
           </div>
         </div>
@@ -48,7 +49,7 @@ function Market({handleAddHat, canvas}) {
 
             <div className="flex-1 overflow-hidden">
               <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
-                <MarketplaceList canvas={canvas} />
+                <MarketplaceList ref={listRef} canvas={canvas} />
               </div>
             </div>
           </div>

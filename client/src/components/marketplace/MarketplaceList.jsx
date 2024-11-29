@@ -1,16 +1,12 @@
 import {Search} from "lucide-react";
-import React, {useEffect, useState} from "react";
+import React, {forwardRef, useEffect, useImperativeHandle, useState} from "react";
 import {API_URL} from "../../utils/fetchConfig";
 import MarketplaceItem from "./MarketplaceItem";
 
-export default function MarketplaceList({canvas}) {
+const MarketplaceList = forwardRef(({canvas}, ref) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
 
   const fetchItems = async () => {
     try {
@@ -23,6 +19,14 @@ export default function MarketplaceList({canvas}) {
       setLoading(false);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    fetchItems,
+  }));
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
   const filterItems = (items, searchTerm) => {
     if (!searchTerm) return items;
@@ -76,4 +80,6 @@ export default function MarketplaceList({canvas}) {
       )}
     </div>
   );
-}
+});
+
+export default MarketplaceList;
