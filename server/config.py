@@ -15,6 +15,7 @@ class Config:
     GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
     GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
     FRONTEND_URL = os.getenv("FRONTEND_URL")
+    ENV = os.getenv("ENV")
 
     ADMIN_EMAILS = [
         email.strip()
@@ -22,12 +23,12 @@ class Config:
         if email.strip()
     ]
 
-    SESSION_COOKIE_SECURE = os.getenv("ENVIRONMENT") != "dev"
+    SESSION_COOKIE_SECURE = ENV != "dev"
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Lax" if os.getenv("ENVIRONMENT") == "dev" else "Strict"
-    REMEMBER_COOKIE_SECURE = os.getenv("ENVIRONMENT") != "dev"
+    SESSION_COOKIE_SAMESITE = "Lax" if ENV == "dev" else "Strict"
+    REMEMBER_COOKIE_SECURE = ENV != "dev"
     REMEMBER_COOKIE_HTTPONLY = True
-    REMEMBER_COOKIE_SAMESITE = "Lax" if os.getenv("ENVIRONMENT") == "dev" else "Strict"
+    REMEMBER_COOKIE_SAMESITE = "Lax" if ENV == "dev" else "Strict"
 
     SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -9,7 +9,8 @@ from flask_cors import CORS
 
 load_dotenv()
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+if Config.ENV == "dev":
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 app = Flask(__name__)
 app.config.from_object(Config)
