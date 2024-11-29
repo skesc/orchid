@@ -6,16 +6,22 @@ from werkzeug.utils import secure_filename
 
 uploads_bp = Blueprint("uploads", __name__)
 
+VALID_FOLDERS = ["nobg", "marketplace"]
 
-@uploads_bp.route("/uploads/<path:filename>")
-def serve_uploaded_file(filename):
+
+@uploads_bp.route("/uploads/<folder>/<path:filename>")
+def serve_uploaded_file(folder, filename):
+    if folder not in VALID_FOLDERS:
+        return abort(404)
+
     filename = secure_filename(filename)
-    file_path = os.path.join(Config.UPLOAD_FOLDER, filename)
+    folder_path = os.path.join(Config.UPLOAD_FOLDER, folder)
+    file_path = os.path.join(folder_path, filename)
 
-    if not file_path.startswith(os.path.abspath(Config.UPLOAD_FOLDER)):
+    if not file_path.startswith(os.path.abspath(folder_path)):
         return abort(404)
 
     if not os.path.exists(file_path):
         return abort(404)
 
-    return send_from_directory(Config.UPLOAD_FOLDER, filename)
+    return send_from_directory(folder_path, filename)

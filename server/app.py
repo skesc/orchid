@@ -35,7 +35,14 @@ db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = "auth.login"
 login_manager.unauthorized_handler = unauthorized
-makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+[
+    makedirs(folder, exist_ok=True)
+    for folder in [
+        Config.UPLOAD_FOLDER,
+        Config.MARKETPLACE_UPLOAD_FOLDER,
+        Config.NOBG_UPLOAD_FOLDER,
+    ]
+]
 
 CORS(
     app,

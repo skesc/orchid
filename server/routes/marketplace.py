@@ -67,10 +67,10 @@ def create_marketplace_item():
         filename = secure_filename(file.filename)
         timestamp = int(time.time())
         filename = f"{timestamp}_{filename}"
-        file_path = os.path.join(Config.UPLOAD_FOLDER, filename)
+        file_path = os.path.join(Config.MARKETPLACE_UPLOAD_FOLDER, filename)
         file.save(file_path)
 
-        relative_path = f"/uploads/{filename}"
+        relative_path = f"/uploads/marketplace/{filename}"
 
         new_item = MarketplaceItem(
             name=sanitized_data["name"],
@@ -150,7 +150,7 @@ def delete_marketplace_item(item_id):
     try:
         if item.image_path.startswith("/uploads/"):
             file_path = os.path.join(
-                Config.UPLOAD_FOLDER, os.path.basename(item.image_path)
+                Config.MARKETPLACE_UPLOAD_FOLDER, os.path.basename(item.image_path)
             )
             if os.path.exists(file_path):
                 os.remove(file_path)

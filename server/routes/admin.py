@@ -2,8 +2,9 @@ import os
 from datetime import datetime, timedelta
 from functools import wraps
 
+from config import Config
 from extensions import db
-from flask import Blueprint, current_app, jsonify
+from flask import Blueprint, jsonify
 from flask_login import current_user, login_required
 from models import MarketplaceItem, User
 
@@ -16,7 +17,7 @@ def admin_required(f):
         if not current_user.is_authenticated:
             return jsonify({"error": "Authentication required"}), 401
 
-        if current_user.email not in current_app.config["ADMIN_EMAILS"]:
+        if current_user.email not in Config.ADMIN_EMAILS:
             return jsonify({"error": "Admin access required"}), 403
 
         return f(*args, **kwargs)
@@ -27,7 +28,7 @@ def admin_required(f):
 @admin_bp.route("/api/admin/check", methods=["GET"])
 @login_required
 def check_admin_status():
-    is_admin = current_user.email in current_app.config["ADMIN_EMAILS"]
+    is_admin = current_user.email in Config.ADMIN_EMAILS
     return jsonify(
         {"is_admin": is_admin, "email": current_user.email if is_admin else None}
     )
@@ -79,7 +80,8 @@ def admin_delete_marketplace_item(item_id):
         # Remove the file if it exists
         if item.image_path.startswith("/uploads/"):
             file_path = os.path.join(
-                current_app.config["UPLOAD_FOLDER"], os.path.basename(item.image_path)
+                Config.MARKETPLACE_UPLOAD_FOLDER,
+                os.path.basename(item.image_path),
             )
             if os.path.exists(file_path):
                 os.remove(file_path)

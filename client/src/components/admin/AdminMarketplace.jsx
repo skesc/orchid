@@ -13,6 +13,7 @@ export default function AdminMarketplace() {
     try {
       const data = await apiFetch("/api/admin/marketplace");
       setItems(data);
+      setError(null);
     } catch (error) {
       console.error("Error fetching items:", error);
       setError("Failed to load marketplace items");
@@ -29,13 +30,20 @@ export default function AdminMarketplace() {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      await apiFetch(`/api/admin/marketplace/${itemId}`, {
+      const response = await apiFetch(`/api/admin/marketplace/${itemId}`, {
         method: "DELETE",
+        credentials: "include",
       });
-      await fetchItems();
+
+      if (response.status === 204) {
+        await fetchItems();
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete item");
+      }
     } catch (error) {
       console.error("Error deleting item:", error);
-      alert("Failed to delete item");
+      alert(error.message || "Failed to delete item");
     }
   };
 

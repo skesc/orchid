@@ -49,12 +49,12 @@ def remove_background():
         timestamp = int(time.time())
         filename = secure_filename(file.filename)
         filename = f"nobg_{timestamp}_{filename}"
-        file_path = os.path.join(Config.UPLOAD_FOLDER, filename)
+        file_path = os.path.join(Config.NOBG_UPLOAD_FOLDER, filename)
 
         with open(file_path, "wb") as f:
             f.write(buffer.getvalue())
 
-        relative_path = f"/uploads/{filename}"
+        relative_path = f"/uploads/nobg/{filename}"
 
         return jsonify(
             {

@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta
 
+from config import Config
 from flask_apscheduler import APScheduler
 
 
@@ -17,35 +18,29 @@ class CleanupScheduler:
         self.scheduler.start()
 
         self.scheduler.add_job(
-            id="cleanup_images",
-            func=self.cleanup_expired_images,
+            id="cleanup_nobg",
+            func=self.cleanup_expired_files,
             trigger="interval",
             minutes=10,
         )
 
-    def cleanup_expired_images(self):
+    def cleanup_expired_files(self):
         with self.app.app_context():
-            upload_dir = self.app.config["UPLOAD_FOLDER"]
+            upload_dir = Config.NOBG_UPLOAD_FOLDER
             current_time = datetime.now()
             cleaned_count = 0
 
             try:
                 for filename in os.listdir(upload_dir):
-                    file_path = os.path.join(upload_dir, filename)
+                    if not filename.startswith("nobg_"):
+                        continue
 
-                    if ".." in file_path or not os.path.exists(file_path):
+                    file_path = os.path.join(upload_dir, filename)
+                    if not os.path.exists(file_path):
                         continue
 
                     file_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
-
-                    if filename.startswith("nobg_"):
-                        expiration_time = timedelta(minutes=10)
-                    elif filename.startswith("temp_"):
-                        expiration_time = timedelta(hours=1)
-                    else:
-                        continue
-
-                    if current_time - file_modified > expiration_time:
+                    if current_time - file_modified > timedelta(minutes=10):
                         try:
                             os.remove(file_path)
                             cleaned_count += 1
@@ -53,31 +48,8 @@ class CleanupScheduler:
                             continue
 
                 if cleaned_count:
-                    self.app.logger.info(f"Cleaned up {cleaned_count} expired files")
+                    self.app.logger.info(
+                        f"Cleaned up {cleaned_count} expired nobg files"
+                    )
             except Exception as e:
                 self.app.logger.error(f"Cleanup error: {str(e)}")
-
-    def cleanup_specific_files(self, prefix, max_age_minutes):
-        with self.app.app_context():
-            upload_dir = self.app.config["UPLOAD_FOLDER"]
-            current_time = datetime.now()
-            cleaned_count = 0
-
-            for filename in os.listdir(upload_dir):
-                if filename.startswith(prefix):
-                    file_path = os.path.join(upload_dir, filename)
-
-                    if ".." in file_path or not os.path.exists(file_path):
-                        continue
-
-                    file_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
-                    if current_time - file_modified > timedelta(
-                        minutes=max_age_minutes
-                    ):
-                        try:
-                            os.remove(file_path)
-                            cleaned_count += 1
-                        except (OSError, IOError):
-                            continue
-
-            return cleaned_count
