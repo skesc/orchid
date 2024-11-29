@@ -30,7 +30,7 @@ function RouteComponent() {
   const {user} = useAuth();
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
-  const [showLayers, setShowLayers] = React.useState(false);
+  const [showLayers, setShowLayers] = React.useState(true);
   const [isDragging, setIsDragging] = React.useState(false);
 
   const handleDragOver = React.useCallback((e) => {
