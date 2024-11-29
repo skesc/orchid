@@ -528,7 +528,7 @@ function RouteComponent() {
       {showLayers && <LayerPanel canvas={canvas} />}
       {showAdjustments && <ImageAdjustments canvas={canvas} />}
       <TextEditor canvas={canvas} isOpen={showTextPanel} onClose={() => setShowTextPanel(false)} />
-      {market && <Market handleAddHat={handleAddHat} />}
+      {market && <Market handleAddHat={handleAddHat} canvas={canvas} />}
 
       {isCropping && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-neutral-900 p-4 rounded-lg flex gap-4">

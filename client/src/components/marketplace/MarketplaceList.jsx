@@ -1,27 +1,20 @@
-import {useNavigate} from "@tanstack/react-router";
+import {Search} from "lucide-react";
 import React, {useEffect, useState} from "react";
+import {API_URL} from "../../utils/fetchConfig";
 import MarketplaceItem from "./MarketplaceItem";
 
-const CATEGORIES = ["Hat", "Glasses", "Accessory", "Background"];
-const API_URL = process.env.VITE_API_URL;
-
-export default function MarketplaceList() {
+export default function MarketplaceList({canvas}) {
   const [items, setItems] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchItems();
-  }, [selectedCategory]);
+  }, []);
 
   const fetchItems = async () => {
     try {
-      const url = new URL(`${API_URL}/api/marketplace/items`);
-      if (selectedCategory) {
-        url.searchParams.append("category", selectedCategory);
-      }
-      const response = await fetch(url);
+      const response = await fetch(`${API_URL}/api/marketplace/items`);
       const data = await response.json();
       setItems(data);
     } catch (error) {
@@ -30,6 +23,21 @@ export default function MarketplaceList() {
       setLoading(false);
     }
   };
+
+  const filterItems = (items, searchTerm) => {
+    if (!searchTerm) return items;
+
+    const searchTerms = searchTerm
+      .toLowerCase()
+      .split(",")
+      .map((term) => term.trim());
+
+    return items.filter((item) => {
+      return searchTerms.some((term) => item.name.toLowerCase().includes(term) || (item.categories && item.categories.some((category) => category.toLowerCase().includes(term))));
+    });
+  };
+
+  const filteredItems = filterItems(items, searchTerm);
 
   if (loading) {
     return (
@@ -40,29 +48,32 @@ export default function MarketplaceList() {
   }
 
   return (
-    <div className="overflow-y-scroll">
+    <div>
       <div className="mb-8">
-        <div className="flex flex-wrap gap-3">
-          <button onClick={() => setSelectedCategory("")} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${selectedCategory === "" ? "bg-violet-500 text-white shadow-lg shadow-violet-500/25" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}>
-            All
-          </button>
-          {CATEGORIES.map((category) => (
-            <button key={category} onClick={() => setSelectedCategory(category)} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${selectedCategory === category ? "bg-violet-500 text-white shadow-lg shadow-violet-500/25" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}>
-              {category}
-            </button>
-          ))}
+        <div className="relative group">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name or categories (separate multiple terms with commas)"
+            className="w-full px-4 py-3 pl-10 bg-neutral-100 rounded-lg outline-none 
+                     border-2 border-transparent
+                     focus:border-violet-400 focus:bg-white
+                     transition-all duration-200"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500" size={20} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-6">
-        {items.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <p className="text-gray-400 text-lg">No items found</p>
-          </div>
-        ) : (
-          items.map((item) => <MarketplaceItem key={item.id} item={item} onUpdate={fetchItems} />)
-        )}
-      </div>
+      {filteredItems.length === 0 ? (
+        <div className="text-center text-neutral-500 py-8">No items found. Try adjusting your search or add some items to the marketplace!</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
+          {filteredItems.map((item) => (
+            <MarketplaceItem key={item.id} item={item} onUpdate={fetchItems} canvas={canvas} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

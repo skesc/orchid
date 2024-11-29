@@ -1,12 +1,8 @@
-import {useNavigate} from "@tanstack/react-router";
 import {Check, Upload, X} from "lucide-react";
 import React, {useState} from "react";
-
-const CATEGORIES = ["Hat", "Glasses", "Accessory", "Background"];
-const API_URL = import.meta.env.VITE_API_URL;
+import {API_URL} from "../../utils/fetchConfig";
 
 export default function MarketplaceForm({setMod}) {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -14,6 +10,7 @@ export default function MarketplaceForm({setMod}) {
     categories: [],
     is_private: false,
   });
+  const [tagInput, setTagInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(null);
@@ -24,6 +21,27 @@ export default function MarketplaceForm({setMod}) {
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleTagInput = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const tag = tagInput.trim();
+      if (tag && !formData.categories.includes(tag)) {
+        setFormData((prev) => ({
+          ...prev,
+          categories: [...prev.categories, tag],
+        }));
+      }
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      categories: prev.categories.filter((tag) => tag !== tagToRemove),
     }));
   };
 
@@ -45,15 +63,8 @@ export default function MarketplaceForm({setMod}) {
         setPreview(reader.result);
       };
       reader.readAsDataURL(file);
-      setError(""); // Clear any previous errors
+      setError("");
     }
-  };
-
-  const handleCategoryToggle = (category) => {
-    setFormData((prev) => {
-      const categories = prev.categories.includes(category) ? prev.categories.filter((c) => c !== category) : [...prev.categories, category];
-      return {...prev, categories};
-    });
   };
 
   const handleSubmit = async (e) => {
@@ -75,18 +86,18 @@ export default function MarketplaceForm({setMod}) {
         body: formDataToSend,
       });
 
-      if (response.ok) {
-        setShowSuccessModal(true);
-        setTimeout(() => {
-          setShowSuccessModal(false);
-          navigate({to: "/marketplace"});
-        }, 1500);
-      } else {
-        const data = await response.json();
-        setError(data.error || "Failed to create item");
+      if (!response.ok) {
+        throw new Error(await response.text());
       }
+
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        setMod(false); // Close the form
+      }, 1000);
     } catch (error) {
-      setError("An error occurred while creating the item");
+      console.error("Error:", error);
+      setError(error.message || "An error occurred while creating the item");
     } finally {
       setLoading(false);
     }
@@ -94,26 +105,42 @@ export default function MarketplaceForm({setMod}) {
 
   return (
     <>
-      <div className=" mx-auto text-neutral-900 rounded-2xl  px-8">
-        <h2 className="text-2xl font-bold  mb-3 text-center">Create New Item</h2>
+      <div className="mx-auto text-neutral-900 rounded-2xl px-8">
+        <h2 className="text-2xl font-bold mb-3 text-center">Create New Item</h2>
 
-        {error && <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-lg mb-3 backdrop-blur-sm">{error}</div>}
+        {error && <div className="bg-red-500/20 border border-red-500/50 text-red-600 px-6 py-4 rounded-lg mb-3">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-lg font-medium text-violet-500 mb-2">Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleInputChange} required className="w-full px-4 py-3 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent text-white placeholder-neutral-400 transition duration-200" placeholder="Enter item name" />
+            <input type="text" name="name" value={formData.name} onChange={handleInputChange} required className="w-full px-4 py-3 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-neutral-900 placeholder-neutral-400" placeholder="Enter item name" />
           </div>
 
           <div>
             <label className="block text-lg font-medium text-violet-500 mb-2">Description</label>
-            <textarea name="description" value={formData.description} onChange={handleInputChange} rows="4" className="w-full px-4 py-3 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent text-white placeholder-neutral-400 transition duration-200" placeholder="Describe your item..." />
+            <textarea name="description" value={formData.description} onChange={handleInputChange} rows="4" className="w-full px-4 py-3 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-neutral-900 placeholder-neutral-400" placeholder="Describe your item..." />
+          </div>
+
+          <div>
+            <label className="block text-lg font-medium text-violet-500 mb-2">Categories</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.categories.map((tag, index) => (
+                <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-violet-500 text-white">
+                  {tag}
+                  <button type="button" onClick={() => removeTag(tag)} className="ml-2 focus:outline-none">
+                    <X size={14} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <input type="text" value={tagInput} onChange={(e) => setTagInput(e.target.value)} onKeyDown={handleTagInput} placeholder="Type categories and press Enter or comma to add" className="w-full px-4 py-3 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-neutral-900 placeholder-neutral-400" />
+            <p className="text-sm text-neutral-500 mt-1">Press Enter or comma (,) to add a category</p>
           </div>
 
           <div>
             <label className="block text-lg font-medium text-violet-500 mb-2">Image</label>
             <div className="mt-1 flex flex-col items-center">
-              <div className="w-full flex justify-center px-6 pt-5 pb-6 border-2 border-violet-500 border-dashed rounded-lg hover:border-violet-500 transition duration-200 relative">
+              <div className="w-full flex justify-center px-6 pt-5 pb-6 border-2 border-violet-500 border-dashed rounded-lg hover:border-violet-600 transition duration-200 relative">
                 <div className="space-y-1 text-center">
                   {preview ? (
                     <div className="relative inline-block">
@@ -138,23 +165,12 @@ export default function MarketplaceForm({setMod}) {
                         </label>
                         <p className="pl-1">or drag and drop</p>
                       </div>
-                      <p className="text-xs text-neutral-400">PNG, JPG, GIF up to 10MB</p>
+                      <p className="text-xs text-neutral-400">PNG, JPG up to 10MB</p>
                     </>
                   )}
                 </div>
               </div>
-              {formData.image && <p className="text-sm text-neutral-300 mt-2">Selected file: {formData.image.name}</p>}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-lg font-medium text-violet-500 mb-3">Categories</label>
-            <div className="flex flex-wrap gap-3">
-              {CATEGORIES.map((category) => (
-                <button key={category} type="button" onClick={() => handleCategoryToggle(category)} className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 ${formData.categories.includes(category) ? "bg-violet-500 text-white shadow-lg shadow-violet-500/50" : "bg-neutral-800/50 text-neutral-300 hover:bg-neutral-700/50"}`}>
-                  {category}
-                </button>
-              ))}
+              {formData.image && <p className="text-sm text-neutral-400 mt-2">Selected file: {formData.image.name}</p>}
             </div>
           </div>
 
@@ -167,10 +183,10 @@ export default function MarketplaceForm({setMod}) {
           </div>
 
           <div className="flex justify-end gap-4 pt-4">
-            <button type="button" onClick={() => setMod(false)} className="px-6 py-3 rounded-lg font-medium text-neutral-300 bg-neutral-800/50 hover:bg-neutral-700/50 transition duration-200">
+            <button type="button" onClick={() => setMod(false)} className="px-6 py-3 rounded-lg font-medium text-neutral-900 bg-neutral-300 hover:bg-neutral-400 transition duration-200">
               Cancel
             </button>
-            <button type="submit" disabled={loading} className="px-6 py-3 rounded-lg font-medium text-white bg-violet-500 hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 shadow-lg shadow-violet-500/30">
+            <button type="submit" disabled={loading} className="px-6 py-3 rounded-lg font-medium text-white bg-violet-500 hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200">
               {loading ? (
                 <span className="flex items-center">
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -187,7 +203,6 @@ export default function MarketplaceForm({setMod}) {
         </form>
       </div>
 
-      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-black/50 absolute inset-0 backdrop-blur-sm"></div>
