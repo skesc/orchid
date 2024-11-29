@@ -1,6 +1,6 @@
 import {createFileRoute} from "@tanstack/react-router";
 import {Canvas, FabricImage, Group, Rect} from "fabric";
-import {Crop, Eraser, ImageDown, Store, Upload, UserSquare2, X} from "lucide-react";
+import {Crop, Eraser, ImageDown, Store, Type, Upload, UserSquare2, X} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/BackgroundRemovalModal";
 import HandleExportImage from "../components/HandleExportImage";
@@ -9,6 +9,7 @@ import LayerPanel from "../components/LayerPanel";
 import Market from "../components/Market";
 import PFPModal from "../components/PFPModal";
 import ProfileSection from "../components/ProfileSection";
+import TextEditor from "../components/TextEditor";
 import {ButtonWithTooltip} from "../components/Tooltip";
 import {useAuth} from "../contexts/AuthContext";
 
@@ -23,6 +24,7 @@ function RouteComponent() {
   const [isCropping, setIsCropping] = React.useState(false);
   const [showPFPModal, setShowPFPModal] = React.useState(false);
   const [showBgRemovalModal, setShowBgRemovalModal] = React.useState(false);
+  const [showTextPanel, setShowTextPanel] = React.useState(false);
   const cropRectRef = React.useRef(null);
   const [error, setError] = React.useState("");
   const {user} = useAuth();
@@ -424,6 +426,7 @@ function RouteComponent() {
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
             <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" onClick={() => setShowPFPModal(true)} />
             <ButtonWithTooltip icon={Eraser} tooltip="Remove Background" onClick={() => setShowBgRemovalModal(true)} />
+            <ButtonWithTooltip icon={Type} tooltip="Add Text" onClick={() => setShowTextPanel(true)} active={showTextPanel} />
           </div>
 
           <div className="flex flex-col items-center gap-5">
@@ -437,6 +440,7 @@ function RouteComponent() {
 
       <LayerPanel canvas={canvas} />
       <ImageAdjustments canvas={canvas} />
+      <TextEditor canvas={canvas} isOpen={showTextPanel} onClose={() => setShowTextPanel(false)} />
       {market && <Market handleAddHat={handleAddHat} />}
 
       {isCropping && (
