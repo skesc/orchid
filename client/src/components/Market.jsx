@@ -51,4 +51,4 @@ function Market({handleAddHat}) {
   );
 }
 
-export default Market
+export default Market;

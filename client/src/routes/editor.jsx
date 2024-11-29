@@ -31,6 +31,36 @@ function RouteComponent() {
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(false);
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const handleDragOver = React.useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = React.useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+
+      const files = Array.from(e.dataTransfer.files);
+      const imageFile = files.find((file) => file.type.startsWith("image/"));
+
+      if (imageFile) {
+        const event = {target: {files: [imageFile]}};
+        handleImageUpload(event);
+      }
+    },
+    [canvas]
+  );
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -121,6 +151,48 @@ function RouteComponent() {
             initCanvas.setActiveObject(group);
             initCanvas.renderAll();
           }
+        }
+
+        // Paste image with Ctrl + V
+        if (event.ctrlKey && event.key === "v") {
+          event.preventDefault();
+          navigator.clipboard.read().then((data) => {
+            data.forEach((item) => {
+              if (item.types.includes("image/png") || item.types.includes("image/jpeg")) {
+                item.getType(item.types[0]).then((blob) => {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const imgElement = new Image();
+                    imgElement.src = e.target.result;
+                    imgElement.onload = () => {
+                      const fabricImage = new FabricImage(imgElement, {
+                        id: `image-${Date.now()}`,
+                        name: `Pasted Image ${initCanvas.getObjects().length + 1}`,
+                      });
+
+                      const maxWidth = window.innerWidth * 0.9;
+                      const maxHeight = window.innerHeight * 0.9;
+
+                      if (fabricImage.width > maxWidth || fabricImage.height > maxHeight) {
+                        const scaleFactorWidth = maxWidth / fabricImage.width;
+                        const scaleFactorHeight = maxHeight / fabricImage.height;
+                        const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
+                        fabricImage.scale(scaleFactor);
+                      }
+
+                      initCanvas.add(fabricImage);
+                      initCanvas.centerObject(fabricImage);
+                      initCanvas.setActiveObject(fabricImage);
+                      initCanvas.renderAll();
+                    };
+                  };
+                  reader.readAsDataURL(blob);
+                });
+              }
+            });
+          }).catch(err => {
+            console.error("Failed to read clipboard:", err);
+          });
         }
 
         // Ungroup with Ctrl + U
@@ -439,8 +511,16 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-
-      <canvas ref={canvasRef} className="w-full h-full" />
+      <div className={`w-screen h-screen overflow-hidden ${isDragging ? "bg-violet-500/20" : ""} transition-all duration-300 ease-in-out`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+        <canvas ref={canvasRef} className="w-full h-full transition-transform duration-300 ease-in-out" />
+        {isDragging && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform scale-100 opacity-100">
+              <p className="text-lg font-semibold text-violet-600 transition-colors duration-300">Drop your image here</p>
+            </div>
+          </div>
+        )}
+      </div>
 
       {showLayers && <LayerPanel canvas={canvas} />}
       {showAdjustments && <ImageAdjustments canvas={canvas} />}
