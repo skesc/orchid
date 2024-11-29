@@ -6,7 +6,7 @@ const fonts = ["Arial", "Times New Roman", "Courier New", "Georgia", "Verdana", 
 
 const TextEditor = ({canvas, isOpen, onClose}) => {
   const [textOptions, setTextOptions] = useState({
-    text: "Double click to edit",
+    text: "Click to edit",
     fontSize: 32,
     fontFamily: "Chakra Petch",
     fill: "#ffffff",
@@ -37,7 +37,7 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
     canvas.setActiveObject(text);
     canvas.renderAll();
     setTextOptions({
-      text: "Double click to edit",
+      text: "Click to edit",
       fontSize: 32,
       fontFamily: "Chakra Petch",
       fill: "#ffffff",
@@ -45,6 +45,10 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
       italic: false,
       underline: false,
     });
+  };
+
+  const handleTextAreaKeyDown = (e) => {
+    e.stopPropagation();
   };
 
   const handleTextChange = (e) => {
@@ -85,12 +89,12 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
       </div>
 
       <div className="space-y-4">
-        <textarea value={textOptions.text} onChange={handleTextChange} className="w-full px-3 py-2 bg-neutral-300  rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none" rows={2} placeholder="Enter your text..." />
+        <textarea value={textOptions.text} onChange={handleTextChange} onKeyDown={handleTextAreaKeyDown} className="w-full px-3 py-2 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none" rows={2} placeholder="Enter your text..." />
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs mb-1">Font Size</label>
-            <input type="number" value={textOptions.fontSize} onChange={handleFontSizeChange} min={8} max={200} className="w-full px-3 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+            <input type="number" value={textOptions.fontSize} onChange={handleFontSizeChange} onKeyDown={handleTextAreaKeyDown} min={8} max={200} className="w-full px-3 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none" />
           </div>
           <div>
             <label className="block text-xs mb-1">Color</label>
@@ -100,7 +104,7 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
 
         <div>
           <label className="block text-xs mb-1">Font Family</label>
-          <select value={textOptions.fontFamily} onChange={handleFontFamilyChange} className="w-full px-3 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+          <select value={textOptions.fontFamily} onChange={handleFontFamilyChange} onKeyDown={handleTextAreaKeyDown} className="w-full px-3 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
             {fonts.map((font) => (
               <option key={font} value={font} style={{fontFamily: font}}>
                 {font}
