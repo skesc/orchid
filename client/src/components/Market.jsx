@@ -5,7 +5,7 @@ import { useState } from "react";
 import MarketplaceForm from "./marketplace/MarketplaceForm";
 
 function Market({handleAddHat}) {
-  const [mod, setMod] = useState(true)
+  const [mod, setMod] = useState(false)
   const HATS = ["/hat-1.png", "/hat-2.png", "/hat-3.png"];
   const { user } = useAuth();
   return (
