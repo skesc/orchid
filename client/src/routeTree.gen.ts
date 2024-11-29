@@ -13,8 +13,6 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as EditorImport } from './routes/editor'
 import { Route as IndexImport } from './routes/index'
-import { Route as MarketplaceIndexImport } from './routes/marketplace/index'
-import { Route as MarketplaceNewImport } from './routes/marketplace/new'
 
 // Create/Update Routes
 
@@ -27,18 +25,6 @@ const EditorRoute = EditorImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MarketplaceIndexRoute = MarketplaceIndexImport.update({
-  id: '/marketplace/',
-  path: '/marketplace/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MarketplaceNewRoute = MarketplaceNewImport.update({
-  id: '/marketplace/new',
-  path: '/marketplace/new',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,20 +46,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorImport
       parentRoute: typeof rootRoute
     }
-    '/marketplace/new': {
-      id: '/marketplace/new'
-      path: '/marketplace/new'
-      fullPath: '/marketplace/new'
-      preLoaderRoute: typeof MarketplaceNewImport
-      parentRoute: typeof rootRoute
-    }
-    '/marketplace/': {
-      id: '/marketplace/'
-      path: '/marketplace'
-      fullPath: '/marketplace'
-      preLoaderRoute: typeof MarketplaceIndexImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -82,46 +54,36 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
-  '/marketplace/new': typeof MarketplaceNewRoute
-  '/marketplace': typeof MarketplaceIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
-  '/marketplace/new': typeof MarketplaceNewRoute
-  '/marketplace': typeof MarketplaceIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
-  '/marketplace/new': typeof MarketplaceNewRoute
-  '/marketplace/': typeof MarketplaceIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/editor' | '/marketplace/new' | '/marketplace'
+  fullPaths: '/' | '/editor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/editor' | '/marketplace/new' | '/marketplace'
-  id: '__root__' | '/' | '/editor' | '/marketplace/new' | '/marketplace/'
+  to: '/' | '/editor'
+  id: '__root__' | '/' | '/editor'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EditorRoute: typeof EditorRoute
-  MarketplaceNewRoute: typeof MarketplaceNewRoute
-  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EditorRoute: EditorRoute,
-  MarketplaceNewRoute: MarketplaceNewRoute,
-  MarketplaceIndexRoute: MarketplaceIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -135,9 +97,7 @@ export const routeTree = rootRoute
       "filePath": "__root.jsx",
       "children": [
         "/",
-        "/editor",
-        "/marketplace/new",
-        "/marketplace/"
+        "/editor"
       ]
     },
     "/": {
@@ -145,12 +105,6 @@ export const routeTree = rootRoute
     },
     "/editor": {
       "filePath": "editor.jsx"
-    },
-    "/marketplace/new": {
-      "filePath": "marketplace/new.jsx"
-    },
-    "/marketplace/": {
-      "filePath": "marketplace/index.jsx"
     }
   }
 }
