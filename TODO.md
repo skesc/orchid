@@ -14,7 +14,7 @@
   - [ ] Use some llm to plug two image of pfp and apparel together
   - [ ] more limit on using the remove bg thing
 - [ ] HUGE IF REAL
- - [ ] GIF SUPPORT
- - [ ] FREE HAND DRAWING
- - [ ] Tiling mode: select a thing, select tile mode, resize the thing and it creates a tiling mode.
- - [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
+  - [ ] GIF SUPPORT
+  - [ ] FREE HAND DRAWING
+  - [ ] Tiling mode: select a thing, select tile mode, resize the thing and it creates a tiling mode.
+  - [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
