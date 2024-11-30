@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as EditorImport } from './routes/editor'
 import { Route as AdminImport } from './routes/admin'
+import { Route as R404Import } from './routes/$404'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
@@ -26,6 +27,12 @@ const EditorRoute = EditorImport.update({
 const AdminRoute = AdminImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const R404Route = R404Import.update({
+  id: '/$404',
+  path: '/$404',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -44,6 +51,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/$404': {
+      id: '/$404'
+      path: '/$404'
+      fullPath: '/$404'
+      preLoaderRoute: typeof R404Import
       parentRoute: typeof rootRoute
     }
     '/admin': {
@@ -67,12 +81,14 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$404': typeof R404Route
   '/admin': typeof AdminRoute
   '/editor': typeof EditorRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$404': typeof R404Route
   '/admin': typeof AdminRoute
   '/editor': typeof EditorRoute
 }
@@ -80,27 +96,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/$404': typeof R404Route
   '/admin': typeof AdminRoute
   '/editor': typeof EditorRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/editor'
+  fullPaths: '/' | '/$404' | '/admin' | '/editor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/editor'
-  id: '__root__' | '/' | '/admin' | '/editor'
+  to: '/' | '/$404' | '/admin' | '/editor'
+  id: '__root__' | '/' | '/$404' | '/admin' | '/editor'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R404Route: typeof R404Route
   AdminRoute: typeof AdminRoute
   EditorRoute: typeof EditorRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R404Route: R404Route,
   AdminRoute: AdminRoute,
   EditorRoute: EditorRoute,
 }
@@ -116,12 +135,16 @@ export const routeTree = rootRoute
       "filePath": "__root.jsx",
       "children": [
         "/",
+        "/$404",
         "/admin",
         "/editor"
       ]
     },
     "/": {
       "filePath": "index.jsx"
+    },
+    "/$404": {
+      "filePath": "$404.jsx"
     },
     "/admin": {
       "filePath": "admin.jsx"
