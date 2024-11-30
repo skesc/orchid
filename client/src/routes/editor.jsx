@@ -1,9 +1,9 @@
-import {createFileRoute} from "@tanstack/react-router";
-import {Canvas, FabricImage} from "fabric";
-import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2} from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Canvas, FabricImage } from "fabric";
+import { Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2 } from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
-import {CropControls, useCropManager} from "../components/editor/CropControls";
+import { CropControls, useCropManager } from "../components/editor/CropControls";
 import HandleExportImage from "../components/editor/HandleExportImage";
 import ImageAdjustments from "../components/editor/ImageAdjustments";
 import LayerPanel from "../components/editor/LayerPanel";
@@ -11,9 +11,9 @@ import Market from "../components/editor/Market";
 import PFPModal from "../components/editor/PFPModal";
 import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
-import {ButtonWithTooltip} from "../components/editor/Tooltip";
-import {handleDragLeave, handleDragOver, handleDrop, handleImageUpload} from "../utils/ImageHandlers";
-import {createKeyboardHandler} from "../utils/KeyboardHandlers";
+import { ButtonWithTooltip } from "../components/editor/Tooltip";
+import { handleDragLeave, handleDragOver, handleDrop, handleImageUpload } from "../utils/ImageHandlers";
+import { createKeyboardHandler } from "../utils/KeyboardHandlers";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
@@ -79,7 +79,19 @@ function RouteComponent() {
       };
       window.addEventListener("resize", handleResize);
 
-      document.addEventListener("keydown", createKeyboardHandler(initCanvas));
+      const keyboardHandler = createKeyboardHandler(initCanvas, {
+        onUpload: () => fileInputRef.current?.click(),
+        onExport: () => HandleExportImage(initCanvas),
+        onMarket: () => setMarket((prev) => !prev),
+        onCrop: () => (isCropping ? cancelCrop() : startCropping()),
+        onPfp: () => setShowPFPModal(true),
+        onBgRemove: () => setShowBgRemovalModal(true),
+        onAdjustments: () => setShowAdjustments((prev) => !prev),
+        onText: () => setShowTextPanel(true),
+        onLayers: () => setShowLayers((prev) => !prev),
+      });
+
+      document.addEventListener("keydown", keyboardHandler);
 
       setCanvas(initCanvas);
       initCanvas.renderAll();
@@ -87,7 +99,7 @@ function RouteComponent() {
       return () => {
         initCanvas.dispose();
         window.removeEventListener("resize", handleResize);
-        document.removeEventListener("keydown", createKeyboardHandler(initCanvas));
+        document.removeEventListener("keydown", keyboardHandler);
       };
     }
   }, []);
@@ -166,17 +178,17 @@ function RouteComponent() {
     <div className="w-screen h-screen overflow-hidden bg-violet-400 bg-[linear-gradient(to_right,#80808042_1px,transparent_1px),linear-gradient(to_bottom,#80808042_1px,transparent_1px)] bg-[size:48px_48px] inset-0">
       <div className="fixed h-screen w-24 z-10 p-5">
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
-          <div className="group flex gap-5 flex-col items-center cursor-pointer">
-            <ButtonWithTooltip icon={Upload} tooltip="Upload Image" onClick={() => fileInputRef.current?.click()} />
+          <div className="flex gap-4 flex-col items-center">
+            <ButtonWithTooltip icon={Upload} tooltip="Upload Image" shortcut="U" onClick={() => fileInputRef.current?.click()} />
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLocalImageUpload} style={{display: "none"}} />
-            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => HandleExportImage(canvas)} />
-            <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" onClick={() => setMarket(!market)} active={market} />
-            <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
-            <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" onClick={() => setShowPFPModal(true)} />
-            <ButtonWithTooltip icon={Eraser} tooltip="Remove Background" onClick={() => setShowBgRemovalModal(true)} />
-            <ButtonWithTooltip icon={Sliders} tooltip="Adjustments" onClick={() => setShowAdjustments(!showAdjustments)} active={showAdjustments} />
-            <ButtonWithTooltip icon={Type} tooltip="Add Text" onClick={() => setShowTextPanel(true)} active={showTextPanel} />
-            <ButtonWithTooltip icon={Layers} tooltip="Layers" onClick={() => setShowLayers(!showLayers)} active={showLayers} />
+            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" shortcut="E" onClick={() => HandleExportImage(canvas)} />
+            <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" shortcut="M" onClick={() => setMarket(!market)} active={market} />
+            <ButtonWithTooltip icon={Crop} tooltip="Crop Image" shortcut="C" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
+            <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" shortcut="P" onClick={() => setShowPFPModal(true)} />
+            <ButtonWithTooltip icon={Eraser} tooltip="Remove Background" shortcut="B" onClick={() => setShowBgRemovalModal(true)} />
+            <ButtonWithTooltip icon={Sliders} tooltip="Image Adjustments" shortcut="I" onClick={() => setShowAdjustments(!showAdjustments)} active={showAdjustments} />
+            <ButtonWithTooltip icon={Type} tooltip="Add Text" shortcut="T" onClick={() => setShowTextPanel(true)} active={showTextPanel} />
+            <ButtonWithTooltip icon={Layers} tooltip="Layers" shortcut="L" onClick={() => setShowLayers(!showLayers)} active={showLayers} />
           </div>
 
           <div className="flex flex-col items-center gap-5">

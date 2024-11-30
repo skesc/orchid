@@ -1,6 +1,6 @@
 import {ActiveSelection, FabricImage, Group} from "fabric";
 
-export function createKeyboardHandler(canvas) {
+export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onCrop, onPfp, onBgRemove, onAdjustments, onText, onLayers} = {}) {
   return (event) => {
     const activeElement = document.activeElement;
     const isInputField = activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.contentEditable === "true";
@@ -11,6 +11,47 @@ export function createKeyboardHandler(canvas) {
     handleGrouping(event, canvas);
     handlePaste(event, canvas);
     handleUngroup(event, canvas);
+
+    if (!event.ctrlKey && !event.altKey && !event.shiftKey) {
+      switch (event.key.toLowerCase()) {
+        case "u":
+          event.preventDefault();
+          onUpload?.();
+          break;
+        case "e":
+          event.preventDefault();
+          onExport?.();
+          break;
+        case "m":
+          event.preventDefault();
+          onMarket?.();
+          break;
+        case "c":
+          event.preventDefault();
+          onCrop?.();
+          break;
+        case "p":
+          event.preventDefault();
+          onPfp?.();
+          break;
+        case "b":
+          event.preventDefault();
+          onBgRemove?.();
+          break;
+        case "i":
+          event.preventDefault();
+          onAdjustments?.();
+          break;
+        case "t":
+          event.preventDefault();
+          onText?.();
+          break;
+        case "l":
+          event.preventDefault();
+          onLayers?.();
+          break;
+      }
+    }
   };
 }
 
