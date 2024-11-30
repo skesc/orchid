@@ -1,4 +1,4 @@
-import {format} from "date-fns";
+import { format } from "date-fns";
 
 const generateFileName = (prefix, activeObject = null) => {
   const timestamp = format(new Date(), "yyyyMMdd-HHmmss");
@@ -9,32 +9,67 @@ const generateFileName = (prefix, activeObject = null) => {
 const HandleExportImage = (canvas, prefix = "edit") => {
   if (!canvas) return;
 
+  const groupStates = new Map();
+
+  canvas.getObjects().forEach((obj) => {
+    if (obj.type === 'group') {
+      groupStates.set(obj, {
+        backgroundColor: obj.backgroundColor,
+        transparentCorners: obj.transparentCorners
+      });
+
+      obj.set({
+        backgroundColor: 'transparent',
+        transparentCorners: true
+      });
+
+      if (obj._objects) {
+        obj._objects.forEach((nestedObj) => {
+          nestedObj.set({
+            transparentCorners: true
+          });
+        });
+      }
+    }
+  });
+
   const activeObject = canvas.getActiveObject();
   let filename;
   let dataURL;
 
-  if (activeObject) {
-    filename = generateFileName("export", activeObject);
-    dataURL = activeObject.toDataURL({
-      format: "png",
-      quality: 1.0,
-    });
-  } else {
-    canvas.discardActiveObject();
-    canvas.renderAll();
-    filename = generateFileName("export");
-    dataURL = canvas.toDataURL({
-      format: "png",
-      quality: 1.0,
-    });
-  }
+  try {
+    if (activeObject) {
+      filename = generateFileName("export", activeObject);
+      dataURL = activeObject.toDataURL({
+        format: "png",
+        quality: 1.0,
+      });
+    } else {
+      canvas.discardActiveObject();
+      canvas.renderAll();
+      filename = generateFileName("export");
+      dataURL = canvas.toDataURL({
+        format: "png",
+        quality: 1.0,
+      });
+    }
 
-  const link = document.createElement("a");
-  link.download = filename;
-  link.href = dataURL;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    const link = document.createElement("a");
+    link.download = filename;
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } finally {
+    groupStates.forEach((state, group) => {
+      group.set({
+        backgroundColor: state.backgroundColor,
+        transparentCorners: state.transparentCorners
+      });
+    });
+
+    canvas.renderAll();
+  }
 };
 
 export default HandleExportImage;

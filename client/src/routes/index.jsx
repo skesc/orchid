@@ -6,6 +6,5 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  // return <div className="text-white">i fucking hate my life !!</div>;
   return <Navigate to="/editor" />;
 }

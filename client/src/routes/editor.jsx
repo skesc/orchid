@@ -11,7 +11,6 @@ import PFPModal from "../components/editor/PFPModal";
 import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
 import {ButtonWithTooltip} from "../components/editor/Tooltip";
-import {useAuth} from "../contexts/AuthContext";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
@@ -27,7 +26,6 @@ function RouteComponent() {
   const [showTextPanel, setShowTextPanel] = React.useState(false);
   const cropRectRef = React.useRef(null);
   const [error, setError] = React.useState("");
-  const {user} = useAuth();
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(true);
@@ -143,7 +141,7 @@ function RouteComponent() {
             const group = new Group(selectedObjects, {
               interactive: true,
               subTargetCheck: true,
-              backgroundColor: "#f00f0022",
+              backgroundColor: "#4c1d9522",
             });
 
             selectedObjects.forEach((obj) => initCanvas.remove(obj));
