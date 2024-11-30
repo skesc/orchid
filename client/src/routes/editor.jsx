@@ -1,5 +1,5 @@
 import {createFileRoute} from "@tanstack/react-router";
-import {Canvas, FabricImage, Group} from "fabric";
+import {Canvas, FabricImage} from "fabric";
 import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
@@ -12,6 +12,8 @@ import PFPModal from "../components/editor/PFPModal";
 import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
 import {ButtonWithTooltip} from "../components/editor/Tooltip";
+import {handleDragLeave, handleDragOver, handleDrop, handleImageUpload} from "../utils/ImageHandlers";
+import {createKeyboardHandler} from "../utils/KeyboardHandlers";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
@@ -30,39 +32,6 @@ function RouteComponent() {
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(true);
   const [isDragging, setIsDragging] = React.useState(false);
-
-  const handleDragOver = React.useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = React.useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  }, []);
-
-  const handleDrop = React.useCallback(
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-
-      const files = Array.from(e.dataTransfer.files);
-      const imageFile = files.find((file) => file.type.startsWith("image/"));
-
-      if (imageFile) {
-        const event = {target: {files: [imageFile]}};
-        handleImageUpload(event);
-      }
-    },
-    [canvas]
-  );
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -110,117 +79,7 @@ function RouteComponent() {
       };
       window.addEventListener("resize", handleResize);
 
-      // Key event handlers
-      const handleKeyDown = (event) => {
-        const activeElement = document.activeElement;
-        const isInputField = activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.contentEditable === "true";
-
-        if ((event.key === "Backspace" || event.key === "Delete") && initCanvas && !isInputField) {
-          const activeObject = initCanvas.getActiveObject();
-          if (activeObject) {
-            const parentGroup = activeObject.group;
-
-            if (parentGroup) {
-              parentGroup.remove(activeObject);
-
-              if (parentGroup.getObjects().length === 0) {
-                initCanvas.remove(parentGroup);
-              }
-            } else {
-              initCanvas.remove(activeObject);
-            }
-
-            initCanvas.discardActiveObject();
-            initCanvas.renderAll();
-          }
-        }
-
-        // Group objects with Ctrl + G
-        if (event.ctrlKey && event.key === "g" && !isInputField) {
-          event.preventDefault();
-          const selectedObjects = initCanvas.getActiveObjects();
-          if (selectedObjects.length > 1) {
-            const group = new Group(selectedObjects, {
-              interactive: true,
-              subTargetCheck: true,
-              backgroundColor: "#4c1d9522",
-            });
-
-            selectedObjects.forEach((obj) => initCanvas.remove(obj));
-            initCanvas.add(group);
-            initCanvas.setActiveObject(group);
-            initCanvas.renderAll();
-          }
-        }
-
-        if (event.ctrlKey && event.key === "v" && !isInputField) {
-          event.preventDefault();
-          navigator.clipboard
-            .read()
-            .then((data) => {
-              data.forEach((item) => {
-                if (item.types.includes("image/png") || item.types.includes("image/jpeg")) {
-                  item.getType(item.types[0]).then((blob) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                      const imgElement = new Image();
-                      imgElement.src = e.target.result;
-                      imgElement.onload = () => {
-                        const fabricImage = new FabricImage(imgElement, {
-                          id: `image-${Date.now()}`,
-                          name: `Pasted Image ${initCanvas.getObjects().length + 1}`,
-                        });
-
-                        const maxWidth = window.innerWidth * 0.9;
-                        const maxHeight = window.innerHeight * 0.9;
-
-                        if (fabricImage.width > maxWidth || fabricImage.height > maxHeight) {
-                          const scaleFactorWidth = maxWidth / fabricImage.width;
-                          const scaleFactorHeight = maxHeight / fabricImage.height;
-                          const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
-                          fabricImage.scale(scaleFactor);
-                        }
-
-                        initCanvas.add(fabricImage);
-                        initCanvas.centerObject(fabricImage);
-                        initCanvas.setActiveObject(fabricImage);
-                        initCanvas.renderAll();
-                      };
-                    };
-                    reader.readAsDataURL(blob);
-                  });
-                }
-              });
-            })
-            .catch((err) => {
-              console.error("Failed to read clipboard:", err);
-            });
-        }
-
-        // Ungroup with Ctrl + U
-        if (event.ctrlKey && event.key === "u" && !isInputField) {
-          event.preventDefault();
-          const activeObject = initCanvas.getActiveObject();
-
-          if (activeObject && activeObject.type === "group") {
-            const items = activeObject.getObjects();
-            initCanvas.remove(activeObject);
-
-            items.forEach((item) => {
-              initCanvas.add(item);
-            });
-
-            initCanvas.discardActiveObject();
-            const sel = new fabric.ActiveSelection(items, {
-              canvas: initCanvas,
-            });
-            initCanvas.setActiveObject(sel);
-            initCanvas.renderAll();
-          }
-        }
-      };
-
-      document.addEventListener("keydown", handleKeyDown);
+      document.addEventListener("keydown", createKeyboardHandler(initCanvas));
 
       setCanvas(initCanvas);
       initCanvas.renderAll();
@@ -228,93 +87,26 @@ function RouteComponent() {
       return () => {
         initCanvas.dispose();
         window.removeEventListener("resize", handleResize);
-        document.removeEventListener("keydown", handleKeyDown);
+        document.removeEventListener("keydown", createKeyboardHandler(initCanvas));
       };
     }
   }, []);
 
-  const handleImageUpload = (event) => {
-    setError("");
-    const file = event.target.files?.[0];
-    if (!file || !canvas) return;
+  const handleLocalDragOver = (e) => {
+    setIsDragging(handleDragOver(e));
+  };
 
-    const fileType = file.type.toLowerCase();
-    if (fileType === "image/svg+xml" || fileType === "image/gif") {
-      setError("SVG and GIF files are not supported. Please upload a static, raster image format (PNG or JPEG).");
-      event.target.value = "";
-      return;
-    }
+  const handleLocalDragLeave = (e) => {
+    setIsDragging(handleDragLeave(e));
+  };
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowedTypes.includes(fileType)) {
-      setError("Unsupported file type. Please upload a PNG, JPEG or WebP image.");
-      event.target.value = "";
-      return;
-    }
+  const handleLocalDrop = (e) => {
+    setIsDragging(false);
+    handleDrop(e, canvas, setError);
+  };
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (e) => {
-      const imgSrc = e.target.result;
-      const imageElement = new Image();
-      imageElement.src = imgSrc;
-      imageElement.onload = function () {
-        const tempCanvas = document.createElement("canvas");
-        tempCanvas.width = imageElement.width;
-        tempCanvas.height = imageElement.height;
-        const ctx = tempCanvas.getContext("2d");
-        ctx.drawImage(imageElement, 0, 0);
-
-        const convertedImage = new Image();
-        convertedImage.src = tempCanvas.toDataURL("image/png");
-
-        convertedImage.onload = () => {
-          let image = new FabricImage(convertedImage, {
-            id: `image-${Date.now()}`,
-            name: file.name || `Image ${canvas.getObjects().length + 1}`,
-            selectable: true,
-            hasControls: true,
-            hoverCursor: "default",
-            lockMovementX: false,
-            lockMovementY: false,
-            evented: true,
-          });
-
-          const maxWidth = window.innerWidth * 0.9;
-          const maxHeight = window.innerHeight * 0.9;
-
-          if (image.width > maxWidth || image.height > maxHeight) {
-            const scaleFactorWidth = maxWidth / image.width;
-            const scaleFactorHeight = maxHeight / image.height;
-            const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight);
-            image.scale(scaleFactor);
-          }
-
-          image.set({
-            selectable: true,
-            hasControls: true,
-            hoverCursor: "default",
-            lockMovementX: false,
-            lockMovementY: false,
-            evented: true,
-          });
-
-          canvas.add(image);
-          canvas.centerObject(image);
-          canvas.renderAll();
-        };
-      };
-
-      imageElement.onerror = function () {
-        setError("Failed to load image. Please try a different file.");
-        event.target.value = "";
-      };
-    };
-
-    reader.onerror = function () {
-      setError("Failed to read file. Please try again.");
-      event.target.value = "";
-    };
+  const handleLocalImageUpload = (event) => {
+    handleImageUpload(event, canvas, setError);
   };
 
   const handleAddHat = (hatUrl) => {
@@ -376,7 +168,7 @@ function RouteComponent() {
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
           <div className="group flex gap-5 flex-col items-center cursor-pointer">
             <ButtonWithTooltip icon={Upload} tooltip="Upload Image" onClick={() => fileInputRef.current?.click()} />
-            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} style={{display: "none"}} />
+            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLocalImageUpload} style={{display: "none"}} />
             <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" onClick={() => HandleExportImage(canvas)} />
             <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" onClick={() => setMarket(!market)} active={market} />
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
@@ -393,7 +185,7 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-      <div className={`w-screen h-screen overflow-hidden ${isDragging ? "bg-violet-500/20" : ""} transition-all duration-300 ease-in-out`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+      <div className={`w-screen h-screen overflow-hidden ${isDragging ? "bg-violet-500/20" : ""} transition-all duration-300 ease-in-out`} onDragOver={handleLocalDragOver} onDragLeave={handleLocalDragLeave} onDrop={handleLocalDrop}>
         <canvas ref={canvasRef} className="w-full h-full transition-transform duration-300 ease-in-out" />
         {isDragging && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
