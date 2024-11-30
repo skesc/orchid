@@ -112,8 +112,10 @@ function RouteComponent() {
 
       // Key event handlers
       const handleKeyDown = (event) => {
-        // Delete selected object (including groups)
-        if ((event.key === "Backspace" || event.key === "Delete") && initCanvas) {
+        const activeElement = document.activeElement;
+        const isInputField = activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.contentEditable === "true";
+
+        if ((event.key === "Backspace" || event.key === "Delete") && initCanvas && !isInputField) {
           const activeObject = initCanvas.getActiveObject();
           if (activeObject) {
             const parentGroup = activeObject.group;
@@ -134,7 +136,7 @@ function RouteComponent() {
         }
 
         // Group objects with Ctrl + G
-        if (event.ctrlKey && event.key === "g") {
+        if (event.ctrlKey && event.key === "g" && !isInputField) {
           event.preventDefault();
           const selectedObjects = initCanvas.getActiveObjects();
           if (selectedObjects.length > 1) {
@@ -150,9 +152,6 @@ function RouteComponent() {
             initCanvas.renderAll();
           }
         }
-
-        const activeElement = document.activeElement;
-        const isInputField = activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA";
 
         if (event.ctrlKey && event.key === "v" && !isInputField) {
           event.preventDefault();
@@ -199,7 +198,7 @@ function RouteComponent() {
         }
 
         // Ungroup with Ctrl + U
-        if (event.ctrlKey && event.key === "u") {
+        if (event.ctrlKey && event.key === "u" && !isInputField) {
           event.preventDefault();
           const activeObject = initCanvas.getActiveObject();
 
