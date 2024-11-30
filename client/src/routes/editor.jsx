@@ -1,8 +1,9 @@
 import {createFileRoute} from "@tanstack/react-router";
-import {Canvas, FabricImage, Group, Rect} from "fabric";
-import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2, X} from "lucide-react";
+import {Canvas, FabricImage, Group} from "fabric";
+import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
+import {CropControls, useCropManager} from "../components/editor/CropControls";
 import HandleExportImage from "../components/editor/HandleExportImage";
 import ImageAdjustments from "../components/editor/ImageAdjustments";
 import LayerPanel from "../components/editor/LayerPanel";
@@ -20,7 +21,6 @@ function RouteComponent() {
   const canvasRef = React.useRef(null);
   const [canvas, setCanvas] = React.useState(null);
   const [market, setMarket] = React.useState(false);
-  const [isCropping, setIsCropping] = React.useState(false);
   const [showPFPModal, setShowPFPModal] = React.useState(false);
   const [showBgRemovalModal, setShowBgRemovalModal] = React.useState(false);
   const [showTextPanel, setShowTextPanel] = React.useState(false);
@@ -337,127 +337,7 @@ function RouteComponent() {
     };
   };
 
-  const startCropping = () => {
-    if (!canvas) return;
-
-    const activeObject = canvas.getActiveObject();
-    if (!activeObject || !(activeObject instanceof FabricImage)) {
-      alert("Please select an image to crop");
-      return;
-    }
-
-    setIsCropping(true);
-    canvas.imageToClip = activeObject;
-
-    const bounds = activeObject.getBoundingRect();
-    const cropRect = new Rect({
-      left: bounds.left,
-      top: bounds.top,
-      width: bounds.width,
-      height: bounds.height,
-      fill: "rgba(0,0,0,0.3)",
-      stroke: "#fff",
-      strokeWidth: 2,
-      strokeDashArray: [5, 5],
-      cornerColor: "white",
-      cornerStrokeColor: "black",
-      cornerSize: 10,
-      transparentCorners: false,
-    });
-
-    cropRectRef.current = cropRect;
-    canvas.add(cropRect);
-    canvas.setActiveObject(cropRect);
-    canvas.renderAll();
-  };
-
-  const applyCrop = () => {
-    if (!canvas || !cropRectRef.current || !canvas.imageToClip) return;
-
-    const imageObject = canvas.imageToClip;
-    const cropRect = cropRectRef.current;
-
-    const originalWidth = imageObject.width * (imageObject.scaleX || 1);
-    const originalHeight = imageObject.height * (imageObject.scaleY || 1);
-
-    const currentAngle = imageObject.angle || 0;
-    const flipX = imageObject.flipX;
-    const flipY = imageObject.flipY;
-
-    imageObject.set({angle: 0});
-    canvas.renderAll();
-
-    const rect = cropRect.getBoundingRect();
-    const imageRect = imageObject.getBoundingRect();
-
-    const relativeLeft = rect.left - imageRect.left;
-    const relativeTop = rect.top - imageRect.top;
-    const relativeWidth = rect.width;
-    const relativeHeight = rect.height;
-
-    const cropX = (relativeLeft / imageRect.width) * originalWidth;
-    const cropY = (relativeTop / imageRect.height) * originalHeight;
-    const cropWidth = (relativeWidth / imageRect.width) * originalWidth;
-    const cropHeight = (relativeHeight / imageRect.height) * originalHeight;
-
-    const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = cropWidth;
-    tempCanvas.height = cropHeight;
-    const tempCtx = tempCanvas.getContext("2d");
-
-    const img = imageObject.getElement();
-
-    tempCtx.drawImage(
-      img,
-      cropX / (imageObject.scaleX || 1), // Adjust for scale
-      cropY / (imageObject.scaleY || 1),
-      cropWidth / (imageObject.scaleX || 1),
-      cropHeight / (imageObject.scaleY || 1),
-      0,
-      0,
-      cropWidth,
-      cropHeight
-    );
-
-    const croppedImg = new Image();
-    croppedImg.src = tempCanvas.toDataURL("image/png");
-
-    croppedImg.onload = () => {
-      const croppedFabricImage = new FabricImage(croppedImg);
-
-      croppedFabricImage.set({
-        left: rect.left + rect.width / 2,
-        top: rect.top + rect.height / 2,
-        originX: "center",
-        originY: "center",
-        angle: currentAngle,
-        flipX: flipX,
-        flipY: flipY,
-        scaleX: 1,
-        scaleY: 1,
-      });
-
-      canvas.remove(imageObject);
-      canvas.remove(cropRect);
-      canvas.add(croppedFabricImage);
-      canvas.setActiveObject(croppedFabricImage);
-
-      cropRectRef.current = null;
-      delete canvas.imageToClip;
-      setIsCropping(false);
-      canvas.renderAll();
-    };
-  };
-
-  const cancelCrop = () => {
-    if (!canvas || !cropRectRef.current) return;
-
-    canvas.remove(cropRectRef.current);
-    cropRectRef.current = null;
-    delete canvas.imageToClip;
-    setIsCropping(false);
-    canvas.renderAll();
-  };
+  const {isCropping, startCropping, applyCrop, cancelCrop} = useCropManager(canvas);
 
   const handlePFPSelect = async (url) => {
     if (!canvas || !url) return;
@@ -528,17 +408,7 @@ function RouteComponent() {
       {showAdjustments && <ImageAdjustments canvas={canvas} />}
       <TextEditor canvas={canvas} isOpen={showTextPanel} onClose={() => setShowTextPanel(false)} />
       {market && <Market handleAddHat={handleAddHat} canvas={canvas} />}
-
-      {isCropping && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-neutral-900 p-4 rounded-lg flex gap-4">
-          <button className="px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600 transition" onClick={applyCrop}>
-            Apply Crop
-          </button>
-          <button className="px-4 py-2 bg-neutral-700 text-white rounded hover:bg-neutral-800 transition" onClick={cancelCrop}>
-            <X size={24} />
-          </button>
-        </div>
-      )}
+      <CropControls canvas={canvas} isActive={isCropping} onComplete={applyCrop} onCancel={cancelCrop} />
 
       {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
 
