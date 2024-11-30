@@ -3,6 +3,7 @@
 
 ## Todo List
 - [x] Keybinds
+- [ ] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [ ] Copy and Paste Elements
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
