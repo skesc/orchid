@@ -103,7 +103,6 @@ const LayerPanel = ({canvas}) => {
     canvas.fire("object:modified");
   };
 
-  // TODO: fix, moveto is not a function in v6
   const moveLayer = (index, direction, e) => {
     e.stopPropagation();
     if (!canvas) return;
@@ -115,7 +114,7 @@ const LayerPanel = ({canvas}) => {
     if (currentIndex === newIndex) return;
 
     const object = objects[currentIndex];
-    canvas.moveTo(object, newIndex);
+    canvas.moveObjectTo(object, newIndex);
     canvas.renderAll();
     canvas.fire("object:modified");
   };

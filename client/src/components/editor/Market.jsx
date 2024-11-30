@@ -27,15 +27,6 @@ function Market({handleAddHat, canvas}) {
       )}
       <div className="fixed right-0 h-screen w-[45rem] top-0 transform z-10 py-5 px-6">
         <div className="h-full w-full flex flex-col bg-neutral-200 rounded-md p-4 box-shadow-3d">
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold">Your Pickings</h1>
-            <div className="flex flex-wrap gap-4 mt-2">
-              {HATS.map((hat, i) => (
-                <img key={i} src={hat} alt={`Hat ${i + 1}`} className="h-20 z-10 cursor-pointer hover:opacity-70" onClick={() => handleAddHat(hat)} />
-              ))}
-            </div>
-          </div>
-
           <div className="flex-1 flex flex-col min-h-0">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <h2 className="text-2xl font-bold tracking-tight">Marketplace</h2>
