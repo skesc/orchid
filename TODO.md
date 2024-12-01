@@ -1,15 +1,18 @@
 ## Bug fixes
 - [ ] Delete && Backspace key deletes the selected object while editing text
 
-## Todo List
+### High Priotity
 - [x] Keybinds
 - [ ] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [ ] Copy and Paste Elements
+- [ ] Shift + dragging does not change the aspect ratio while resizing
+- [ ] Snapping selections and moving wrt to edges of neighbouring elements
+- [ ] Options to export by png,jpg,webp,json (can be imported)
+- [ ] Just rate limit the rembg thing for now
+
+### Low Priority
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
-- [ ] Shift + dragging does not change the aspect ratio while resizing
-- [ ] Options to export by png,jpg,webp,json (can be imported)
-- [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [ ] Paid Plan
   - [ ] AS a paid plan we can maybe save user files on our end 
   - [ ] Use some llm to plug two image of pfp and apparel together
