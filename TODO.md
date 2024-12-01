@@ -1,14 +1,16 @@
 ## Bug fixes
 - [x] Delete && Backspace key deletes the selected object while editing text
 - [x] Shift + dragging does not change the aspect ratio while resizing
+- [ ] changing blur resets other image adjustments
 
 ### High Priotity
 - [x] Keybinds
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Save a compressed copy of image as well and use it in the marketplace (i know where you live - rex)
 - [ ] write a better compression function, compress images when uploading and save directly compressed image. 
-- [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
+- [ ] Undo and Redo functions
 - [ ] Copy and Paste Elements
+- [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [ ] Options to export by png,jpg,webp,json (can be imported)
 - [x] Just rate limit the rembg thing for now
