@@ -47,7 +47,6 @@ login_manager.unauthorized_handler = unauthorized
     for folder in [
         Config.UPLOAD_FOLDER,
         Config.MARKETPLACE_UPLOAD_FOLDER,
-        Config.MARKETPLACE_COMPRESSED,
         Config.NOBG_UPLOAD_FOLDER,
     ]
 ]

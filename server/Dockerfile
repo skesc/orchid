@@ -25,7 +25,7 @@ RUN echo "from PIL import Image; \
     && python preload_rembg.py \
     && rm preload_rembg.py
 
-RUN mkdir -p uploads/marketplace uploads/marketplace_compressed uploads/nobg
+RUN mkdir -p uploads/marketplace uploads/nobg
 
 EXPOSE 5000
 

@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 uploads_bp = Blueprint("uploads", __name__)
 
-VALID_FOLDERS = ["nobg", "marketplace", "marketplace_compressed"]
+VALID_FOLDERS = ["nobg", "marketplace"]
 
 
 @uploads_bp.route("/uploads/<folder>/<path:filename>")
