@@ -1,5 +1,7 @@
 import {ActiveSelection, FabricImage, Group} from "fabric";
 
+let fabricClipboard = null;
+
 export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onCrop, onPfp, onBgRemove, onAdjustments, onText, onLayers} = {}) {
   return (event) => {
     const activeElement = document.activeElement;
@@ -9,6 +11,7 @@ export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onC
 
     handleDelete(event, canvas);
     handleGrouping(event, canvas);
+    handleCopy(event, canvas);
     handlePaste(event, canvas);
     handleUngroup(event, canvas);
 
@@ -83,9 +86,7 @@ function handleGrouping(event, canvas) {
   if (selectedObjects.length <= 1) return;
 
   const group = new Group(selectedObjects, {
-    interactive: true,
-    subTargetCheck: true,
-    backgroundColor: "#4c1d9522",
+    canvas: canvas,
   });
 
   selectedObjects.forEach((obj) => canvas.remove(obj));
@@ -94,22 +95,50 @@ function handleGrouping(event, canvas) {
   canvas.renderAll();
 }
 
+function handleCopy(event, canvas) {
+  if (!(event.ctrlKey && event.key === "c")) return;
+
+  event.preventDefault();
+  canvas
+    ?.getActiveObject()
+    ?.clone(["name"])
+    .then((cloned) => {
+      fabricClipboard = cloned;
+    });
+}
+
 async function handlePaste(event, canvas) {
   if (!(event.ctrlKey && event.key === "v")) return;
+  if (!fabricClipboard || !canvas) return;
 
   event.preventDefault();
   try {
-    const clipboardItems = await navigator.clipboard.read();
+    const clonedObj = await fabricClipboard.clone(["name", "padding"]);
+    canvas.discardActiveObject();
 
-    for (const item of clipboardItems) {
-      if (!item.types.includes("image/png") && !item.types.includes("image/jpeg")) continue;
+    clonedObj.set({
+      left: clonedObj.left + 10,
+      top: clonedObj.top + 10,
+      evented: true,
+    });
 
-      const blob = await item.getType(item.types[0]);
-      const imgDataUrl = await blobToDataURL(blob);
-      await createImageFromDataUrl(imgDataUrl, canvas);
+    if (clonedObj instanceof ActiveSelection) {
+      clonedObj.canvas = canvas;
+      clonedObj.forEachObject((obj) => {
+        canvas.add(obj);
+      });
+      clonedObj.setCoords();
+    } else {
+      canvas.add(clonedObj);
     }
+
+    fabricClipboard.top += 10;
+    fabricClipboard.left += 10;
+    canvas.setActiveObject(clonedObj);
+    canvas.requestRenderAll();
+    canvas.fire("custom:added");
   } catch (err) {
-    console.error("Failed to read clipboard:", err);
+    console.error("Failed to paste:", err);
   }
 }
 

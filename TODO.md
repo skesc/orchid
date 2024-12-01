@@ -10,8 +10,8 @@
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Save a compressed copy of image as well and use it in the marketplace (i know where you live - rex)
 - [ ] write a better compression function, compress images when uploading and save directly compressed image.
-- [ ] Undo and Redo functions
-- [ ] Copy and Paste Elements
+- [ ] Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
+- [x] Copy and Paste Elements
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
 - [ ] Paste link to upload
 - [ ] Editing paramaters of already existing texts
@@ -27,6 +27,7 @@
 
 ### Low Priority
 
+- [ ] refactor rembg to be a separate service, as it increases build time exponentially
 - [ ] Optimise the sliders
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
