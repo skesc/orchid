@@ -21,6 +21,22 @@ class User(UserMixin, db.Model):
         return f"<User {self.email}>"
 
 
+class Bookmark(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    item_id = db.Column(
+        db.Integer, db.ForeignKey("marketplace_item.id"), nullable=False
+    )
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    user = db.relationship("User", backref=db.backref("bookmarks", lazy=True))
+    item = db.relationship(
+        "MarketplaceItem", backref=db.backref("bookmarks", lazy=True)
+    )
+
+    __table_args__ = (db.UniqueConstraint("user_id", "item_id"),)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

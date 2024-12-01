@@ -1,9 +1,12 @@
-import {Search} from "lucide-react";
+import {LogIn, Search} from "lucide-react";
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
+import {useAuth} from "../../contexts/AuthContext";
 import {API_URL} from "../../utils/fetchConfig";
+import MarketplaceBookmarks from "./MarketplaceBookmarks";
 import MarketplaceItem from "./MarketplaceItem";
 
 const MarketplaceList = forwardRef(({canvas}, ref) => {
+  const {user} = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,6 +14,25 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const scrollContainerRef = useRef(null);
+  const [bookmarkedItems, setBookmarkedItems] = useState([]);
+  const [myItems, setMyItems] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchBookmarks = async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/marketplace/bookmarks`, {
+            credentials: "include",
+          });
+          const data = await response.json();
+          setBookmarkedItems(data.bookmarks);
+        } catch (error) {
+          console.error("Error fetching bookmarks:", error);
+        }
+      };
+      fetchBookmarks();
+    }
+  }, [user]);
 
   const fetchItems = useCallback(
     async (resetItems = true) => {
@@ -21,7 +43,20 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         const response = await fetch(`${API_URL}/api/marketplace/items?page=${page}&per_page=9`);
         const data = await response.json();
 
-        setItems((prevItems) => (resetItems ? data.items : [...prevItems, ...data.items]));
+        if (user) {
+          const filteredItems = data.items.filter((item) => item.author.id !== user.id);
+          setItems((prevItems) => (resetItems ? filteredItems : [...prevItems, ...filteredItems]));
+
+          const userItems = data.items.filter((item) => item.author.id === user.id);
+          if (resetItems) {
+            setMyItems(userItems);
+          } else {
+            setMyItems((prev) => [...prev, ...userItems]);
+          }
+        } else {
+          setItems((prevItems) => (resetItems ? data.items : [...prevItems, ...data.items]));
+        }
+
         setHasMore(data.has_next);
       } catch (error) {
         console.error("Error fetching marketplace items:", error);
@@ -30,7 +65,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         setIsLoadingMore(false);
       }
     },
-    [page]
+    [page, user]
   );
 
   useImperativeHandle(ref, () => ({
@@ -65,6 +100,31 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
       fetchItems(false);
     }
   }, [page, fetchItems]);
+
+  const handleItemDeleted = useCallback(() => {
+    // Reset the page and fetch items again
+    setPage(1);
+    fetchItems(true);
+  }, [fetchItems]);
+
+  const handleToggleBookmark = async (item) => {
+    if (!user) return;
+
+    const isBookmarked = bookmarkedItems.some((bookmarked) => bookmarked.id === item.id);
+
+    try {
+      const response = await fetch(`${API_URL}/api/marketplace/bookmarks/${item.id}`, {
+        method: isBookmarked ? "DELETE" : "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        setBookmarkedItems((prev) => (isBookmarked ? prev.filter((bookmarked) => bookmarked.id !== item.id) : [...prev, item]));
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    }
+  };
 
   const filterItems = (items, searchTerm) => {
     if (!searchTerm) return items;
@@ -101,9 +161,25 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
                      focus:border-violet-400 focus:bg-white
                      transition-all duration-200"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
         </div>
       </div>
+
+      {(myItems.length > 0 || bookmarkedItems.length > 0) && <MarketplaceBookmarks canvas={canvas} myItems={myItems} bookmarkedItems={bookmarkedItems} onToggleBookmark={handleToggleBookmark} onItemDeleted={handleItemDeleted} />}
+
+      {!user && (
+        <div className="bg-violet-100 border-2 border-violet-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-violet-500 rounded-lg">
+              <LogIn className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-violet-900 font-medium">Want to add your own items?</h3>
+              <p className="text-violet-700 text-sm mt-0.5">Sign in to create and share your items with the community!</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {filteredItems.length === 0 ? (
         <div className="text-center text-neutral-500 py-8 flex-grow">No items found. Try adjusting your search or add some items to the marketplace!</div>
@@ -111,7 +187,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         <div ref={scrollContainerRef} className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
             {filteredItems.map((item) => (
-              <MarketplaceItem key={item.id} item={item} onUpdate={() => fetchItems(true)} canvas={canvas} />
+              <MarketplaceItem key={item.id} item={item} canvas={canvas} onUpdate={handleItemDeleted} onBookmark={handleToggleBookmark} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked.id === item.id)} isOwn={user && item.author.id === user.id} />
             ))}
           </div>
 
@@ -120,8 +196,6 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500"></div>
             </div>
           )}
-
-          {!hasMore && items.length > 0 && <div className="text-center text-neutral-500 py-4">No more items to load</div>}
         </div>
       )}
     </div>

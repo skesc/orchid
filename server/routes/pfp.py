@@ -54,7 +54,7 @@ def fetch_x_profile_picture(username):
             {"success": True, "message": "Profile picture found", "url": match.group(0)}
         )
     except Exception as e:
-        return jsonify({"success": False, "message": str(e), "url": None}), 500
+        return jsonify({"success": False, "message": "Internal server error"}), 500
     finally:
         driver.quit()
 
@@ -79,4 +79,4 @@ def fetch_github_profile_picture(username):
             404,
         )
     except Exception as e:
-        return jsonify({"success": False, "message": str(e), "url": None}), 500
+        return jsonify({"success": False, "message": "Internal server error"}), 500

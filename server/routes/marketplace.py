@@ -6,13 +6,8 @@ from config import Config
 from extensions import db
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
-from models import MarketplaceItem
-from utils import (
-    allowed_file,
-    compress_image,
-    sanitize_marketplace_input,
-    validate_marketplace_item,
-)
+from models import Bookmark, MarketplaceItem
+from utils import allowed_file, sanitize_marketplace_input, validate_marketplace_item
 from werkzeug.utils import secure_filename
 
 marketplace_bp = Blueprint("marketplace", __name__)
@@ -90,9 +85,10 @@ def create_marketplace_item():
         filename = f"{timestamp}_{filename}"
 
         file_path = os.path.join(Config.MARKETPLACE_UPLOAD_FOLDER, filename)
-        compressed_path, width, height, file_size = compress_image(
-            file, file_path, max_size_kb=500, min_quality=50
-        )
+        file_bytes = file.read()
+
+        with open(file_path, "wb") as f:
+            f.write(file_bytes)
 
         relative_path = f"/uploads/marketplace/{filename}"
 
@@ -108,23 +104,14 @@ def create_marketplace_item():
         db.session.add(new_item)
         db.session.commit()
 
-        return (
-            jsonify(
-                {
-                    **new_item.to_dict(),
-                    "image_dimensions": {"width": width, "height": height},
-                    "file_size_kb": file_size,
-                }
-            ),
-            201,
-        )
+        return jsonify(new_item.to_dict()), 201
 
     except json.JSONDecodeError:
         return jsonify({"error": "Invalid categories format"}), 400
     except Exception as e:
         if "file_path" in locals() and os.path.exists(file_path):
             os.remove(file_path)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["PUT"])
@@ -169,7 +156,7 @@ def update_marketplace_item(item_id):
         return jsonify({"error": "Invalid JSON data"}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["DELETE"])
@@ -192,7 +179,7 @@ def delete_marketplace_item(item_id):
         db.session.commit()
         return "", 204
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["GET"])
@@ -205,3 +192,39 @@ def get_marketplace_item(item_id):
         return jsonify({"error": "Not found"}), 404
 
     return jsonify(item.to_dict())
+
+
+@marketplace_bp.route("/api/marketplace/bookmarks", methods=["GET"])
+@login_required
+def get_bookmarks():
+    bookmarks = Bookmark.query.filter_by(user_id=current_user.id).all()
+    return jsonify({"bookmarks": [bookmark.item.to_dict() for bookmark in bookmarks]})
+
+
+@marketplace_bp.route("/api/marketplace/bookmarks/<int:item_id>", methods=["POST"])
+@login_required
+def add_bookmark(item_id):
+    existing = Bookmark.query.filter_by(
+        user_id=current_user.id, item_id=item_id
+    ).first()
+    if existing:
+        return jsonify({"message": "Already bookmarked"}), 400
+
+    bookmark = Bookmark(user_id=current_user.id, item_id=item_id)
+    db.session.add(bookmark)
+    db.session.commit()
+
+    return jsonify({"message": "Bookmarked successfully"}), 201
+
+
+@marketplace_bp.route("/api/marketplace/bookmarks/<int:item_id>", methods=["DELETE"])
+@login_required
+def remove_bookmark(item_id):
+    bookmark = Bookmark.query.filter_by(
+        user_id=current_user.id, item_id=item_id
+    ).first_or_404()
+
+    db.session.delete(bookmark)
+    db.session.commit()
+
+    return "", 204

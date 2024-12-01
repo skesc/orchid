@@ -4,9 +4,8 @@ import {useAuth} from "../../contexts/AuthContext";
 import MarketplaceForm from "../marketplace/MarketplaceForm";
 import MarketplaceList from "../marketplace/MarketplaceList";
 
-function Market({handleAddHat, canvas}) {
+function Market({canvas}) {
   const [showForm, setShowForm] = useState(false);
-  const HATS = ["/hat-1.png", "/hat-2.png", "/hat-3.png"];
   const {user} = useAuth();
   const listRef = React.useRef();
 

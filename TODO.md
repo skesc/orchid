@@ -8,15 +8,13 @@
 
 - [x] Keybinds
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
-- [x] Save a compressed copy of image as well and use it in the marketplace (i know where you live - rex)
-- [x] write a better compression function, compress images when uploading and save directly compressed image.
 - [ ] Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Copy and Paste Elements
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
 - [ ] Paste link to upload
 - [ ] Editing paramaters of already existing texts
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
-- [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
+- [x] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
 - [ ] Options to export by png,jpg,webp,json (can be imported)
 - [ ] Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
 - [x] Just rate limit the rembg thing for now
@@ -26,6 +24,7 @@
 
 ### Low Priority
 
+- [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
 - [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors! Yes, it is HIGH PRIORITY
 - [ ] refactor rembg to be a separate service, as it increases build time exponentially
 - [ ] Optimise the sliders

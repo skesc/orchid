@@ -144,7 +144,6 @@ def github_login():
         redirect_uri=url_for("auth.github_callback", _external=True, _scheme=scheme),
         scope=["user:email"],
     )
-    print(url_for("auth.github_callback", _external=True, _scheme="https"))
     authorization_url, state = github.authorization_url(GITHUB_AUTH_URL)
     session["oauth_state"] = state
 

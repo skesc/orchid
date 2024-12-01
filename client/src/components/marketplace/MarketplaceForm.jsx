@@ -48,8 +48,8 @@ export default function MarketplaceForm({setMod, onSuccess}) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        setError("File size must be less than 10MB");
+      if (file.size > 1 * 1024 * 1024) {
+        setError("File size must be less than 1MB");
         return;
       }
 
@@ -166,7 +166,7 @@ export default function MarketplaceForm({setMod, onSuccess}) {
                         </label>
                         <p className="pl-1">or drag and drop</p>
                       </div>
-                      <p className="text-xs text-neutral-400">PNG, JPG up to 10MB</p>
+                      <p className="text-xs text-neutral-400">PNG, JPG up to 1MB</p>
                     </>
                   )}
                 </div>

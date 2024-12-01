@@ -121,26 +121,6 @@ function RouteComponent() {
     handleImageUpload(event, canvas, setError);
   };
 
-  const handleAddHat = (hatUrl) => {
-    if (!canvas) return;
-    let imageElement = document.createElement("img");
-    imageElement.src = hatUrl;
-    imageElement.onload = function () {
-      let image = new FabricImage(imageElement, {
-        id: `hat-${Date.now()}`,
-        name: `Hat ${canvas.getObjects().length + 1}`,
-        selectable: true,
-        hasControls: true,
-        evented: true,
-      });
-
-      canvas.add(image);
-      canvas.centerObject(image);
-      canvas.setActiveObject(image);
-      canvas.renderAll();
-    };
-  };
-
   const {isCropping, startCropping, applyCrop, cancelCrop} = useCropManager(canvas);
 
   const handlePFPSelect = async (url) => {
@@ -211,7 +191,7 @@ function RouteComponent() {
       {showLayers && <LayerPanel canvas={canvas} />}
       {showAdjustments && <ImageAdjustments canvas={canvas} />}
       <TextEditor canvas={canvas} isOpen={showTextPanel} onClose={() => setShowTextPanel(false)} />
-      {market && <Market handleAddHat={handleAddHat} canvas={canvas} />}
+      {market && <Market canvas={canvas} />}
       <CropControls canvas={canvas} isActive={isCropping} onComplete={applyCrop} onCancel={cancelCrop} />
 
       {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
