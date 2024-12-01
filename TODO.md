@@ -3,6 +3,8 @@
 - [x] Delete && Backspace key deletes the selected object while editing text
 - [x] Shift + dragging does not change the aspect ratio while resizing
 - [x] changing blur resets other image adjustments
+- [ ] if you add an item, then delete it, page should auto refresh. (check console for error)
+- [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad ux, fix by making preview smaller?
 
 ### High Priotity
 
