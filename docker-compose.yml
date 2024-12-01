@@ -18,6 +18,7 @@ services:
       - "5757:5757"
     volumes:
       - ./server/uploads:/app/uploads
+      - ./server/instance:/app/instance
     env_file:
       - ./server/.env
     deploy:
