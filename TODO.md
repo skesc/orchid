@@ -10,10 +10,10 @@
 - [ ] Copy and Paste Elements
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [ ] Options to export by png,jpg,webp,json (can be imported)
-- [ ] Just rate limit the rembg thing for now
+- [x] Just rate limit the rembg thing for now
 - [x] Background Color to text
 - [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors! Yes, it is HIGH PRIORITY
-- [ ] Host it
+- [x] Host it
 
 ### Low Priority
 - [ ] delete pics form marketplace folder 

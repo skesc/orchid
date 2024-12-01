@@ -3,7 +3,7 @@ from os import environ, makedirs
 from cleanup import CleanupScheduler
 from config import Config
 from dotenv import load_dotenv
-from extensions import db, login_manager
+from extensions import db, limiter, login_manager
 from flask import Flask
 from flask_cors import CORS
 
@@ -33,6 +33,7 @@ app.register_blueprint(uploads_bp)
 
 db.init_app(app)
 login_manager.init_app(app)
+limiter.init_app(app)
 login_manager.login_view = "auth.login"
 login_manager.unauthorized_handler = unauthorized
 [
@@ -54,7 +55,6 @@ CORS(
         }
     },
 )
-
 
 with app.app_context():
     db.create_all()

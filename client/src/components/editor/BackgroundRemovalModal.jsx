@@ -1,5 +1,5 @@
 import {FabricImage} from "fabric";
-import {Loader2, X} from "lucide-react";
+import {AlertTriangle, Loader2, X} from "lucide-react";
 import React from "react";
 import {API_URL} from "../../utils/fetchConfig";
 
@@ -31,7 +31,15 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
         credentials: "include",
       });
 
+      if (response.status === 429) {
+        throw new Error("You can only remove background once per minute. Please try again later.");
+      }
+
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to remove background");
+      }
 
       if (!data.success) {
         throw new Error(data.message || "Failed to remove background");
@@ -44,10 +52,9 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
       const flipY = activeObject.flipY;
 
       const img = await FabricImage.fromURL(`${API_URL}${data.image_path}`, {
-        crossOrigin: "anonymous"
+        crossOrigin: "anonymous",
       });
 
-      // Only set width/height if not cropping
       const imgProps = {
         left: activeObject.left,
         top: activeObject.top,
@@ -71,13 +78,16 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
       canvas.renderAll();
       onClose();
     } catch (err) {
-      setError(err.message || "An error occurred while removing the background");
+      const errorMessage = err.message || "An error occurred while removing the background";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   if (!isOpen) return null;
+
+  const isRateLimit = error?.includes("once per minute");
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -93,7 +103,17 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
           <p className="mt-2 text-sm text-neutral-600">Select an image first, then click remove background</p>
         </div>
 
-        {error && <div className="mb-4 sm:mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 text-sm">{error}</div>}
+        {error && (
+          <div className={`mb-4 sm:mb-6 p-4 rounded-lg ${isRateLimit ? "bg-amber-50 border border-amber-200" : "bg-red-50 border border-red-200"}`}>
+            <div className="flex items-start gap-3">
+              <AlertTriangle className={`w-5 h-5 mt-0.5 ${isRateLimit ? "text-amber-500" : "text-red-500"}`} />
+              <div>
+                <p className={`text-sm font-medium ${isRateLimit ? "text-amber-800" : "text-red-800"}`}>{isRateLimit ? "Rate Limit Reached" : "Error"}</p>
+                <p className={`mt-1 text-sm ${isRateLimit ? "text-amber-700" : "text-red-700"}`}>{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mb-4 sm:mb-6">
           <label className="flex items-center justify-between p-4 rounded-lg bg-neutral-300/80 cursor-pointer group transition-colors hover:bg-gray-300/50">
@@ -107,7 +127,7 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
         </div>
 
         <div className="flex gap-4">
-          <button onClick={onClose} className="flex-1 px-4 py-3 rounded-lg font-medium bg-neutral-300/80  text-gray-600  hover:bg-neutral-300/50  transition-colors">
+          <button onClick={onClose} className="flex-1 px-4 py-3 rounded-lg font-medium bg-neutral-300/80 text-gray-600 hover:bg-neutral-300/50 transition-colors">
             Cancel
           </button>
 

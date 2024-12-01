@@ -3,6 +3,7 @@ import time
 from io import BytesIO
 
 from config import Config
+from extensions import limiter
 from flask import Blueprint, jsonify, request
 from PIL import Image
 from rembg import remove
@@ -13,6 +14,7 @@ bgremove_bp = Blueprint("bgremove", __name__)
 
 
 @bgremove_bp.route("/api/remove-background", methods=["POST"])
+@limiter.limit("1 per minute")
 def remove_background():
     if "image" not in request.files:
         return jsonify({"error": "No image file provided"}), 400
