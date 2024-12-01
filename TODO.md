@@ -5,7 +5,8 @@
 ### High Priotity
 - [x] Keybinds
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
-- [x] Save a compressed copy of image as well and use it in the marketplace
+- [x] Save a compressed copy of image as well and use it in the marketplace (i know where you live - rex)
+- [ ] write a better compression function, compress images when uploading and save directly compressed image. 
 - [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
 - [ ] Copy and Paste Elements
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
@@ -16,7 +17,6 @@
 - [x] Host it
 
 ### Low Priority
-- [ ] delete pics form marketplace folder 
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
 - [ ] Paid Plan
