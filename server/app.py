@@ -4,7 +4,7 @@ from cleanup import CleanupScheduler
 from config import Config
 from dotenv import load_dotenv
 from extensions import db, limiter, login_manager
-from flask import Flask
+from flask import Flask, redirect
 from flask_cors import CORS
 
 load_dotenv()
@@ -55,6 +55,12 @@ CORS(
         }
     },
 )
+
+
+@app.route("/", methods=["GET"])
+def root():
+    return redirect(Config.FRONTEND_URL)
+
 
 with app.app_context():
     db.create_all()
