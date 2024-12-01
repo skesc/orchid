@@ -5,21 +5,26 @@ import requests
 from flask import Blueprint, jsonify
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from extensions import limiter
 
 pfp_bp = Blueprint("pfp", __name__)
 
 
 def _setup_chrome_driver():
     options = Options()
-    options.add_argument("--headless")
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
     options.add_argument("--log-level=3")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    options.add_experimental_option("useAutomationExtension", False)
     options.set_capability("browserVersion", "117")
     return webdriver.Chrome(options=options)
 
 
 @pfp_bp.route("/api/pfp/x/<username>")
+@limiter.limit("1 per minute")
 def fetch_x_profile_picture(username):
     if not re.match(r"^[a-zA-Z0-9_]+$", username):
         return (
@@ -31,7 +36,7 @@ def fetch_x_profile_picture(username):
     # this is the worst thing ever i'm so sorry
     try:
         driver.get(f"https://x.com/{username}/photo")
-        time.sleep(2)
+        time.sleep(5)  # 2-5 seconds depending on the hardware
         pattern = r"https://pbs\.twimg\.com/profile_images/.*?\.jpg"
         match = re.search(pattern, driver.page_source)
         if not match:
