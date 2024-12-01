@@ -16,6 +16,7 @@ GOOGLE_USER_INFO = "https://www.googleapis.com/oauth2/v1/userinfo"
 GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_INFO = "https://api.github.com/user"
+scheme = "http" if Config.ENV == "dev" else "https"
 
 after_login_html = """
 <html>
@@ -101,7 +102,7 @@ def google_login():
     google = OAuth2Session(
         Config.GOOGLE_CLIENT_ID,
         scope=["openid", "email", "profile"],
-        redirect_uri=url_for("auth.google_callback", _external=True),
+        redirect_uri=url_for("auth.google_callback", _external=True, _scheme=scheme),
     )
     authorization_url, state = google.authorization_url(GOOGLE_AUTH_URL)
     session["oauth_state"] = state
@@ -117,7 +118,7 @@ def google_callback():
     google = OAuth2Session(
         Config.GOOGLE_CLIENT_ID,
         state=session["oauth_state"],
-        redirect_uri=url_for("auth.google_callback", _external=True),
+        redirect_uri=url_for("auth.google_callback", _external=True, _scheme=scheme),
     )
     token = google.fetch_token(  # noqa
         GOOGLE_TOKEN_URL,
