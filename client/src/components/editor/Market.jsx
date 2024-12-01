@@ -37,7 +37,6 @@ function Market({handleAddHat, canvas}) {
                 </button>
               )}
             </div>
-
             <div className="flex-1 overflow-hidden">
               <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
                 <MarketplaceList ref={listRef} canvas={canvas} />

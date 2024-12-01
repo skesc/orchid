@@ -63,7 +63,7 @@ export default function MarketplaceItem({item, onUpdate, canvas}) {
   return (
     <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group h-full flex flex-col">
       <div className="relative">
-        <img src={`${API_URL}${item.image_path}`} alt={item.name} className="h-32 w-full object-cover" />
+        <img src={`${API_URL}${item.compressed_path}`} alt={item.name} className="h-32 w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 
