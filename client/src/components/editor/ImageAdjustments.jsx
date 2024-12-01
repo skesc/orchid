@@ -50,6 +50,14 @@ const ImageAdjustments = ({canvas}) => {
 
     setAdjustments((prev) => ({...prev, [filterType]: value}));
 
+    const currentFilters = activeObject.filters || [];
+    const filterMap = {
+      blur: currentFilters.findIndex((f) => f instanceof filters.Blur),
+      brightness: currentFilters.findIndex((f) => f instanceof filters.Brightness),
+      contrast: currentFilters.findIndex((f) => f instanceof filters.Contrast),
+      saturation: currentFilters.findIndex((f) => f instanceof filters.Saturation),
+    };
+
     let filter;
     switch (filterType) {
       case "blur":
@@ -76,7 +84,16 @@ const ImageAdjustments = ({canvas}) => {
         return;
     }
 
-    activeObject.filters = [filter];
+    const newFilters = [...currentFilters];
+    const filterIndex = filterMap[filterType];
+
+    if (filterIndex >= 0) {
+      newFilters[filterIndex] = filter;
+    } else {
+      newFilters.push(filter);
+    }
+
+    activeObject.filters = newFilters;
     activeObject.applyFilters();
     canvas.renderAll();
   };
