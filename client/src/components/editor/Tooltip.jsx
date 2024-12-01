@@ -34,7 +34,7 @@ export const Tooltip = ({text, children, position = "right", shortcut}) => {
 export const ButtonWithTooltip = ({icon: Icon, tooltip, shortcut, onClick, active, disabled}) => {
   return (
     <Tooltip text={tooltip} shortcut={shortcut}>
-      <button onClick={onClick} disabled={disabled} className={`text-neutral-900 hover:text-violet-600 transition-colors ${active ? "text-violet-600" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
+      <button onClick={onClick} disabled={disabled} className={`text-neutral-900 relative hover:text-violet-600 transition-colors ${active ? "text-violet-600" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
         <Icon size={24} />
       </button>
     </Tooltip>

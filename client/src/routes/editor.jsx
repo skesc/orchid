@@ -26,7 +26,6 @@ function RouteComponent() {
   const [showPFPModal, setShowPFPModal] = React.useState(false);
   const [showBgRemovalModal, setShowBgRemovalModal] = React.useState(false);
   const [showTextPanel, setShowTextPanel] = React.useState(false);
-  const cropRectRef = React.useRef(null);
   const [error, setError] = React.useState("");
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
