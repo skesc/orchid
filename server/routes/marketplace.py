@@ -7,9 +7,9 @@ from extensions import db
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from models import MarketplaceItem
+from PIL import Image
 from utils import allowed_file, sanitize_marketplace_input, validate_marketplace_item
 from werkzeug.utils import secure_filename
-from PIL import Image
 
 marketplace_bp = Blueprint("marketplace", __name__)
 
@@ -25,28 +25,31 @@ def get_marketplace_items():
         query = query.filter(MarketplaceItem.categories.contains([category]))
     if author_id:
         query = query.filter_by(author_id=int(author_id))
-    
+
     query = query.order_by(MarketplaceItem.created_at.desc())
     paginated_items = query.paginate(
-        page=page, 
-        per_page=per_page, 
-        error_out=False  # Prevents 404 if page is out of range
+        page=page,
+        per_page=per_page,
+        error_out=False,  # Prevents 404 if page is out of range
     )
-    
-    return jsonify({
-        "items": [item.to_dict() for item in paginated_items.items],
-        "total_items": paginated_items.total,
-        "total_pages": paginated_items.pages,
-        "current_page": page,
-        "per_page": per_page,
-        "has_next": paginated_items.has_next,
-        "has_prev": paginated_items.has_prev
-    })
+
+    return jsonify(
+        {
+            "items": [item.to_dict() for item in paginated_items.items],
+            "total_items": paginated_items.total,
+            "total_pages": paginated_items.pages,
+            "current_page": page,
+            "per_page": per_page,
+            "has_next": paginated_items.has_next,
+            "has_prev": paginated_items.has_prev,
+        }
+    )
+
 
 def compress_image(input_path, output_path, quality=30, width=250):
     with Image.open(input_path) as img:
-        if img.mode in ('RGBA', 'LA'):
-            background = Image.new('RGBA', img.size, (255, 255, 255, 0))
+        if img.mode in ("RGBA", "LA"):
+            background = Image.new("RGBA", img.size, (255, 255, 255, 0))
             background.paste(img, (0, 0), img)
             img = background
 
@@ -54,10 +57,11 @@ def compress_image(input_path, output_path, quality=30, width=250):
         height = int(width * aspect_ratio)
 
         img = img.resize((width, height), Image.Resampling.LANCZOS)
-        
+
         img.save(output_path, optimize=True, quality=quality)
-    
+
     return output_path
+
 
 @marketplace_bp.route("/api/marketplace/items", methods=["POST"])
 @login_required

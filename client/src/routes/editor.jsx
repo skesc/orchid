@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Canvas, FabricImage } from "fabric";
-import { Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2 } from "lucide-react";
+import {createFileRoute} from "@tanstack/react-router";
+import {Canvas, FabricImage} from "fabric";
+import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
-import { CropControls, useCropManager } from "../components/editor/CropControls";
+import {CropControls, useCropManager} from "../components/editor/CropControls";
 import HandleExportImage from "../components/editor/HandleExportImage";
 import ImageAdjustments from "../components/editor/ImageAdjustments";
 import LayerPanel from "../components/editor/LayerPanel";
@@ -11,9 +11,9 @@ import Market from "../components/editor/Market";
 import PFPModal from "../components/editor/PFPModal";
 import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
-import { ButtonWithTooltip } from "../components/editor/Tooltip";
-import { handleDragLeave, handleDragOver, handleDrop, handleImageUpload } from "../utils/ImageHandlers";
-import { createKeyboardHandler } from "../utils/KeyboardHandlers";
+import {ButtonWithTooltip} from "../components/editor/Tooltip";
+import {handleDragLeave, handleDragOver, handleDrop, handleImageUpload} from "../utils/ImageHandlers";
+import {createKeyboardHandler} from "../utils/KeyboardHandlers";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,

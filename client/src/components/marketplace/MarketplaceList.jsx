@@ -1,6 +1,6 @@
-import { Search } from "lucide-react";
-import React, { forwardRef, useEffect, useImperativeHandle, useState, useCallback, useRef } from "react";
-import { API_URL } from "../../utils/fetchConfig";
+import {Search} from "lucide-react";
+import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
+import {API_URL} from "../../utils/fetchConfig";
 import MarketplaceItem from "./MarketplaceItem";
 
 const MarketplaceList = forwardRef(({canvas}, ref) => {
@@ -12,25 +12,26 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const scrollContainerRef = useRef(null);
 
-  const fetchItems = useCallback(async (resetItems = true) => {
-    try {
-      setLoading(resetItems);
-      setIsLoadingMore(!resetItems);
+  const fetchItems = useCallback(
+    async (resetItems = true) => {
+      try {
+        setLoading(resetItems);
+        setIsLoadingMore(!resetItems);
 
-      const response = await fetch(`${API_URL}/api/marketplace/items?page=${page}&per_page=9`);
-      const data = await response.json();
-      
-      setItems(prevItems => 
-        resetItems ? data.items : [...prevItems, ...data.items]
-      );
-      setHasMore(data.has_next);
-    } catch (error) {
-      console.error("Error fetching marketplace items:", error);
-    } finally {
-      setLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, [page]);
+        const response = await fetch(`${API_URL}/api/marketplace/items?page=${page}&per_page=9`);
+        const data = await response.json();
+
+        setItems((prevItems) => (resetItems ? data.items : [...prevItems, ...data.items]));
+        setHasMore(data.has_next);
+      } catch (error) {
+        console.error("Error fetching marketplace items:", error);
+      } finally {
+        setLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [page]
+  );
 
   useImperativeHandle(ref, () => ({
     fetchItems: () => fetchItems(true),
@@ -44,16 +45,10 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const isNearBottom = 
-      container.scrollHeight - container.scrollTop - container.clientHeight < 300;
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 300;
 
-    if (
-      isNearBottom
-      && hasMore 
-      && !loading 
-      && !isLoadingMore
-    ) {
-      setPage(prevPage => prevPage + 1);
+    if (isNearBottom && hasMore && !loading && !isLoadingMore) {
+      setPage((prevPage) => prevPage + 1);
     }
   }, [hasMore, loading, isLoadingMore]);
 
@@ -61,8 +56,8 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   useEffect(() => {
@@ -78,12 +73,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
       .split(",")
       .map((term) => term.trim());
     return items.filter((item) => {
-      return searchTerms.some((term) => 
-        item.name.toLowerCase().includes(term) || 
-        (item.categories && item.categories.some((category) => 
-          category.toLowerCase().includes(term)
-        ))
-      );
+      return searchTerms.some((term) => item.name.toLowerCase().includes(term) || (item.categories && item.categories.some((category) => category.toLowerCase().includes(term))));
     });
   };
 
@@ -111,30 +101,17 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
                      focus:border-violet-400 focus:bg-white
                      transition-all duration-200"
           />
-          <Search 
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500" 
-            size={20} 
-          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500" size={20} />
         </div>
       </div>
 
       {filteredItems.length === 0 ? (
-        <div className="text-center text-neutral-500 py-8 flex-grow">
-          No items found. Try adjusting your search or add some items to the marketplace!
-        </div>
+        <div className="text-center text-neutral-500 py-8 flex-grow">No items found. Try adjusting your search or add some items to the marketplace!</div>
       ) : (
-        <div 
-          ref={scrollContainerRef} 
-          className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300"
-        >
+        <div ref={scrollContainerRef} className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
             {filteredItems.map((item) => (
-              <MarketplaceItem 
-                key={item.id} 
-                item={item} 
-                onUpdate={() => fetchItems(true)} 
-                canvas={canvas} 
-              />
+              <MarketplaceItem key={item.id} item={item} onUpdate={() => fetchItems(true)} canvas={canvas} />
             ))}
           </div>
 
@@ -144,11 +121,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
             </div>
           )}
 
-          {!hasMore && items.length > 0 && (
-            <div className="text-center text-neutral-500 py-4">
-              No more items to load
-            </div>
-          )}
+          {!hasMore && items.length > 0 && <div className="text-center text-neutral-500 py-4">No more items to load</div>}
         </div>
       )}
     </div>

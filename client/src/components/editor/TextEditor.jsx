@@ -110,10 +110,10 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
             <input type="color" value={textOptions.fill} onChange={handleColorChange} className="w-full h-8 bg-neutral-300 rounded-lg cursor-pointer" />
           </div>
         </div>
-          <div>
-            <label className="block text-xs mb-1">Background Highlight</label>
-            <input type="color" value={textOptions.backgroundColor} onChange={handleBackgroundColorChange} className="w-full h-8 bg-neutral-300 rounded-lg cursor-pointer" />
-          </div>
+        <div>
+          <label className="block text-xs mb-1">Background Highlight</label>
+          <input type="color" value={textOptions.backgroundColor} onChange={handleBackgroundColorChange} className="w-full h-8 bg-neutral-300 rounded-lg cursor-pointer" />
+        </div>
         <div>
           <label className="block text-xs mb-1">Font Family</label>
           <select value={textOptions.fontFamily} onChange={handleFontFamilyChange} onKeyDown={handleTextAreaKeyDown} className="w-full px-3 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">

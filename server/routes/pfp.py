@@ -2,10 +2,10 @@ import re
 import time
 
 import requests
+from extensions import limiter
 from flask import Blueprint, jsonify
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from extensions import limiter
 
 pfp_bp = Blueprint("pfp", __name__)
 

@@ -1,32 +1,32 @@
-import { format } from "date-fns";
+import {format} from "date-fns";
 
 const generateFileName = (prefix, activeObject = null) => {
-  const timestamp = format(new Date(), "yyyyMMdd-HHmmss");
-  const objectType = activeObject ? "selection" : "full";
-  return `orchid-${prefix}-${objectType}-${timestamp}.png`;
+  const timestamp = format(new Date(), "yyyy-MM-dd-HHmm");
+  const objectType = activeObject ? "selection" : "canvas";
+  return `${objectType}-${timestamp}.png`;
 };
 
-const HandleExportImage = (canvas, prefix = "edit") => {
+const HandleExportImage = (canvas) => {
   if (!canvas) return;
 
   const groupStates = new Map();
 
   canvas.getObjects().forEach((obj) => {
-    if (obj.type === 'group') {
+    if (obj.type === "group") {
       groupStates.set(obj, {
         backgroundColor: obj.backgroundColor,
-        transparentCorners: obj.transparentCorners
+        transparentCorners: obj.transparentCorners,
       });
 
       obj.set({
-        backgroundColor: 'transparent',
-        transparentCorners: true
+        backgroundColor: "transparent",
+        transparentCorners: true,
       });
 
       if (obj._objects) {
         obj._objects.forEach((nestedObj) => {
           nestedObj.set({
-            transparentCorners: true
+            transparentCorners: true,
           });
         });
       }
@@ -64,7 +64,7 @@ const HandleExportImage = (canvas, prefix = "edit") => {
     groupStates.forEach((state, group) => {
       group.set({
         backgroundColor: state.backgroundColor,
-        transparentCorners: state.transparentCorners
+        transparentCorners: state.transparentCorners,
       });
     });
 

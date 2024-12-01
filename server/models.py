@@ -1,6 +1,5 @@
-from flask_login import UserMixin
-
 from extensions import db, login_manager
+from flask_login import UserMixin
 
 
 class OAuthConnection(db.Model):
@@ -36,23 +35,24 @@ class MarketplaceItem(db.Model):
     categories = db.Column(db.JSON)  # Array of strings stored as JSON
     is_private = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    author = db.relationship('User', backref=db.backref('marketplace_items', lazy=True))
+    updated_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp(),
+    )
+    author_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    author = db.relationship("User", backref=db.backref("marketplace_items", lazy=True))
 
     def to_dict(self):
         return {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'image_path': self.image_path,
-            'compressed_path': self.compressed_path,
-            'categories': self.categories,
-            'is_private': self.is_private,
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat(),
-            'author': {
-                'id': self.author.id,
-                'name': self.author.name
-            }
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "image_path": self.image_path,
+            "compressed_path": self.compressed_path,
+            "categories": self.categories,
+            "is_private": self.is_private,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "author": {"id": self.author.id, "name": self.author.name},
         }
