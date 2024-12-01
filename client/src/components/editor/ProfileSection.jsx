@@ -4,7 +4,7 @@ import {useAuth} from "../../contexts/AuthContext";
 import LoginModal from "./LoginModal";
 
 const ProfileSection = () => {
-  const {user, logout} = useAuth();
+  const {user, logout, loading} = useAuth();
   const [imageError, setImageError] = React.useState(false);
   const [showLoginModal, setShowLoginModal] = React.useState(false);
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
@@ -31,6 +31,16 @@ const ProfileSection = () => {
   React.useEffect(() => {
     setImageError(false);
   }, [user?.name]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-full flex flex-col items-center">
+        <div className="flex gap-5 flex-col items-center">
+          <div className="h-8 w-8 rounded-full bg-neutral-300 animate-pulse"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex flex-col items-center">

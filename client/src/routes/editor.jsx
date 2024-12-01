@@ -29,7 +29,7 @@ function RouteComponent() {
   const [error, setError] = React.useState("");
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
-  const [showLayers, setShowLayers] = React.useState(true);
+  const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900); // Only show layers on screens >= 900px
   const [isDragging, setIsDragging] = React.useState(false);
 
   React.useEffect(() => {
