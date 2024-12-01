@@ -10,15 +10,24 @@
 - [ ] write a better compression function, compress images when uploading and save directly compressed image. 
 - [ ] Undo and Redo functions
 - [ ] Copy and Paste Elements
+<<<<<<< HEAD
+- [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
+- [ ] Paste link to upload
+- [ ] Editing paramaters of already existing texts
+=======
 - [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
+>>>>>>> 80e47254e533bf649feab01a8a07c7728874a638
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [ ] Options to export by png,jpg,webp,json (can be imported)
+- [ ] Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
 - [x] Just rate limit the rembg thing for now
 - [x] Background Color to text
 - [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors! Yes, it is HIGH PRIORITY
 - [x] Host it
+- [ ] Just put a lot of items in market place (assigned to nam)
 
 ### Low Priority
+- [ ] Optimise the sliders
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
 - [ ] Paid Plan
