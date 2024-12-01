@@ -118,7 +118,7 @@ def google_callback():
     google = OAuth2Session(
         Config.GOOGLE_CLIENT_ID,
         state=session["oauth_state"],
-        redirect_uri=url_for("auth.google_callback", _external=True),
+        redirect_uri=url_for("auth.google_callback", _external=True, _scheme=scheme),
     )
     token = google.fetch_token(  # noqa
         GOOGLE_TOKEN_URL,
@@ -168,6 +168,7 @@ def github_login():
         redirect_uri=url_for("auth.github_callback", _external=True, _scheme=scheme),
         scope=["user:email"],
     )
+    print(url_for("auth.github_callback", _external=True, _scheme="https"))
     authorization_url, state = github.authorization_url(GITHUB_AUTH_URL)
     session["oauth_state"] = state
 
@@ -182,7 +183,7 @@ def github_callback():
     github = OAuth2Session(
         Config.GITHUB_CLIENT_ID,
         state=session["oauth_state"],
-        redirect_uri=url_for("auth.github_callback", _external=True),
+        redirect_uri=url_for("auth.github_callback", _external=True, _scheme=scheme),
     )
     token = github.fetch_token(  # noqa
         GITHUB_TOKEN_URL,

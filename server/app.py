@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from extensions import db, limiter, login_manager
 from flask import Flask, redirect
 from flask_cors import CORS
+from flask_talisman import Talisman
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv()
 
@@ -15,6 +17,10 @@ if Config.ENV == "dev":
 app = Flask(__name__)
 app.config.from_object(Config)
 cleanup = CleanupScheduler(app)
+
+if Config.ENV != "dev":
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+    Talisman(app)
 
 from routes.admin import admin_bp
 from routes.auth import auth_bp
