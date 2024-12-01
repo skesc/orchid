@@ -39,6 +39,7 @@ function RouteComponent() {
         width: window.innerWidth,
         height: window.innerHeight,
         backgroundColor: "#02061700",
+        uniScaleKey: "shiftKey",
         allowTouchScrolling: true,
         preserveObjectStacking: true,
       });
