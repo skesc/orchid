@@ -15,6 +15,6 @@ COPY . .
 
 RUN mkdir -p uploads/marketplace uploads/marketplace_compressed uploads/nobg
 
-EXPOSE 5000
+EXPOSE 5757
 
 CMD ["gunicorn", "--bind", "0.0.0.0:5757", "--workers", "4", "--timeout", "120", "app:app"]
