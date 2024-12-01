@@ -26,6 +26,7 @@
 
 ### Low Priority
 
+- [ ] Go over API rate limits properly
 - [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
 - [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors! Yes, it is HIGH PRIORITY
 - [ ] refactor rembg to be a separate service, as it increases build time exponentially

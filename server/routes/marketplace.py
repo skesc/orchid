@@ -3,7 +3,7 @@ import os
 import time
 
 from config import Config
-from extensions import db
+from extensions import db, limiter
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from models import Bookmark, MarketplaceItem
@@ -46,6 +46,7 @@ def get_marketplace_items():
 
 
 @marketplace_bp.route("/api/marketplace/items", methods=["POST"])
+@limiter.limit("5 per minute")
 @login_required
 def create_marketplace_item():
     if "image" not in request.files:
@@ -116,6 +117,7 @@ def create_marketplace_item():
 
 @marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["PUT"])
 @login_required
+@limiter.limit("5 per minute")
 def update_marketplace_item(item_id):
     item = MarketplaceItem.query.get_or_404(item_id)
 
@@ -161,6 +163,7 @@ def update_marketplace_item(item_id):
 
 @marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["DELETE"])
 @login_required
+@limiter.limit("5 per minute")
 def delete_marketplace_item(item_id):
     item = MarketplaceItem.query.get_or_404(item_id)
 
