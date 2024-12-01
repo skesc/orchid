@@ -1,23 +1,22 @@
 ## Bug fixes
+
 - [x] Delete && Backspace key deletes the selected object while editing text
 - [x] Shift + dragging does not change the aspect ratio while resizing
 - [x] changing blur resets other image adjustments
 
 ### High Priotity
+
 - [x] Keybinds
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Save a compressed copy of image as well and use it in the marketplace (i know where you live - rex)
-- [ ] write a better compression function, compress images when uploading and save directly compressed image. 
+- [ ] write a better compression function, compress images when uploading and save directly compressed image.
 - [ ] Undo and Redo functions
 - [ ] Copy and Paste Elements
-<<<<<<< HEAD
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
 - [ ] Paste link to upload
 - [ ] Editing paramaters of already existing texts
-=======
-- [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
->>>>>>> 80e47254e533bf649feab01a8a07c7728874a638
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
+- [ ] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
 - [ ] Options to export by png,jpg,webp,json (can be imported)
 - [ ] Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
 - [x] Just rate limit the rembg thing for now
@@ -27,11 +26,12 @@
 - [ ] Just put a lot of items in market place (assigned to nam)
 
 ### Low Priority
+
 - [ ] Optimise the sliders
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
 - [ ] Paid Plan
-  - [ ] AS a paid plan we can maybe save user files on our end 
+  - [ ] AS a paid plan we can maybe save user files on our end
   - [ ] Use some llm to plug two image of pfp and apparel together
   - [ ] more limit on using the remove bg thing
 - [ ] HUGE IF REAL
