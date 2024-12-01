@@ -31,8 +31,7 @@ class MarketplaceItem(db.Model):
     name = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text)
     image_path = db.Column(db.String(255), nullable=False)
-    compressed_path = db.Column(db.String(255), nullable=False)
-    categories = db.Column(db.JSON)  # Array of strings stored as JSON
+    categories = db.Column(db.JSON)
     is_private = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(
@@ -49,7 +48,6 @@ class MarketplaceItem(db.Model):
             "name": self.name,
             "description": self.description,
             "image_path": self.image_path,
-            "compressed_path": self.compressed_path,
             "categories": self.categories,
             "is_private": self.is_private,
             "created_at": self.created_at.isoformat(),

@@ -12,9 +12,6 @@ class Config:
     MARKETPLACE_UPLOAD_FOLDER = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "uploads", "marketplace"
     )
-    MARKETPLACE_COMPRESSED = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "uploads", "marketplace_compressed"
-    )
     NOBG_UPLOAD_FOLDER = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "uploads", "nobg"
     )

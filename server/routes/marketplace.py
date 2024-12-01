@@ -7,8 +7,12 @@ from extensions import db
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from models import MarketplaceItem
-from PIL import Image
-from utils import allowed_file, sanitize_marketplace_input, validate_marketplace_item
+from utils import (
+    allowed_file,
+    compress_image,
+    sanitize_marketplace_input,
+    validate_marketplace_item,
+)
 from werkzeug.utils import secure_filename
 
 marketplace_bp = Blueprint("marketplace", __name__)
@@ -44,23 +48,6 @@ def get_marketplace_items():
             "has_prev": paginated_items.has_prev,
         }
     )
-
-
-def compress_image(input_path, output_path, quality=30, width=250):
-    with Image.open(input_path) as img:
-        if img.mode in ("RGBA", "LA"):
-            background = Image.new("RGBA", img.size, (255, 255, 255, 0))
-            background.paste(img, (0, 0), img)
-            img = background
-
-        aspect_ratio = img.height / img.width
-        height = int(width * aspect_ratio)
-
-        img = img.resize((width, height), Image.Resampling.LANCZOS)
-
-        img.save(output_path, optimize=True, quality=quality)
-
-    return output_path
 
 
 @marketplace_bp.route("/api/marketplace/items", methods=["POST"])
@@ -101,20 +88,18 @@ def create_marketplace_item():
         filename = secure_filename(file.filename)
         timestamp = int(time.time())
         filename = f"{timestamp}_{filename}"
-        file_path = os.path.join(Config.MARKETPLACE_UPLOAD_FOLDER, filename)
-        compressed_path = os.path.join(Config.MARKETPLACE_COMPRESSED, filename)
 
-        file.save(file_path)
-        compress_image(file_path, compressed_path)
+        file_path = os.path.join(Config.MARKETPLACE_UPLOAD_FOLDER, filename)
+        compressed_path, width, height, file_size = compress_image(
+            file, file_path, max_size_kb=500, min_quality=50
+        )
 
         relative_path = f"/uploads/marketplace/{filename}"
-        relative_comp_path = f"/uploads/marketplace_compressed/{filename}"
 
         new_item = MarketplaceItem(
             name=sanitized_data["name"],
             description=sanitized_data["description"],
             image_path=relative_path,
-            compressed_path=relative_comp_path,
             categories=sanitized_data["categories"],
             is_private=sanitized_data["is_private"],
             author_id=current_user.id,
@@ -123,7 +108,16 @@ def create_marketplace_item():
         db.session.add(new_item)
         db.session.commit()
 
-        return jsonify(new_item.to_dict()), 201
+        return (
+            jsonify(
+                {
+                    **new_item.to_dict(),
+                    "image_dimensions": {"width": width, "height": height},
+                    "file_size_kb": file_size,
+                }
+            ),
+            201,
+        )
 
     except json.JSONDecodeError:
         return jsonify({"error": "Invalid categories format"}), 400
