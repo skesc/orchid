@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-bun.lockb
 .claudesync
 
 # Python
