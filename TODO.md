@@ -1,7 +1,7 @@
 ## Bug fixes
 - [x] Delete && Backspace key deletes the selected object while editing text
 - [x] Shift + dragging does not change the aspect ratio while resizing
-- [ ] changing blur resets other image adjustments
+- [x] changing blur resets other image adjustments
 
 ### High Priotity
 - [x] Keybinds
