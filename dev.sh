@@ -2,7 +2,7 @@
 
 (cd server &&
     pip3 install -r requirements.txt &&
-    flask --debug run --port=5757) &
+    flask --debug run) &
 
 (cd client &&
     bun install &&
