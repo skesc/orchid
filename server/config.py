@@ -6,6 +6,13 @@ load_dotenv()
 
 
 class Config:
+    CSP = {
+        "default-src": "'self' https://*.google.com https://*.googleapis.com https://*.github.com https://fonts.gstatic.com",
+        "script-src": "'self' 'unsafe-inline'",
+        "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src": "'self' data: https://*.githubusercontent.com https://*.googleusercontent.com",
+        "object-src": "'none'",
+    }
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2MB limit
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")

@@ -4,6 +4,7 @@
 - [x] Shift + dragging does not change the aspect ratio while resizing
 - [x] changing blur resets other image adjustments
 - [x] if you add an item, then delete it, page should auto refresh. (check console for error)
+- [x] CSP causes the login success page to not auto close, and also not load styles.
 
 ### High Priotity
 

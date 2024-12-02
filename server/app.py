@@ -20,7 +20,7 @@ cleanup = CleanupScheduler(app)
 
 if Config.ENV != "dev":
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-    Talisman(app)
+    Talisman(app, content_security_policy=Config.CSP)
 
 from routes.admin import admin_bp
 from routes.auth import auth_bp
