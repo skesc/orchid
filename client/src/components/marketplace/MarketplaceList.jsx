@@ -17,23 +17,6 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   const [bookmarkedItems, setBookmarkedItems] = useState([]);
   const [myItems, setMyItems] = useState([]);
 
-  useEffect(() => {
-    if (user) {
-      const fetchBookmarks = async () => {
-        try {
-          const response = await fetch(`${API_URL}/api/marketplace/bookmarks`, {
-            credentials: "include",
-          });
-          const data = await response.json();
-          setBookmarkedItems(data.bookmarks);
-        } catch (error) {
-          console.error("Error fetching bookmarks:", error);
-        }
-      };
-      fetchBookmarks();
-    }
-  }, [user]);
-
   const fetchItems = useCallback(
     async (resetItems = true) => {
       try {
@@ -68,9 +51,46 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
     [page, user]
   );
 
+  const forceRefresh = useCallback(async () => {
+    setPage(1);
+    setItems([]);
+    setMyItems([]);
+    setBookmarkedItems([]);
+    await fetchItems(true);
+
+    if (user) {
+      try {
+        const response = await fetch(`${API_URL}/api/marketplace/bookmarks`, {
+          credentials: "include",
+        });
+        const data = await response.json();
+        setBookmarkedItems(data.bookmarks);
+      } catch (error) {
+        console.error("Error fetching bookmarks:", error);
+      }
+    }
+  }, [fetchItems, user]);
+
   useImperativeHandle(ref, () => ({
-    fetchItems: () => fetchItems(true),
+    fetchItems: forceRefresh,
   }));
+
+  useEffect(() => {
+    if (user) {
+      const fetchBookmarks = async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/marketplace/bookmarks`, {
+            credentials: "include",
+          });
+          const data = await response.json();
+          setBookmarkedItems(data.bookmarks);
+        } catch (error) {
+          console.error("Error fetching bookmarks:", error);
+        }
+      };
+      fetchBookmarks();
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchItems(true);
@@ -102,10 +122,8 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   }, [page, fetchItems]);
 
   const handleItemDeleted = useCallback(() => {
-    // Reset the page and fetch items again
-    setPage(1);
-    fetchItems(true);
-  }, [fetchItems]);
+    forceRefresh();
+  }, [forceRefresh]);
 
   const handleToggleBookmark = async (item) => {
     if (!user) return;
@@ -165,7 +183,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         </div>
       </div>
 
-      {(myItems.length > 0 || bookmarkedItems.length > 0) && <MarketplaceBookmarks canvas={canvas} myItems={myItems} bookmarkedItems={bookmarkedItems} onToggleBookmark={handleToggleBookmark} onItemDeleted={handleItemDeleted} />}
+      {(myItems.length > 0 || bookmarkedItems.length > 0) && <MarketplaceBookmarks canvas={canvas} myItems={myItems} bookmarkedItems={bookmarkedItems} onToggleBookmark={handleToggleBookmark} onUpdate={handleItemDeleted} />}
 
       {!user && (
         <div className="bg-violet-100 border-2 border-violet-200 rounded-lg p-4 mb-6">

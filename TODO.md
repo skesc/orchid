@@ -3,8 +3,7 @@
 - [x] Delete && Backspace key deletes the selected object while editing text
 - [x] Shift + dragging does not change the aspect ratio while resizing
 - [x] changing blur resets other image adjustments
-- [ ] if you add an item, then delete it, page should auto refresh. (check console for error)
-- [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad ux, fix by making preview smaller?
+- [x] if you add an item, then delete it, page should auto refresh. (check console for error)
 
 ### High Priotity
 
@@ -26,6 +25,7 @@
 ### Low Priority
 
 - [ ] Go over API rate limits properly
+- [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad UX. fix by making preview smaller?
 - [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
 - [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors
 - [ ] refactor rembg to be a separate service, as it increases build time exponentially

@@ -19,7 +19,7 @@ export default function MarketplaceItem({item, onUpdate, canvas}) {
       });
 
       if (response.ok) {
-        onUpdate();
+        onUpdate?.();
       } else {
         console.error("Failed to delete item");
       }
