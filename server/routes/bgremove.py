@@ -1,12 +1,10 @@
 import os
 import time
-from io import BytesIO
 
+import requests
 from config import Config
 from extensions import limiter
 from flask import Blueprint, jsonify, request
-from PIL import Image
-from rembg import remove
 from utils import allowed_file
 from werkzeug.utils import secure_filename
 
@@ -27,47 +25,47 @@ def remove_background():
         return jsonify({"error": "Invalid file type"}), 400
 
     try:
-        input_image = file.read()
-        output_image = remove(input_image)
-
-        buffer = BytesIO()
-        buffer.write(output_image)
-        buffer.seek(0)
-
-        should_crop = request.args.get("crop", "").lower() == "true"
-
-        if should_crop:
-            img = Image.open(buffer).convert("RGBA")
-            alpha = img.getchannel("A")
-            bbox = alpha.getbbox()
-
-            if bbox:
-                img = img.crop(bbox)
-
-            buffer = BytesIO()
-            img.save(buffer, format="PNG")
-            buffer.seek(0)
-
         timestamp = int(time.time())
         filename = secure_filename(file.filename)
         filename = f"nobg_{timestamp}_{filename}"
         file_path = os.path.join(Config.NOBG_UPLOAD_FOLDER, filename)
 
-        with open(file_path, "wb") as f:
-            f.write(buffer.getvalue())
+        try:
+            response = requests.post(
+                "http://rembg:5001/remove",  # docker internal service
+                files={"image": file},
+                params={"crop": request.args.get("crop", "")},
+                timeout=15,  # 15 second timeout
+            )
+            response.raise_for_status()
+        except (requests.ConnectionError, requests.Timeout):
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Background removal service is currently unavailable. Please try again in a few minutes.",
+                    }
+                ),
+                503,
+            )
+        except requests.RequestException as e:
+            return jsonify({"success": False, "message": str(e)}), 500
 
-        relative_path = f"/uploads/nobg/{filename}"
+        with open(file_path, "wb") as f:
+            f.write(response.content)
 
         return jsonify(
             {
                 "success": True,
                 "message": "Background removed successfully",
-                "image_path": relative_path,
+                "image_path": f"/uploads/nobg/{filename}",
                 "expires_in": "10 minutes",
             }
         )
 
     except Exception as e:
+        if "file_path" in locals() and os.path.exists(file_path):
+            os.remove(file_path)
         return (
             jsonify({"success": False, "message": f"Error processing image: {str(e)}"}),
             500,

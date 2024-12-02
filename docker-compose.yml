@@ -22,5 +22,11 @@ services:
     env_file:
       - ./server/.env
 
+  rembg:
+    build:
+      context: ./server/rembg
+      dockerfile: Dockerfile
+    restart: always
+
 volumes:
   uploads:

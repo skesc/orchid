@@ -8,23 +8,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir gunicorn
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-# this is to preload the rembg library, or server will be slow to start
-# TODO: refactor the rembg server to be a separate service
-RUN echo "from PIL import Image; \
-    import numpy as np; \
-    from rembg import remove; \
-    img = Image.new('RGB', (100, 100), color='red'); \
-    img_array = np.array(img); \
-    remove(img_array); \
-    print('rembg preloaded successfully')" > preload_rembg.py \
-    && python preload_rembg.py \
-    && rm preload_rembg.py
-
 RUN mkdir -p uploads/marketplace uploads/nobg
 
 EXPOSE 5000

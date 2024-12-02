@@ -20,6 +20,7 @@
 - [x] Just rate limit the rembg thing for now
 - [x] Background Color to text
 - [x] Host it
+- [x] refactor rembg to be a separate service, as it increases build time exponentially
 - [ ] Just put a lot of items in market place (assigned to nam)
 
 ### Low Priority
@@ -28,7 +29,6 @@
 - [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad UX. fix by making preview smaller?
 - [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
 - [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors
-- [ ] refactor rembg to be a separate service, as it increases build time exponentially
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
 - [ ] Paid Plan
