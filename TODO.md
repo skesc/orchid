@@ -8,12 +8,11 @@
 
 ### High Priotity
 
+- [ ] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
-- [ ] Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Copy and Paste Elements
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
-- [ ] Paste link to upload
 - [ ] Editing paramaters of already existing texts
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [x] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
@@ -28,9 +27,8 @@
 
 - [ ] Go over API rate limits properly
 - [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
-- [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors! Yes, it is HIGH PRIORITY
+- [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors
 - [ ] refactor rembg to be a separate service, as it increases build time exponentially
-- [ ] Optimise the sliders
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
 - [ ] Paid Plan
@@ -42,3 +40,4 @@
   - [ ] FREE HAND DRAWING
   - [ ] Tiling mode: select a thing, select tile mode, resize the thing and it creates a tiling mode.
 - [ ] Leaderboard - most no of images exported (idk)
+- [ ] Optimise the sliders // not an issue on most pcs, but still
