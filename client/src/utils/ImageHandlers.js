@@ -118,10 +118,14 @@ export function handleImageUpload(event, canvas, setError) {
     return;
   }
 
-  createImageFromFile(file, canvas).catch((error) => {
-    setError?.(error.message);
-    if (event.target) event.target.value = "";
-  });
+  createImageFromFile(file, canvas)
+    .then(() => {
+      if (event.target) event.target.value = "";
+    })
+    .catch((error) => {
+      setError?.(error.message);
+      if (event.target) event.target.value = "";
+    });
 }
 
 export function handleDragOver(e) {

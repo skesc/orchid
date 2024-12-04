@@ -69,21 +69,12 @@ export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onC
 function handleDelete(event, canvas) {
   if (event.key !== "Backspace" && event.key !== "Delete") return;
 
-  const activeObject = canvas.getActiveObject();
-  if (!activeObject) return;
+  const selectedObjects = canvas.getActiveObjects();
+  if (!selectedObjects || selectedObjects.length === 0) return;
 
-  const parentGroup = activeObject.group;
-  if (parentGroup) {
-    parentGroup.remove(activeObject);
-    if (parentGroup.getObjects().length === 0) {
-      canvas.remove(parentGroup);
-    }
-  } else {
-    canvas.remove(activeObject);
-  }
-
+  selectedObjects.forEach((obj) => canvas.remove(obj));
   canvas.discardActiveObject();
-  canvas.renderAll();
+  canvas.requestRenderAll();
 }
 
 function handleGrouping(event, canvas) {
