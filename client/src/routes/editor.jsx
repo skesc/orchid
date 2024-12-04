@@ -13,6 +13,7 @@ import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
 import {ButtonWithTooltip} from "../components/editor/Tooltip";
 import {handleDragLeave, handleDragOver, handleDrop, handleImageUpload} from "../utils/ImageHandlers";
+import ZoomSlider from "../components/editor/ZoomSlider";
 import {createKeyboardHandler} from "../utils/KeyboardHandlers";
 
 export const Route = createFileRoute("/editor")({
@@ -156,6 +157,7 @@ function RouteComponent() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-violet-400 bg-[linear-gradient(to_right,#80808042_1px,transparent_1px),linear-gradient(to_bottom,#80808042_1px,transparent_1px)] bg-[size:48px_48px] inset-0">
+    <ZoomSlider canvas={canvas}/>
       <div className="fixed h-screen w-24 z-10 p-5">
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
           <div className="flex gap-4 flex-col items-center">
