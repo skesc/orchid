@@ -101,6 +101,7 @@ function RouteComponent() {
         initCanvas.dispose();
         window.removeEventListener("resize", handleResize);
         document.removeEventListener("keydown", keyboardHandler);
+        document.removeEventListener("paste", (e) => handlePaste(e, initCanvas));
       };
     }
   }, []);
