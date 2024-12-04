@@ -41,45 +41,7 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
     canvas.add(text);
     canvas.setActiveObject(text);
     canvas.renderAll();
-    setTextOptions({
-      text: "Click to edit",
-      fontSize: 32,
-      fontFamily: "Chakra Petch",
-      fill: "#ffffff",
-      backgroundColor: "#00000000",
-      bold: false,
-      italic: false,
-      underline: false,
-    });
-
     onClose();
-  };
-
-  const handleTextAreaKeyDown = (e) => {
-    e.stopPropagation();
-  };
-
-  const handleTextChange = (e) => {
-    setTextOptions((prev) => ({...prev, text: e.target.value}));
-  };
-
-  const handleFontSizeChange = (e) => {
-    setTextOptions((prev) => ({...prev, fontSize: parseInt(e.target.value)}));
-  };
-
-  const handleFontFamilyChange = (e) => {
-    setTextOptions((prev) => ({...prev, fontFamily: e.target.value}));
-  };
-
-  const handleColorChange = (color) => {
-    setTextOptions((prev) => ({...prev, fill: color.hex}));
-  };
-
-  const handleBackgroundColorChange = (color) => {
-    const alpha = Math.round(color.rgb.a * 255)
-      .toString(16)
-      .padStart(2, "0");
-    setTextOptions((prev) => ({...prev, backgroundColor: color.hex + alpha}));
   };
 
   const toggleStyle = (style) => {
@@ -89,80 +51,34 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed left-24 top-[16rem] bg-neutral-200 box-shadow-3d w-72 text-neutral-900 p-4 rounded-lg shadow-xl">
-      <div className="flex items-center justify-between mb-4">
+    <div className="fixed left-24 top-[16rem] bg-neutral-200 box-shadow-3d w-64 text-neutral-900 p-4 rounded-lg">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Type size={16} />
-          <h3 className="font-bold">Text Editor</h3>
+          <h3 className="font-medium text-sm">Add Text</h3>
         </div>
         <div className="flex items-center gap-2">
-          <AlertCircle size={16} className="text-neutral-400" title="Double click text to edit after adding" />
-          <button onClick={onClose} className="p-1 hover:text-violet-600 rounded-lg transition-colors">
-            <X size={16} />
+          <div className="relative group">
+            <AlertCircle size={14} className="text-neutral-400" />
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2 py-1 bg-neutral-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Double click text to edit after adding</div>
+          </div>
+          <button onClick={onClose} className="text-neutral-400 hover:text-violet-600 transition-colors">
+            <X size={14} />
           </button>
         </div>
       </div>
 
-      <div className="space-y-4">
-        <textarea value={textOptions.text} onChange={handleTextChange} onKeyDown={handleTextAreaKeyDown} className="w-full px-3 py-2 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none" rows={2} placeholder="Enter your text..." />
+      <div className="space-y-3">
+        <textarea value={textOptions.text} onChange={(e) => setTextOptions((prev) => ({...prev, text: e.target.value}))} className="w-full px-2 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm" rows={2} placeholder="Enter your text..." />
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs mb-1">Font Size</label>
-            <input type="number" value={textOptions.fontSize} onChange={handleFontSizeChange} onKeyDown={handleTextAreaKeyDown} min={8} max={200} className="w-full px-3 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+            <label className="block text-xs mb-1 text-neutral-600">Size</label>
+            <input type="number" value={textOptions.fontSize} onChange={(e) => setTextOptions((prev) => ({...prev, fontSize: parseInt(e.target.value)}))} min={8} max={200} className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm" />
           </div>
-
           <div>
-            <label className="block text-xs mb-1">Text Color</label>
-            <div className="relative">
-              <button
-                onClick={() => {
-                  setShowColorPicker(!showColorPicker);
-                  setShowBgColorPicker(false);
-                }}
-                className="w-full h-8 rounded-lg flex items-center px-3 bg-neutral-300 hover:bg-neutral-400 transition-colors">
-                <div className="w-6 h-6 rounded-md mr-2" style={{backgroundColor: textOptions.fill}} />
-                <span className="text-sm">{textOptions.fill}</span>
-              </button>
-              {showColorPicker && (
-                <div className="absolute z-50 mt-2">
-                  <div className="fixed inset-0" onClick={() => setShowColorPicker(false)} />
-                  <div className="relative">
-                    <ChromePicker color={textOptions.fill} onChange={handleColorChange} disableAlpha={true} />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs mb-1">Background Color</label>
-            <div className="relative">
-              <button
-                onClick={() => {
-                  setShowBgColorPicker(!showBgColorPicker);
-                  setShowColorPicker(false);
-                }}
-                className="w-full h-8 rounded-lg flex items-center px-3 bg-neutral-300 hover:bg-neutral-400 transition-colors">
-                <div className="w-6 h-6 rounded-md mr-2 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==')] border border-neutral-400">
-                  <div className="w-full h-full rounded-md" style={{backgroundColor: textOptions.backgroundColor}} />
-                </div>
-                <span className="text-sm">{textOptions.backgroundColor}</span>
-              </button>
-              {showBgColorPicker && (
-                <div className="absolute z-50 mt-2">
-                  <div className="fixed inset-0" onClick={() => setShowBgColorPicker(false)} />
-                  <div className="relative">
-                    <ChromePicker color={textOptions.backgroundColor} onChange={handleBackgroundColorChange} />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs mb-1">Font Family</label>
-            <select value={textOptions.fontFamily} onChange={handleFontFamilyChange} onKeyDown={handleTextAreaKeyDown} className="w-full px-3 py-1.5 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none">
+            <label className="block text-xs mb-1 text-neutral-600">Font</label>
+            <select value={textOptions.fontFamily} onChange={(e) => setTextOptions((prev) => ({...prev, fontFamily: e.target.value}))} className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm">
               {fonts.map((font) => (
                 <option key={font} value={font} style={{fontFamily: font}}>
                   {font}
@@ -170,20 +86,74 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
               ))}
             </select>
           </div>
+        </div>
 
-          <div className="flex gap-2">
-            <button onClick={() => toggleStyle("bold")} className={`flex-1 p-1.5 rounded-lg font-medium transition-colors ${textOptions.bold ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-900"}`}>
-              <Bold size={16} className="mx-auto" />
-            </button>
-            <button onClick={() => toggleStyle("italic")} className={`flex-1 p-1.5 rounded-lg font-medium transition-colors ${textOptions.italic ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-900"}`}>
-              <Italic size={16} className="mx-auto" />
-            </button>
-            <button onClick={() => toggleStyle("underline")} className={`flex-1 p-1.5 rounded-lg font-medium transition-colors ${textOptions.underline ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-900"}`}>
-              <Underline size={16} className="mx-auto" />
-            </button>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-xs mb-1 text-neutral-600">Color</label>
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setShowColorPicker(!showColorPicker);
+                  setShowBgColorPicker(false);
+                }}
+                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
+                <div className="w-4 h-4 rounded mr-2" style={{backgroundColor: textOptions.fill}} />
+                <span className="text-xs">{textOptions.fill}</span>
+              </button>
+              {showColorPicker && (
+                <div className="absolute z-50 mt-1">
+                  <div className="fixed inset-0" onClick={() => setShowColorPicker(false)} />
+                  <ChromePicker color={textOptions.fill} onChange={(color) => setTextOptions((prev) => ({...prev, fill: color.hex}))} disableAlpha={true} />
+                </div>
+              )}
+            </div>
           </div>
+          <div>
+            <label className="block text-xs mb-1 text-neutral-600">Background</label>
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setShowBgColorPicker(!showBgColorPicker);
+                  setShowColorPicker(false);
+                }}
+                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
+                <div className="w-4 h-4 rounded mr-2 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==')] border border-neutral-400">
+                  <div className="w-full h-full rounded" style={{backgroundColor: textOptions.backgroundColor}} />
+                </div>
+                <span className="text-xs truncate">{textOptions.backgroundColor}</span>
+              </button>
+              {showBgColorPicker && (
+                <div className="absolute z-50 mt-1">
+                  <div className="fixed inset-0" onClick={() => setShowBgColorPicker(false)} />
+                  <ChromePicker
+                    color={textOptions.backgroundColor}
+                    onChange={(color) => {
+                      const alpha = Math.round(color.rgb.a * 255)
+                        .toString(16)
+                        .padStart(2, "0");
+                      setTextOptions((prev) => ({...prev, backgroundColor: color.hex + alpha}));
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-          <button onClick={addText} className="w-full px-4 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-colors">
+        <div className="flex items-center justify-between pt-1">
+          <div className="flex gap-1">
+            {[
+              {key: "bold", Icon: Bold},
+              {key: "italic", Icon: Italic},
+              {key: "underline", Icon: Underline},
+            ].map(({key, Icon}) => (
+              <button key={key} onClick={() => toggleStyle(key)} className={`p-1.5 rounded-lg transition-colors ${textOptions[key] ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-600"}`}>
+                <Icon size={14} />
+              </button>
+            ))}
+          </div>
+          <button onClick={addText} className="px-4 py-1.5 bg-violet-500 text-white text-sm rounded-lg hover:bg-violet-600 transition-colors">
             Add Text
           </button>
         </div>
