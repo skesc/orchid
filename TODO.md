@@ -9,6 +9,7 @@
 
 ### High Priotity
 
+- [ ] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
 - [ ] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
 - [ ] Being able to add rectangles (color configurable)
