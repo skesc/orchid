@@ -12,6 +12,7 @@
 - [ ] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
 - [ ] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
+- [x] Zoom
 - [ ] Being able to add rectangles (color configurable)
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Copy and Paste Elements

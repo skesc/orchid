@@ -83,7 +83,7 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed left-24 top-96 bg-neutral-200 box-shadow-3d w-72 text-neutral-900 p-4 rounded-lg shadow-xl">
+    <div className="fixed left-24 top-72 bg-neutral-200 box-shadow-3d w-72 text-neutral-900 p-4 rounded-lg shadow-xl">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Type size={16} />
