@@ -5,6 +5,9 @@
 - [x] changing blur resets other image adjustments
 - [x] if you add an item, then delete it, page should auto refresh. (check console for error)
 - [x] CSP causes the login success page to not auto close, and also not load styles.
+- [x] If you delete an image, then add it again, it doesn't show up.
+- [x] If you select multiple objects with shift, then delete, it does nothing.
+- [ ] Text panel doesn't render properly on low res screens (768p)
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 
 ### High Priotity
@@ -18,6 +21,7 @@
 - [ ] Being able to add rectangles (color configurable)
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Copy and Paste Elements
+- [x] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
 - [ ] Editing paramaters of already existing texts
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
@@ -35,7 +39,6 @@
 - [ ] Go over API rate limits properly
 - [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad UX. fix by making preview smaller?
 - [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
-- [ ] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
 - [ ] Paid Plan
