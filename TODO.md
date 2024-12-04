@@ -5,11 +5,13 @@
 - [x] changing blur resets other image adjustments
 - [x] if you add an item, then delete it, page should auto refresh. (check console for error)
 - [x] CSP causes the login success page to not auto close, and also not load styles.
+- [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 
 ### High Priotity
 
 - [ ] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
+- [ ] Being able to add rectangles (color configurable)
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Copy and Paste Elements
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
