@@ -9,12 +9,16 @@
 - [x] If you select multiple objects with shift, then delete, it does nothing.
 - [ ] Text panel doesn't render properly on low res screens (768p)
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
+- [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling, also look if it can be made more smoother
+- [ ] Marketplace gliching after adding new item
 
 ### High Priotity
 
 - [ ] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
 - [ ] Make canvas infinite scrollable
-- [ ] Segment things ai boom wow magick thing
+- [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
+- [ ] Maybe try usign the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
+- [ ] Need a better background removing thing
 - [ ] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
 - [x] Zoom
