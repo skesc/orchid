@@ -37,6 +37,7 @@
 - [x] Host it
 - [x] refactor rembg to be a separate service, as it increases build time exponentially
 - [ ] Just put a lot of items in market place (assigned to nam)
+- [ ] Warping Images and Selections // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
 
 ### Low Priority
 
