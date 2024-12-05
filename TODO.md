@@ -11,33 +11,35 @@
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 - [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling, also look if it can be made more smoother
 - [ ] Marketplace gliching after adding new item
+- [ ] reordering does not work inside a group
 
 ### High Priotity
 
 - [ ] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
-- [ ] Make canvas infinite scrollable
+- [ ] Make canvas infinite scrollable (middle mouse to pan)
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
 - [ ] Maybe try usign the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
 - [ ] Need a better background removing thing
 - [ ] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
 - [x] Zoom
-- [ ] Being able to add rectangles (color configurable)
+- [ ] (!!) Being able to add rectangles (color configurable)
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Copy and Paste Elements
 - [x] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
-- [ ] Editing paramaters of already existing texts
+- [ ] (!!) Editing paramaters of already existing texts
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [x] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
 - [ ] Options to export by png,jpg,webp,json (can be imported)
-- [ ] Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
+- [ ] (!!) Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
 - [x] Just rate limit the rembg thing for now
 - [x] Background Color to text
 - [x] Host it
+- [ ] FREE HAND DRAWING
 - [x] refactor rembg to be a separate service, as it increases build time exponentially
 - [ ] Just put a lot of items in market place (assigned to nam)
-- [ ] Warping Images and Selections // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
+- [ ] Warping Images and Groups // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
 
 ### Low Priority
 
@@ -52,7 +54,6 @@
   - [ ] more limit on using the remove bg thing
 - [ ] HUGE IF REAL
   - [ ] GIF SUPPORT // https://stackoverflow.com/questions/28056636/animated-gif-on-fabric-js-canvas | https://github.com/fabricjs/fabric.js/issues/560#issuecomment-686191184 | https://www.youtube.com/watch?v=DwnvQVhV9ho
-  - [ ] FREE HAND DRAWING
   - [ ] Tiling mode: select a thing, select tile mode, resize the thing and it creates a tiling mode.
 - [ ] Leaderboard - most no of images exported (idk)
 - [ ] Optimise the sliders // not an issue on most pcs, but still
