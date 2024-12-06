@@ -1,15 +1,16 @@
-import {IText} from "fabric";
-import {AlertCircle, Bold, Italic, Type, Underline, X} from "lucide-react";
+import {Textbox} from "fabric";
+import {AlertCircle, AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Italic, Type, Underline, X} from "lucide-react";
 import React, {useState} from "react";
 import {ChromePicker} from "react-color";
 
-const fonts = ["Arial", "Times New Roman", "Courier New", "Georgia", "Verdana", "Helvetica", "Chakra Petch"];
+const fonts = ["Chakra Petch", "Impact", "Arial", "Times New Roman", "Courier New", "Georgia", "Verdana", "Helvetica"]
 
 const TextEditor = ({canvas, isOpen, onClose}) => {
   const [textOptions, setTextOptions] = useState({
     text: "Click to edit",
     fontSize: 32,
     fontFamily: "Chakra Petch",
+    textAlign: 'center',
     fill: "#ffffff",
     backgroundColor: "#00000000",
     bold: false,
@@ -22,11 +23,12 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
   const addText = () => {
     if (!canvas) return;
 
-    const text = new IText(textOptions.text, {
+    const text = new Textbox(textOptions.text, {
       left: canvas.width / 2,
       top: canvas.height / 2,
       originX: "center",
       originY: "center",
+      textAlign: textOptions.textAlign,
       fontSize: textOptions.fontSize,
       fontFamily: textOptions.fontFamily,
       fill: textOptions.fill,
@@ -42,6 +44,11 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
     canvas.setActiveObject(text);
     canvas.renderAll();
     onClose();
+  };
+
+  const toggleAlign = (style) => {
+    setTextOptions((prev) => ({...prev, textAlign: style}));
+  
   };
 
   const toggleStyle = (style) => {
@@ -153,10 +160,22 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
               </button>
             ))}
           </div>
-          <button onClick={addText} className="px-4 py-1.5 bg-violet-500 text-white text-sm rounded-lg hover:bg-violet-600 transition-colors">
+          <div className="flex gap-1">
+            {[
+              {key: "left", Icon: AlignLeft},
+              {key: "center", Icon: AlignCenter},
+              {key: "justify", Icon: AlignJustify},
+              {key: "right", Icon: AlignRight},
+            ].map(({key, Icon}) => (
+              <button key={key} onClick={() => toggleAlign(key)} className={`p-1.5 rounded-lg transition-colors ${textOptions.textAlign == key ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-600"}`}>
+                <Icon size={14} />
+              </button>
+            ))}
+          </div>
+        </div>
+          <button onClick={addText} className="px-4 w-full py-1.5 bg-violet-500 text-white text-sm rounded-lg hover:bg-violet-600 transition-colors">
             Add Text
           </button>
-        </div>
       </div>
     </div>
   );
