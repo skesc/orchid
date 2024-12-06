@@ -15,9 +15,12 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
     backgroundColor: "#00000000",
     bold: false,
     italic: false,
+    stroke: "#00000000",
+    strokeWidth: 0,
     underline: false,
   });
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showStrokePicker, setShowStrokePicker] = useState(false);
   const [showBgColorPicker, setShowBgColorPicker] = useState(false);
 
   const addText = () => {
@@ -27,6 +30,8 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
       left: canvas.width / 2,
       top: canvas.height / 2,
       originX: "center",
+      stroke: textOptions.stroke,
+      strokeWidth: textOptions.strokeWidth,
       originY: "center",
       textAlign: textOptions.textAlign,
       fontSize: textOptions.fontSize,
@@ -80,29 +85,13 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs mb-1 text-neutral-600">Size</label>
-            <input type="number" value={textOptions.fontSize} onChange={(e) => setTextOptions((prev) => ({...prev, fontSize: parseInt(e.target.value)}))} min={8} max={200} className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm" />
-          </div>
-          <div>
-            <label className="block text-xs mb-1 text-neutral-600">Font</label>
-            <select value={textOptions.fontFamily} onChange={(e) => setTextOptions((prev) => ({...prev, fontFamily: e.target.value}))} className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm">
-              {fonts.map((font) => (
-                <option key={font} value={font} style={{fontFamily: font}}>
-                  {font}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div>
             <label className="block text-xs mb-1 text-neutral-600">Color</label>
             <div className="relative">
               <button
                 onClick={() => {
                   setShowColorPicker(!showColorPicker);
                   setShowBgColorPicker(false);
+                  setShowStrokePicker(false);
                 }}
                 className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
                 <div className="w-4 h-4 rounded mr-2" style={{backgroundColor: textOptions.fill}} />
@@ -123,6 +112,7 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
                 onClick={() => {
                   setShowBgColorPicker(!showBgColorPicker);
                   setShowColorPicker(false);
+                  setShowStrokePicker(false);
                 }}
                 className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
                 <div className="w-4 h-4 rounded mr-2 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==')] border border-neutral-400">
@@ -147,6 +137,52 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
             </div>
           </div>
         </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-xs mb-1 text-neutral-600">Size</label>
+            <input type="number" value={textOptions.fontSize} onChange={(e) => setTextOptions((prev) => ({...prev, fontSize: parseInt(e.target.value)}))} min={8} max={200} className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm" />
+          </div>
+          <div>
+            <label className="block text-xs mb-1 text-neutral-600">Font</label>
+            <select value={textOptions.fontFamily} onChange={(e) => setTextOptions((prev) => ({...prev, fontFamily: e.target.value}))} className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm">
+              {fonts.map((font) => (
+                <option key={font} value={font} style={{fontFamily: font}}>
+                  {font}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-xs mb-1 text-neutral-600">Stroke Width</label>
+            <input type="number" value={textOptions.strokeWidth} onChange={(e) => setTextOptions((prev) => ({...prev, strokeWidth: parseInt(e.target.value)}))} min={8} max={200} className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm" />
+          </div>
+          <div>
+            <label className="block text-xs mb-1 text-neutral-600">Stroke Color</label>
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setShowStrokePicker(!showColorPicker);
+                  setShowBgColorPicker(false);
+                  setShowColorPicker(false)
+                }}
+                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
+                <div className="w-4 h-4 rounded mr-2" style={{backgroundColor: textOptions.stroke}} />
+                <span className="text-xs">{textOptions.stroke}</span>
+              </button>
+              {showStrokePicker && (
+                <div className="absolute z-50 mt-1">
+                  <div className="fixed inset-0" onClick={() => setShowStrokePicker(false)} />
+                  <ChromePicker color={textOptions.stroke} onChange={(color) => setTextOptions((prev) => ({...prev, stroke: color.hex}))} disableAlpha={true} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
 
         <div className="flex items-center justify-between pt-1">
           <div className="flex gap-1">
