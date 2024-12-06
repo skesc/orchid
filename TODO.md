@@ -15,7 +15,7 @@
 
 ### High Priotity
 
-- [ ] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
+- [x] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
 - [ ] Maybe try usign the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
