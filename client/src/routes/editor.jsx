@@ -1,22 +1,22 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Canvas, FabricImage, util } from "fabric";
-import { Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2 } from "lucide-react";
+import {createFileRoute} from "@tanstack/react-router";
+import {Canvas, FabricImage} from "fabric";
+import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
-import { CropControls, useCropManager } from "../components/editor/CropControls";
+import {CropControls, useCropManager} from "../components/editor/CropControls";
 import HandleExportImage from "../components/editor/HandleExportImage";
+import History from "../components/editor/History";
 import ImageAdjustments from "../components/editor/ImageAdjustments";
 import LayerPanel from "../components/editor/LayerPanel";
 import Market from "../components/editor/Market";
 import PFPModal from "../components/editor/PFPModal";
 import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
-import { ButtonWithTooltip } from "../components/editor/Tooltip";
-import { handleDragLeave, handleDragOver, handleDrop, handleImageUpload } from "../utils/ImageHandlers";
+import {ButtonWithTooltip} from "../components/editor/Tooltip";
 import ZoomSlider from "../components/editor/ZoomSlider";
-import { createKeyboardHandler } from "../utils/KeyboardHandlers";
-import { useCanvasHistory } from "../hooks/useHistory";
-import History from "../components/editor/History";
+import {useCanvasHistory} from "../hooks/useHistory";
+import {handleDragLeave, handleDragOver, handleDrop, handleImageUpload} from "../utils/ImageHandlers";
+import {createKeyboardHandler} from "../utils/KeyboardHandlers";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
@@ -34,6 +34,12 @@ function RouteComponent() {
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900); // Only show layers on screens >= 900px
   const [isDragging, setIsDragging] = React.useState(false);
+  const undoRef = React.useRef(null);
+  const redoRef = React.useRef(null);
+
+  const {undo, redo, history, historyRedo} = useCanvasHistory(canvas);
+  undoRef.current = undo;
+  redoRef.current = redo;
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -92,6 +98,8 @@ function RouteComponent() {
         onAdjustments: () => setShowAdjustments((prev) => !prev),
         onText: () => setShowTextPanel(true),
         onLayers: () => setShowLayers((prev) => !prev),
+        onUndo: () => undoRef.current?.(),
+        onRedo: () => redoRef.current?.(),
       });
 
       document.addEventListener("keydown", keyboardHandler);
@@ -125,7 +133,7 @@ function RouteComponent() {
     handleImageUpload(event, canvas, setError);
   };
 
-  const { isCropping, startCropping, applyCrop, cancelCrop } = useCropManager(canvas);
+  const {isCropping, startCropping, applyCrop, cancelCrop} = useCropManager(canvas);
 
   const handlePFPSelect = async (url) => {
     if (!canvas || !url) return;
@@ -166,7 +174,7 @@ function RouteComponent() {
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
           <div className="flex gap-4 flex-col items-center">
             <ButtonWithTooltip icon={Upload} tooltip="Upload Image" shortcut="U" onClick={() => fileInputRef.current?.click()} />
-            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLocalImageUpload} style={{ display: "none" }} />
+            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLocalImageUpload} style={{display: "none"}} />
             <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" shortcut="E" onClick={() => HandleExportImage(canvas)} />
             <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" shortcut="M" onClick={() => setMarket(!market)} active={market} />
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" shortcut="C" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />

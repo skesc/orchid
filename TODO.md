@@ -9,15 +9,17 @@
 - [x] If you select multiple objects with shift, then delete, it does nothing.
 - [ ] Text panel doesn't render properly on low res screens (768p)
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
-- [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling, also look if it can be made more smoother
+- [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling
 - [ ] Marketplace gliching after adding new item
-- [ ] undo and redo state do not update on the layers panel sometimes
+- [x] reordering does not work inside a group
+- [x] undo and redo state do not update on the layers panel sometimes
+- [x] undo/redo broken for crop since it makes multiple layers
 - [ ] undoing on a group, removes the group 💀
-- [ ] reordering does not work inside a group
-- [ ] keybinds for undo redo
 
 ### High Priotity
 
+- [ ] keybinds for undo redo
+- [ ] use ipx or something similar for marketplace preview images
 - [x] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
@@ -47,6 +49,8 @@
 ### Low Priority
 
 - [ ] Go over API rate limits properly
+- [ ] Deploy on push with CI/CD
+- [ ] Proper healthchecks for all services
 - [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad UX. fix by making preview smaller?
 - [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
 - [ ] use .JSON files to save into local device (inbuilt function iirc)

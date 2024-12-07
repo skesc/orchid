@@ -5,22 +5,25 @@ import requests
 from extensions import limiter
 from flask import Blueprint, jsonify
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 pfp_bp = Blueprint("pfp", __name__)
 
 
-def _setup_chrome_driver():
+def _setup_remote_driver():
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
-    options.add_argument("--log-level=3")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_experimental_option("excludeSwitches", ["enable-logging"])
-    options.add_experimental_option("useAutomationExtension", False)
-    options.set_capability("browserVersion", "117")
-    return webdriver.Chrome(options=options)
+    options.add_argument("--log-level=3")
+    return webdriver.Remote(
+        command_executor="http://selenium-chrome:4444", options=options
+    )
 
 
 @pfp_bp.route("/api/pfp/x/<username>")
@@ -32,29 +35,57 @@ def fetch_x_profile_picture(username):
             400,
         )
 
-    driver = _setup_chrome_driver()
-    # this is the worst thing ever i'm so sorry
+    try:
+        driver = _setup_remote_driver()
+    except WebDriverException:
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Could not connect to Selenium server",
+                    "url": None,
+                }
+            ),
+            503,
+        )
+
     try:
         driver.get(f"https://x.com/{username}/photo")
-        time.sleep(5)  # 2-5 seconds depending on the hardware
-        pattern = r"https://pbs\.twimg\.com/profile_images/.*?\.jpg"
-        match = re.search(pattern, driver.page_source)
-        if not match:
+        wait = WebDriverWait(driver, 10)  # 10 second maximum timeout
+        try:
+            profile_image = wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//img[contains(@src, 'pbs.twimg.com/profile_images')]")
+                )
+            )
+            image_url = profile_image.get_attribute("src")
+
+            return jsonify(
+                {
+                    "success": True,
+                    "message": "Profile picture found",
+                    "url": image_url,
+                }
+            )
+
+        except TimeoutException:
             return (
                 jsonify(
                     {
                         "success": False,
-                        "message": "Could not retrieve profile picture",
+                        "message": "Could not retrieve profile picture - timeout",
                         "url": None,
                     }
                 ),
                 404,
             )
-        return jsonify(
-            {"success": True, "message": "Profile picture found", "url": match.group(0)}
-        )
+
     except Exception as e:
-        return jsonify({"success": False, "message": "Internal server error"}), 500
+        return (
+            jsonify({"success": False, "message": f"Internal server error: {str(e)}"}),
+            500,
+        )
+
     finally:
         driver.quit()
 

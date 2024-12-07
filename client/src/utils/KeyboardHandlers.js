@@ -1,9 +1,8 @@
 import {ActiveSelection, FabricImage, Group} from "fabric";
-import { useCanvasHistory } from "../hooks/useHistory";
 
 let fabricClipboard = null;
 
-export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onCrop, onPfp, onBgRemove, onAdjustments, onText, onLayers} = {}) {
+export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onCrop, onPfp, onBgRemove, onAdjustments, onText, onLayers, onUndo, onRedo} = {}) {
   // Add paste event listener
   document.addEventListener("paste", (e) => {
     const activeElement = document.activeElement;
@@ -23,6 +22,23 @@ export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onC
     handleCopy(event, canvas);
     handleObjectPaste(event, canvas);
     handleUngroup(event, canvas);
+
+    if (event.ctrlKey) {
+      if (event.key === "z") {
+        event.preventDefault();
+        if (event.shiftKey) {
+          onRedo?.();
+        } else {
+          onUndo?.();
+        }
+        return;
+      }
+      if (event.key === "y") {
+        event.preventDefault();
+        onRedo?.();
+        return;
+      }
+    }
 
     if (!event.ctrlKey && !event.altKey && !event.shiftKey) {
       switch (event.key.toLowerCase()) {
@@ -106,7 +122,6 @@ function handleCopy(event, canvas) {
       fabricClipboard = cloned;
     });
 }
-
 
 async function handleImagePaste(event, canvas) {
   if (!event.clipboardData || !canvas) return;

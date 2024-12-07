@@ -28,5 +28,11 @@ services:
       dockerfile: Dockerfile
     restart: always
 
+  selenium-chrome:
+    image: selenium/standalone-chrome:131.0
+    shm_size: "2gb"
+    ports:
+      - "4444:4444"
+
 volumes:
   uploads:

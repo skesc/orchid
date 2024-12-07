@@ -1,23 +1,21 @@
 import {ActiveSelection, Group} from "fabric";
 import {ChevronDown, ChevronUp, Edit2, Eye, EyeOff, Group as GroupIcon, Lock, Trash2, Ungroup, Unlock} from "lucide-react";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 
 const LayerPanel = ({canvas}) => {
   const [layers, setLayers] = useState([]);
   const [editingLayerId, setEditingLayerId] = useState(null);
   const [selectedLayers, setSelectedLayers] = useState(new Set());
 
-  useEffect(() => {
-    if (!canvas) return;
+  const initializeLayer = useCallback((obj, index) => {
+    if (!obj.id) obj.id = `layer-${Date.now()}-${index}`;
+    if (!obj.name) {
+      obj.name = obj.type === "group" ? `Group ${index + 1}` : `Layer ${index + 1}`;
+    }
+  }, []);
 
-    const initializeLayer = (obj, index) => {
-      if (!obj.id) obj.id = `layer-${Date.now()}-${index}`;
-      if (!obj.name) {
-        obj.name = obj.type === "group" ? `Group ${index + 1}` : `Layer ${index + 1}`;
-      }
-    };
-
-    const processObjects = (objects) => {
+  const processObjects = useCallback(
+    (objects) => {
       return objects.map((obj, index) => {
         initializeLayer(obj, index);
 
@@ -42,15 +40,21 @@ const LayerPanel = ({canvas}) => {
           type: obj.type,
         };
       });
-    };
+    },
+    [initializeLayer]
+  );
 
-    const updateLayers = () => {
-      const objects = canvas.getObjects();
-      const processedLayers = processObjects(objects).reverse();
-      setLayers(processedLayers);
-    };
+  const updateLayers = useCallback(() => {
+    if (!canvas) return;
+    const objects = canvas.getObjects();
+    const processedLayers = processObjects(objects).reverse();
+    setLayers(processedLayers);
+  }, [canvas, processObjects]);
 
-    const events = ["object:added", "object:removed", "object:modified", "object:visibility:changed", "selection:created", "selection:updated", "selection:cleared"];
+  useEffect(() => {
+    if (!canvas) return;
+
+    const events = ["object:added", "object:removed", "object:modified", "object:visibility:changed", "selection:created", "selection:updated", "selection:cleared", "history:changed"];
 
     events.forEach((eventName) => {
       canvas.on(eventName, updateLayers);
@@ -63,7 +67,7 @@ const LayerPanel = ({canvas}) => {
         canvas.off(eventName, updateLayers);
       });
     };
-  }, [canvas]);
+  }, [canvas, updateLayers]);
 
   const toggleVisibility = (layer, e) => {
     e.stopPropagation();
@@ -103,20 +107,40 @@ const LayerPanel = ({canvas}) => {
     canvas.fire("object:modified");
   };
 
-  const moveLayer = (index, direction, e) => {
+  const moveLayer = (index, direction, e, parentGroup = null) => {
     e.stopPropagation();
     if (!canvas) return;
 
-    const objects = canvas.getObjects();
-    const currentIndex = objects.length - 1 - index;
-    const newIndex = direction === "up" ? Math.min(currentIndex + 1, objects.length - 1) : Math.max(currentIndex - 1, 0);
+    const moveObjectInGroup = (group, objectIndex, direction) => {
+      const objects = group.getObjects();
+      const currentIndex = objects.length - 1 - objectIndex;
+      const newIndex = direction === "up" ? Math.min(currentIndex + 1, objects.length - 1) : Math.max(currentIndex - 1, 0);
 
-    if (currentIndex === newIndex) return;
+      if (currentIndex === newIndex) return;
 
-    const object = objects[currentIndex];
-    canvas.moveObjectTo(object, newIndex);
-    canvas.renderAll();
-    canvas.fire("object:modified");
+      const object = objects[currentIndex];
+      objects.splice(currentIndex, 1);
+      objects.splice(newIndex, 0, object);
+
+      group._objects = objects;
+      canvas.renderAll();
+      canvas.fire("object:modified");
+    };
+
+    if (parentGroup) {
+      moveObjectInGroup(parentGroup, index, direction);
+    } else {
+      const objects = canvas.getObjects();
+      const currentIndex = objects.length - 1 - index;
+      const newIndex = direction === "up" ? Math.min(currentIndex + 1, objects.length - 1) : Math.max(currentIndex - 1, 0);
+
+      if (currentIndex === newIndex) return;
+
+      const object = objects[currentIndex];
+      canvas.moveObjectTo(object, newIndex);
+      canvas.renderAll();
+      canvas.fire("object:modified");
+    }
   };
 
   const deleteLayer = (layer, e) => {
@@ -125,6 +149,7 @@ const LayerPanel = ({canvas}) => {
 
     canvas.remove(layer.object);
     canvas.renderAll();
+    canvas.fire("object:modified");
   };
 
   const handleLayerClick = (layer, e) => {
@@ -201,6 +226,7 @@ const LayerPanel = ({canvas}) => {
     canvas.setActiveObject(group);
     canvas.renderAll();
     setSelectedLayers(new Set());
+    canvas.fire("object:modified");
   };
 
   const ungroupLayer = (layer, e) => {
@@ -220,9 +246,10 @@ const LayerPanel = ({canvas}) => {
     });
     canvas.setActiveObject(sel);
     canvas.requestRenderAll();
+    canvas.fire("object:modified");
   };
 
-  const renderLayer = (layer, index, depth = 0) => (
+  const renderLayer = (layer, index, depth = 0, parentGroup = null) => (
     <div key={layer.id} className={`relative ${depth > 0 ? "ml-6" : ""}`}>
       {depth > 0 && <div className="absolute left-[-24px] top-0 w-px h-full bg-neutral-700" />}
       {depth > 0 && <div className="absolute left-[-24px] top-[20px] w-6 h-px bg-neutral-700" />}
@@ -266,11 +293,11 @@ const LayerPanel = ({canvas}) => {
               <Ungroup size={16} />
             </button>
           )}
-          <button className="p-1 hover:bg-neutral-600/50 rounded transition-colors" onClick={(e) => moveLayer(index, "up", e)} disabled={index === 0}>
+          <button className="p-1 hover:bg-neutral-600/50 rounded transition-colors" onClick={(e) => moveLayer(index, "up", e, parentGroup)} disabled={parentGroup ? index === 0 : index === 0}>
             <ChevronUp size={16} className={index === 0 ? "opacity-50" : ""} />
           </button>
-          <button className="p-1 hover:bg-neutral-600/50 rounded transition-colors" onClick={(e) => moveLayer(index, "down", e)} disabled={index === layers.length - 1}>
-            <ChevronDown size={16} className={index === layers.length - 1 ? "opacity-50" : ""} />
+          <button className="p-1 hover:bg-neutral-600/50 rounded transition-colors" onClick={(e) => moveLayer(index, "down", e, parentGroup)} disabled={parentGroup ? index === layer.items?.length - 1 : index === layers.length - 1}>
+            <ChevronDown size={16} className={parentGroup ? (index === layer.items?.length - 1 ? "opacity-50" : "") : index === layers.length - 1 ? "opacity-50" : ""} />
           </button>
           <button className="p-1 hover:bg-red-600/50 rounded transition-colors" onClick={(e) => deleteLayer(layer, e)}>
             <Trash2 size={16} />
@@ -278,7 +305,7 @@ const LayerPanel = ({canvas}) => {
         </div>
       </div>
 
-      {layer.type === "group" && layer.items?.length > 0 && <div className="mt-1 space-y-1">{layer.items.map((item, i) => renderLayer(item, i, depth + 1))}</div>}
+      {layer.type === "group" && layer.items?.length > 0 && <div className="mt-1 space-y-1">{layer.items.map((item, i) => renderLayer(item, i, depth + 1, layer.object))}</div>}
     </div>
   );
 
