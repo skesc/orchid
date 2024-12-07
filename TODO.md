@@ -18,10 +18,10 @@
 ### High Priotity
 
 - [ ] speed up s3 fetching, implement heavy caching
-- [ ] dont serve images at full quality from s3, serve compressed versions using ipx
+- [ ] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
-- [ ] Maybe try usign the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
+- [ ] Maybe try using the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
 - [ ] Being able to add rectangles (color configurable)
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
 - [ ] (!!) Editing paramaters of already existing texts
@@ -57,7 +57,6 @@
 - [ ] Deploy on push with CI/CD
 - [ ] Proper healthchecks for all services
 - [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad UX. fix by making preview smaller?
-- [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
 - [ ] import files and restore state
 - [ ] Paid Plan
