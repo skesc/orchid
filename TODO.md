@@ -18,6 +18,11 @@
 
 ### High Priotity
 
+- [ ] switch out filenames for uuids for marketplace and nobg
+- [ ] litestream for sqlite db (for backup)
+- [ ] speed up s3 fetching, implement heavy caching
+- [ ] dont serve images at full quality from s3, serve compressed versions
+- [ ] make all routes compatible with s3, some are still using local. mainly marketplace/admin
 - [ ] cleanup expired nobg files from s3
 - [ ] keybinds for undo redo
 - [ ] use ipx or something similar for marketplace preview images
