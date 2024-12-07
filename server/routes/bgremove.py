@@ -1,15 +1,21 @@
-import os
 import time
+import uuid
 from io import BytesIO
+from pathlib import Path
 
 import requests
 from extensions import limiter
 from flask import Blueprint, jsonify, request
 from s3 import upload_file
 from utils import allowed_file
-from werkzeug.utils import secure_filename
 
 bgremove_bp = Blueprint("bgremove", __name__)
+
+
+def generate_filename(original_filename):
+    timestamp = int(time.time())  # for cleanup purposes
+    file_extension = Path(original_filename).suffix
+    return f"{timestamp}_{uuid.uuid4()}{file_extension}"
 
 
 @bgremove_bp.route("/api/remove-background", methods=["POST"])
@@ -26,16 +32,14 @@ def remove_background():
         return jsonify({"error": "Invalid file type"}), 400
 
     try:
-        timestamp = int(time.time())
-        filename = secure_filename(file.filename)
-        filename = f"nobg_{timestamp}_{filename}"
+        unique_filename = generate_filename(file.filename)
 
         try:
             response = requests.post(
-                "http://rembg:5001/remove",  # docker internal service
+                "http://rembg:5001/remove",
                 files={"image": file},
                 params={"crop": request.args.get("crop", "")},
-                timeout=15,  # 15 second timeout
+                timeout=15,
             )
             response.raise_for_status()
         except (requests.ConnectionError, requests.Timeout):
@@ -43,7 +47,7 @@ def remove_background():
                 jsonify(
                     {
                         "success": False,
-                        "message": "Background removal service is currently unavailable. Please try again in a few minutes.",
+                        "message": "Background removal service unavailable",
                     }
                 ),
                 503,
@@ -51,23 +55,12 @@ def remove_background():
         except requests.RequestException as e:
             return jsonify({"success": False, "message": str(e)}), 500
 
-        # Create a file-like object from the response content
         file_obj = BytesIO(response.content)
-
-        try:
-            relative_path = upload_file(file_obj, "nobg", filename)
-        except Exception as e:
-            return (
-                jsonify(
-                    {"success": False, "message": f"Failed to upload file: {str(e)}"}
-                ),
-                500,
-            )
+        relative_path = upload_file(file_obj, "nobg", unique_filename)
 
         return jsonify(
             {
                 "success": True,
-                "message": "Background removed successfully",
                 "image_path": relative_path,
                 "expires_in": "10 minutes",
             }

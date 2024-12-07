@@ -1,10 +1,7 @@
-import os
-from io import BytesIO
 from typing import List, Optional, Tuple, Union
 
 from config import Config
 from flask import jsonify
-from PIL import Image
 from werkzeug.datastructures import FileStorage
 
 

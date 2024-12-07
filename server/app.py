@@ -1,4 +1,4 @@
-from os import environ, makedirs
+from os import environ
 
 from cleanup import CleanupScheduler
 from config import Config
@@ -39,14 +39,6 @@ login_manager.init_app(app)
 limiter.init_app(app)
 login_manager.login_view = "auth.login"
 login_manager.unauthorized_handler = unauthorized
-[
-    makedirs(folder, exist_ok=True)
-    for folder in [
-        Config.UPLOAD_FOLDER,
-        Config.MARKETPLACE_UPLOAD_FOLDER,
-        Config.NOBG_UPLOAD_FOLDER,
-    ]
-]
 
 CORS(
     app,

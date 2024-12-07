@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -7,6 +6,7 @@ from extensions import db
 from flask import Blueprint, jsonify
 from flask_login import current_user, login_required
 from models import MarketplaceItem, User
+from s3 import delete_file
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -77,19 +77,14 @@ def admin_delete_marketplace_item(item_id):
     item = MarketplaceItem.query.get_or_404(item_id)
 
     try:
-        # Remove the file if it exists
-        if item.image_path.startswith("/uploads/"):
-            file_path = os.path.join(
-                Config.MARKETPLACE_UPLOAD_FOLDER,
-                os.path.basename(item.image_path),
-            )
-            if os.path.exists(file_path):
-                os.remove(file_path)
+        if item.image_path:
+            delete_file(item.image_path)
 
         db.session.delete(item)
         db.session.commit()
         return "", 204
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 

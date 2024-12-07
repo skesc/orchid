@@ -1,8 +1,8 @@
-import os
 from datetime import datetime, timedelta
 
 from config import Config
 from flask_apscheduler import APScheduler
+from s3 import get_s3_client
 
 
 class CleanupScheduler:
@@ -24,32 +24,57 @@ class CleanupScheduler:
             minutes=10,
         )
 
+    def parse_timestamp(self, key):
+        try:
+            timestamp = key.split("_")[0]
+            return int(timestamp)
+        except (IndexError, ValueError):
+            return None
+
     def cleanup_expired_files(self):
         with self.app.app_context():
-            upload_dir = Config.NOBG_UPLOAD_FOLDER
-            current_time = datetime.now()
-            cleaned_count = 0
-
             try:
-                for filename in os.listdir(upload_dir):
-                    if not filename.startswith("nobg_"):
+                s3 = get_s3_client()
+                bucket = Config.S3_BUCKET
+                current_time = datetime.now()
+                cleaned_count = 0
+
+                try:
+                    response = s3.list_objects_v2(Bucket=bucket, Prefix="nobg/")
+                except Exception as e:
+                    self.app.logger.error(f"Failed to list S3 objects: {str(e)}")
+                    return
+
+                if "Contents" not in response:
+                    return
+
+                objects_to_delete = []
+                for obj in response["Contents"]:
+                    key = obj["Key"]
+                    filename = key.split("/")[-1]  # Get just the filename part
+
+                    timestamp = self.parse_timestamp(filename)
+                    if timestamp is None:
                         continue
 
-                    file_path = os.path.join(upload_dir, filename)
-                    if not os.path.exists(file_path):
-                        continue
+                    file_time = datetime.fromtimestamp(timestamp)
 
-                    file_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
-                    if current_time - file_modified > timedelta(minutes=10):
-                        try:
-                            os.remove(file_path)
-                            cleaned_count += 1
-                        except (OSError, IOError):
-                            continue
+                    if current_time - file_time > timedelta(minutes=10):
+                        objects_to_delete.append({"Key": key})
+                        cleaned_count += 1
 
-                if cleaned_count:
-                    self.app.logger.info(
-                        f"Cleaned up {cleaned_count} expired nobg files"
-                    )
+                if objects_to_delete:
+                    try:
+                        s3.delete_objects(
+                            Bucket=bucket, Delete={"Objects": objects_to_delete}
+                        )
+                        self.app.logger.info(
+                            f"Cleaned up {cleaned_count} expired files from S3"
+                        )
+                    except Exception as e:
+                        self.app.logger.error(
+                            f"Failed to delete expired files from S3: {str(e)}"
+                        )
+
             except Exception as e:
-                self.app.logger.error(f"Cleanup error: {str(e)}")
+                self.app.logger.error(f"S3 cleanup error: {str(e)}")
