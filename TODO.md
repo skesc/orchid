@@ -14,9 +14,11 @@
 - [x] undo and redo state do not update on the layers panel sometimes
 - [x] undo/redo broken for crop since it makes multiple layers
 - [ ] undoing on a group, removes the group 💀
+- [ ] deleting is slightly broken in admin panel, works but causes an error.
 
 ### High Priotity
 
+- [ ] update the marketplace route to use UUIDs only, and not routes like `/api/marketplace/items/1` (switch out the 1 for the uuid)
 - [ ] speed up s3 fetching, implement heavy caching
 - [ ] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
