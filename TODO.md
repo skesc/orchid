@@ -7,7 +7,6 @@
 - [x] CSP causes the login success page to not auto close, and also not load styles.
 - [x] If you delete an image, then add it again, it doesn't show up.
 - [x] If you select multiple objects with shift, then delete, it does nothing.
-- [ ] Text panel doesn't render properly on low res screens (768p)
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 - [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling
 - [ ] Marketplace gliching after adding new item
@@ -18,41 +17,42 @@
 
 ### High Priotity
 
-- [ ] litestream for sqlite db (for backup)
 - [ ] speed up s3 fetching, implement heavy caching
 - [ ] dont serve images at full quality from s3, serve compressed versions using ipx
+- [ ] Make canvas infinite scrollable (middle mouse to pan)
+- [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
+- [ ] Maybe try usign the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
+- [ ] Being able to add rectangles (color configurable)
+- [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
+- [ ] (!!) Editing paramaters of already existing texts
+- [ ] Snapping selections and moving wrt to edges of neighbouring elements
+- [ ] Options to export by png,jpg,webp,json (can be imported)
+- [ ] (!!) Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
+- [ ] FREE HAND DRAWING
+- [ ] Just put a lot of items in market place (assigned to nam)
+- [ ] Warping Images and Groups // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
+- [x] litestream for sqlite db (for backup)
 - [x] switch out filenames for uuids for marketplace and nobg
 - [x] make all routes compatible with s3, some are still using local. mainly marketplace/admin
 - [x] cleanup expired nobg files from s3
 - [x] keybinds for undo redo
 - [x] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
-- [ ] Make canvas infinite scrollable (middle mouse to pan)
-- [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
-- [ ] Maybe try usign the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
-- [ ] Need a better background removing thing
 - [x] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
 - [x] Zoom
-- [ ] (!!) Being able to add rectangles (color configurable)
 - [x] Do not dump all items in marketplace, infinite scrolling 9 at a time
 - [x] Copy and Paste Elements
 - [x] Use https://casesandberg.github.io/react-color/ for selecting colors to allow for selecting transparent colors
-- [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
-- [ ] (!!) Editing paramaters of already existing texts
-- [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [x] Bookmarks for decorations, as in they appear in top seperately. user made are auto bookmarked
-- [ ] Options to export by png,jpg,webp,json (can be imported)
-- [ ] (!!) Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
 - [x] Just rate limit the rembg thing for now
 - [x] Background Color to text
 - [x] Host it
-- [ ] FREE HAND DRAWING
 - [x] refactor rembg to be a separate service, as it increases build time exponentially
-- [ ] Just put a lot of items in market place (assigned to nam)
-- [ ] Warping Images and Groups // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
 
 ### Low Priority
 
+- [ ] text panel doesn't render properly on low res screens (768p)
+- [ ] Need a better/faster background removing thing
 - [ ] Go over API rate limits properly
 - [ ] Deploy on push with CI/CD
 - [ ] Proper healthchecks for all services
