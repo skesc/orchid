@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+if [ -f .env ]; then
+    export "$(grep -v '^#' .env | xargs)"
+fi
+
 mkdir -p /app/instance
 
 if litestream restore -if-replica-exists -config /app/litestream.yml /app/instance/app.db; then
