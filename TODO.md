@@ -18,14 +18,13 @@
 
 ### High Priotity
 
-- [ ] switch out filenames for uuids for marketplace and nobg
 - [ ] litestream for sqlite db (for backup)
 - [ ] speed up s3 fetching, implement heavy caching
-- [ ] dont serve images at full quality from s3, serve compressed versions
-- [ ] make all routes compatible with s3, some are still using local. mainly marketplace/admin
-- [ ] cleanup expired nobg files from s3
-- [ ] keybinds for undo redo
-- [ ] use ipx or something similar for marketplace preview images
+- [ ] dont serve images at full quality from s3, serve compressed versions using ipx
+- [x] switch out filenames for uuids for marketplace and nobg
+- [x] make all routes compatible with s3, some are still using local. mainly marketplace/admin
+- [x] cleanup expired nobg files from s3
+- [x] keybinds for undo redo
 - [x] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
