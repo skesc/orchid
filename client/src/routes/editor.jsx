@@ -33,6 +33,7 @@ function RouteComponent() {
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900); // Only show layers on screens >= 900px
+  const [textMode, setTextMode] = React.useState("create");
   const [isDragging, setIsDragging] = React.useState(false);
   const undoRef = React.useRef(null);
   const redoRef = React.useRef(null);
@@ -55,6 +56,11 @@ function RouteComponent() {
       // Add event listener for mouse down to handle group selection
       initCanvas.on("mouse:down", (opt) => {
         const evt = opt.e;
+        const activeObj = initCanvas.getActiveObject();
+        if (activeObj && activeObj.type === "textbox") {
+          setShowTextPanel(true);
+          setTextMode("edit");
+        }
         if (evt.ctrlKey) {
           const target = opt.target;
           if (target && target.group) {
@@ -204,7 +210,7 @@ function RouteComponent() {
 
       {showLayers && <LayerPanel canvas={canvas} />}
       {showAdjustments && <ImageAdjustments canvas={canvas} />}
-      <TextEditor canvas={canvas} isOpen={showTextPanel} onClose={() => setShowTextPanel(false)} />
+      <TextEditor canvas={canvas} isOpen={showTextPanel} textMode={textMode} setTextMode={setTextMode} onClose={() => setShowTextPanel(false)} />
       {market && <Market canvas={canvas} />}
       <CropControls canvas={canvas} isActive={isCropping} onComplete={applyCrop} onCancel={cancelCrop} />
 

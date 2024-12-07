@@ -1,5 +1,5 @@
+import {Group} from "fabric";
 import {useCallback, useEffect, useState} from "react";
-
 export const useCanvasHistory = (canvas) => {
   const [history, setHistory] = useState([]);
   const [historyRedo, setHistoryRedo] = useState([]);
@@ -12,7 +12,7 @@ export const useCanvasHistory = (canvas) => {
     for (const obj of objects) {
       if (obj.type === "group") {
         const groupObjects = await cloneGroupObjects(obj.getObjects());
-        const group = new fabric.Group(groupObjects, {
+        const group = new Group(groupObjects, {
           ...obj.toObject(),
           objects: undefined,
         });

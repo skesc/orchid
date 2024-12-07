@@ -3,14 +3,14 @@ import {AlertCircle, AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Ita
 import React, {useState} from "react";
 import {ChromePicker} from "react-color";
 
-const fonts = ["Chakra Petch", "Impact", "Arial", "Times New Roman", "Courier New", "Georgia", "Verdana", "Helvetica"]
+const fonts = ["Chakra Petch", "Impact", "Arial", "Times New Roman", "Courier New", "Georgia", "Verdana", "Helvetica"];
 
-const TextEditor = ({canvas, isOpen, onClose}) => {
+const TextEditor = ({canvas, isOpen, onClose, textMode, setTextMode}) => {
   const [textOptions, setTextOptions] = useState({
     text: "Click to edit",
     fontSize: 32,
     fontFamily: "Chakra Petch",
-    textAlign: 'center',
+    textAlign: "center",
     fill: "#ffffff",
     backgroundColor: "#00000000",
     bold: false,
@@ -25,35 +25,55 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
 
   const addText = () => {
     if (!canvas) return;
+    if (textMode == "create") {
+      const text = new Textbox(textOptions.text, {
+        left: canvas.width / 2,
+        top: canvas.height / 2,
+        originX: "center",
+        stroke: textOptions.stroke,
+        strokeWidth: textOptions.strokeWidth,
+        originY: "center",
+        textAlign: textOptions.textAlign,
+        fontSize: textOptions.fontSize,
+        fontFamily: textOptions.fontFamily,
+        fill: textOptions.fill,
+        backgroundColor: textOptions.backgroundColor,
+        fontWeight: textOptions.bold ? "bold" : "normal",
+        fontStyle: textOptions.italic ? "italic" : "normal",
+        underline: textOptions.underline,
+        id: `text-${Date.now()}`,
+        name: "Text Layer",
+      });
 
-    const text = new Textbox(textOptions.text, {
-      left: canvas.width / 2,
-      top: canvas.height / 2,
-      originX: "center",
-      stroke: textOptions.stroke,
-      strokeWidth: textOptions.strokeWidth,
-      originY: "center",
-      textAlign: textOptions.textAlign,
-      fontSize: textOptions.fontSize,
-      fontFamily: textOptions.fontFamily,
-      fill: textOptions.fill,
-      backgroundColor: textOptions.backgroundColor,
-      fontWeight: textOptions.bold ? "bold" : "normal",
-      fontStyle: textOptions.italic ? "italic" : "normal",
-      underline: textOptions.underline,
-      id: `text-${Date.now()}`,
-      name: "Text Layer",
-    });
+      canvas.add(text);
+      canvas.setActiveObject(text);
+      canvas.renderAll();
+    } else {
+      const activeObject = canvas.getActiveObject();
+      if (!activeObject || (activeObject.type !== "textbox" && activeObject.type !== "text")) return;
+      // Update the selected text object with current options
+      activeObject.set({
+        //  text: textOptions.text,
+        fontSize: textOptions.fontSize,
+        fontFamily: textOptions.fontFamily,
+        textAlign: textOptions.textAlign,
+        fill: textOptions.fill,
+        backgroundColor: textOptions.backgroundColor,
+        fontWeight: textOptions.bold ? "bold" : "normal",
+        fontStyle: textOptions.italic ? "italic" : "normal",
+        stroke: textOptions.stroke,
+        strokeWidth: textOptions.strokeWidth,
+        underline: textOptions.underline,
+      });
 
-    canvas.add(text);
-    canvas.setActiveObject(text);
-    canvas.renderAll();
+      canvas.renderAll();
+      setTextMode("create");
+    }
     onClose();
   };
 
   const toggleAlign = (style) => {
     setTextOptions((prev) => ({...prev, textAlign: style}));
-  
   };
 
   const toggleStyle = (style) => {
@@ -67,7 +87,7 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Type size={16} />
-          <h3 className="font-medium text-sm">Add Text</h3>
+          <h3 className="font-medium text-sm">{textMode == "create" ? "Add text" : "Modify text"}</h3>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative group">
@@ -167,11 +187,12 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
                 onClick={() => {
                   setShowStrokePicker(!showColorPicker);
                   setShowBgColorPicker(false);
-                  setShowColorPicker(false)
+                  setShowColorPicker(false);
                 }}
                 className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
                 <div className="w-4 h-4 rounded mr-2 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==')] border border-neutral-400">
-                <div className="w-4 h-4 rounded mr-2" style={{backgroundColor: textOptions.stroke}} /></div>
+                  <div className="w-4 h-4 rounded mr-2" style={{backgroundColor: textOptions.stroke}} />
+                </div>
 
                 <span className="text-xs">{textOptions.stroke}</span>
               </button>
@@ -184,7 +205,6 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
             </div>
           </div>
         </div>
-
 
         <div className="flex items-center justify-between pt-1">
           <div className="flex gap-1">
@@ -211,9 +231,9 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
             ))}
           </div>
         </div>
-          <button onClick={addText} className="px-4 w-full py-1.5 bg-violet-500 text-white text-sm rounded-lg hover:bg-violet-600 transition-colors">
-            Add Text
-          </button>
+        <button onClick={addText} className="px-4 w-full py-1.5 bg-violet-500 text-white text-sm rounded-lg hover:bg-violet-600 transition-colors">
+          {textMode == "create" ? "Add" : "Modify"}
+        </button>
       </div>
     </div>
   );
