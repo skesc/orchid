@@ -170,13 +170,15 @@ const TextEditor = ({canvas, isOpen, onClose}) => {
                   setShowColorPicker(false)
                 }}
                 className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
-                <div className="w-4 h-4 rounded mr-2" style={{backgroundColor: textOptions.stroke}} />
+                <div className="w-4 h-4 rounded mr-2 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==')] border border-neutral-400">
+                <div className="w-4 h-4 rounded mr-2" style={{backgroundColor: textOptions.stroke}} /></div>
+
                 <span className="text-xs">{textOptions.stroke}</span>
               </button>
               {showStrokePicker && (
                 <div className="absolute z-50 mt-1">
                   <div className="fixed inset-0" onClick={() => setShowStrokePicker(false)} />
-                  <ChromePicker color={textOptions.stroke} onChange={(color) => setTextOptions((prev) => ({...prev, stroke: color.hex}))} disableAlpha={true} />
+                  <ChromePicker className="z-[100]" color={textOptions.stroke} onChange={(color) => setTextOptions((prev) => ({...prev, stroke: color.hex}))} />
                 </div>
               )}
             </div>
