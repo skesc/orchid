@@ -1,8 +1,8 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-if [ -f .env ]; then
-    export "$(grep -v '^#' .env | xargs)"
+if [ ! -f .env ]; then
+    export "$(cat .env | xargs)"
 fi
 
 mkdir -p /app/instance
@@ -15,11 +15,11 @@ fi
 
 litestream replicate -config /app/litestream.yml &
 
-exec gunicorn --bind 0.0.0.0:5000 \
+exec gunicorn app:app \
+    --bind 0.0.0.0:5000 \
     --workers 4 \
     --timeout 120 \
     --preload \
     --log-level info \
-    --access-logfile - \
-    --error-logfile - \
-    app:app
+    --access-logfile /dev/stdout \
+    --error-logfile /dev/stderr
