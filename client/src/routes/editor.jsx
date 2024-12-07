@@ -1,5 +1,5 @@
 import {createFileRoute} from "@tanstack/react-router";
-import {Canvas, FabricImage} from "fabric";
+import {Canvas, FabricImage, util} from "fabric";
 import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
@@ -15,6 +15,7 @@ import {ButtonWithTooltip} from "../components/editor/Tooltip";
 import {handleDragLeave, handleDragOver, handleDrop, handleImageUpload} from "../utils/ImageHandlers";
 import ZoomSlider from "../components/editor/ZoomSlider";
 import {createKeyboardHandler} from "../utils/KeyboardHandlers";
+import { useCanvasHistory } from "../hooks/useHistory";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
@@ -32,6 +33,8 @@ function RouteComponent() {
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900); // Only show layers on screens >= 900px
   const [isDragging, setIsDragging] = React.useState(false);
+
+  const {undo, redo, history, historyRedo} = useCanvasHistory(canvasRef, canvas)
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -162,6 +165,7 @@ function RouteComponent() {
       <div className="fixed h-screen w-24 z-10 p-5">
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
           <div className="flex gap-4 flex-col items-center">
+            <button onClick={undo}>undo</button>
             <ButtonWithTooltip icon={Upload} tooltip="Upload Image" shortcut="U" onClick={() => fileInputRef.current?.click()} />
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLocalImageUpload} style={{display: "none"}} />
             <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" shortcut="E" onClick={() => HandleExportImage(canvas)} />
