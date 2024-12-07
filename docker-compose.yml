@@ -3,23 +3,47 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "5173:5173"
     depends_on:
       - backend
     env_file:
       - ./client/.env
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:5173"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   backend:
     build:
       context: ./server
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "5000:5000"
     volumes:
       - ./server/instance:/app/instance
     env_file:
       - ./server/.env
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   rembg:
     build:
@@ -30,6 +54,7 @@ services:
   selenium-chrome:
     image: selenium/standalone-chrome:131.0
     shm_size: "2gb"
+    restart: always
     ports:
       - "4444:4444"
 

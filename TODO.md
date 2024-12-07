@@ -55,7 +55,7 @@
 - [ ] Need a better/faster background removing thing
 - [ ] Go over API rate limits properly
 - [ ] Deploy on push with CI/CD
-- [ ] Proper healthchecks for all services
+- [x] Proper healthchecks for all services
 - [ ] when adding an item, the preview makes the add item button move down, so you have to scroll. bad UX. fix by making preview smaller?
 - [ ] write a good compression function, compress images when uploading and save directly compressed image. // temp fix: limited size to 1mb
 - [ ] use .JSON files to save into local device (inbuilt function iirc)
