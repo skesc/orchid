@@ -7,6 +7,7 @@ from extensions import db, limiter
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from models import Bookmark, MarketplaceItem
+from s3 import delete_file, upload_file
 from utils import allowed_file, sanitize_marketplace_input, validate_marketplace_item
 from werkzeug.utils import secure_filename
 
@@ -85,13 +86,10 @@ def create_marketplace_item():
         timestamp = int(time.time())
         filename = f"{timestamp}_{filename}"
 
-        file_path = os.path.join(Config.MARKETPLACE_UPLOAD_FOLDER, filename)
-        file_bytes = file.read()
-
-        with open(file_path, "wb") as f:
-            f.write(file_bytes)
-
-        relative_path = f"/uploads/marketplace/{filename}"
+        try:
+            relative_path = upload_file(file, "marketplace", filename)
+        except Exception as e:
+            return jsonify({"error": f"Failed to upload file: {str(e)}"}), 500
 
         new_item = MarketplaceItem(
             name=sanitized_data["name"],
@@ -110,8 +108,10 @@ def create_marketplace_item():
     except json.JSONDecodeError:
         return jsonify({"error": "Invalid categories format"}), 400
     except Exception as e:
-        if "file_path" in locals() and os.path.exists(file_path):
-            os.remove(file_path)
+        # If we uploaded the file but failed to create the database entry,
+        # clean up the uploaded file
+        if "relative_path" in locals():
+            delete_file(relative_path)
         return jsonify({"error": "Internal server error"}), 500
 
 

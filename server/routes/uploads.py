@@ -1,7 +1,6 @@
-import os
-
 from config import Config
-from flask import Blueprint, abort, send_from_directory
+from flask import Blueprint, abort, redirect
+from s3 import get_s3_client
 from werkzeug.utils import secure_filename
 
 uploads_bp = Blueprint("uploads", __name__)
@@ -15,13 +14,15 @@ def serve_uploaded_file(folder, filename):
         return abort(404)
 
     filename = secure_filename(filename)
-    folder_path = os.path.join(Config.UPLOAD_FOLDER, folder)
-    file_path = os.path.join(folder_path, filename)
+    key = f"{folder}/{filename}"
 
-    if not file_path.startswith(os.path.abspath(folder_path)):
+    try:
+        s3 = get_s3_client()
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": Config.S3_BUCKET, "Key": key},
+            ExpiresIn=3600,  # URL valid for 1 hour
+        )
+        return redirect(url)
+    except Exception:
         return abort(404)
-
-    if not os.path.exists(file_path):
-        return abort(404)
-
-    return send_from_directory(folder_path, filename)

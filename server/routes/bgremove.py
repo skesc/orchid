@@ -1,10 +1,11 @@
 import os
 import time
+from io import BytesIO
 
 import requests
-from config import Config
 from extensions import limiter
 from flask import Blueprint, jsonify, request
+from s3 import upload_file
 from utils import allowed_file
 from werkzeug.utils import secure_filename
 
@@ -28,7 +29,6 @@ def remove_background():
         timestamp = int(time.time())
         filename = secure_filename(file.filename)
         filename = f"nobg_{timestamp}_{filename}"
-        file_path = os.path.join(Config.NOBG_UPLOAD_FOLDER, filename)
 
         try:
             response = requests.post(
@@ -51,21 +51,29 @@ def remove_background():
         except requests.RequestException as e:
             return jsonify({"success": False, "message": str(e)}), 500
 
-        with open(file_path, "wb") as f:
-            f.write(response.content)
+        # Create a file-like object from the response content
+        file_obj = BytesIO(response.content)
+
+        try:
+            relative_path = upload_file(file_obj, "nobg", filename)
+        except Exception as e:
+            return (
+                jsonify(
+                    {"success": False, "message": f"Failed to upload file: {str(e)}"}
+                ),
+                500,
+            )
 
         return jsonify(
             {
                 "success": True,
                 "message": "Background removed successfully",
-                "image_path": f"/uploads/nobg/{filename}",
+                "image_path": relative_path,
                 "expires_in": "10 minutes",
             }
         )
 
     except Exception as e:
-        if "file_path" in locals() and os.path.exists(file_path):
-            os.remove(file_path)
         return (
             jsonify({"success": False, "message": f"Error processing image: {str(e)}"}),
             500,

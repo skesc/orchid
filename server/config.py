@@ -1,8 +1,11 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+root_dir = Path(__file__).resolve().parent.parent
+env_path = root_dir / ".env"
+load_dotenv(env_path)
 
 
 class Config:
@@ -45,3 +48,8 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+    S3_ACCESS_KEY = os.getenv("S3_ACCESS_KEY")
+    S3_SECRET_KEY = os.getenv("S3_SECRET_KEY")
+    S3_BUCKET = os.getenv("S3_BUCKET", "orchid")

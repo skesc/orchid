@@ -2,14 +2,11 @@ from os import environ, makedirs
 
 from cleanup import CleanupScheduler
 from config import Config
-from dotenv import load_dotenv
 from extensions import db, limiter, login_manager
 from flask import Flask, redirect
 from flask_cors import CORS
 from flask_talisman import Talisman
 from werkzeug.middleware.proxy_fix import ProxyFix
-
-load_dotenv()
 
 if Config.ENV == "dev":
     environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"

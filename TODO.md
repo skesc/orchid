@@ -18,6 +18,7 @@
 
 ### High Priotity
 
+- [ ] cleanup expired nobg files from s3
 - [ ] keybinds for undo redo
 - [ ] use ipx or something similar for marketplace preview images
 - [x] Change default export behavior to not export the entire canvas, just the objects, even if they are not selected.
