@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { util } from 'fabric';
 
-export const useCanvasHistory = (canvasRef, canvas) => {
+export const useCanvasHistory = (canvas) => {
   const [history, setHistory] = useState([]);
   const [historyRedo, setHistoryRedo] = useState([]);
   const [isClearingCanvas, setIsClearingCanvas] = useState(false);

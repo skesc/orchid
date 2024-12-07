@@ -11,7 +11,10 @@
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 - [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling, also look if it can be made more smoother
 - [ ] Marketplace gliching after adding new item
+- [ ] undo and redo state do not update on the layers panel sometimes
+- [ ] undoing on a group, removes the group 💀
 - [ ] reordering does not work inside a group
+- [ ] keybinds for undo redo
 
 ### High Priotity
 
@@ -20,7 +23,7 @@
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
 - [ ] Maybe try usign the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
 - [ ] Need a better background removing thing
-- [ ] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
+- [x] (!!) Undo and Redo functions // https://github.com/fabricjs/fabric.js/issues/10011
 - [x] Keybinds
 - [x] Zoom
 - [ ] (!!) Being able to add rectangles (color configurable)

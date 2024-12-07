@@ -1,4 +1,5 @@
 import {ActiveSelection, FabricImage, Group} from "fabric";
+import { useCanvasHistory } from "../hooks/useHistory";
 
 let fabricClipboard = null;
 
@@ -105,6 +106,7 @@ function handleCopy(event, canvas) {
       fabricClipboard = cloned;
     });
 }
+
 
 async function handleImagePaste(event, canvas) {
   if (!event.clipboardData || !canvas) return;
