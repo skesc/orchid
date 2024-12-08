@@ -1,6 +1,7 @@
 import {Eye, EyeOff, Search, Trash2} from "lucide-react";
 import React from "react";
-import {API_URL, apiFetch} from "../../utils/fetchConfig";
+import {apiFetch} from "../../utils/fetchConfig";
+import {OptimizedImage} from "../../utils/ImageLoader.jsx";
 
 export default function AdminMarketplace() {
   const [items, setItems] = React.useState([]);
@@ -49,9 +50,13 @@ export default function AdminMarketplace() {
 
   const filteredItems = React.useMemo(() => {
     return items.filter((item) => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.author.email.toLowerCase().includes(searchTerm.toLowerCase()) || item.categories.some((cat) => cat.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          item.author.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          item.categories.some((cat) => cat.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      const matchesFilter = filter === "all" || (filter === "public" && !item.is_private) || (filter === "private" && item.is_private);
+      const matchesFilter = filter === "all" || 
+                          (filter === "public" && !item.is_private) || 
+                          (filter === "private" && item.is_private);
 
       return matchesSearch && matchesFilter;
     });
@@ -74,7 +79,13 @@ export default function AdminMarketplace() {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
-          <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search by name, email, or category..." className="w-full pl-10 pr-4 py-2 bg-white rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-violet-500" />
+          <input 
+            type="text" 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            placeholder="Search by name, email, or category..." 
+            className="w-full pl-10 pr-4 py-2 bg-white rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-violet-500" 
+          />
         </div>
         <div className="flex gap-2">
           <button onClick={() => setFilter("all")} className={`px-4 py-2 rounded-lg transition-colors ${filter === "all" ? "bg-violet-500 text-white" : "bg-white text-neutral-600 hover:bg-neutral-100"}`}>
@@ -93,7 +104,12 @@ export default function AdminMarketplace() {
         {filteredItems.map((item) => (
           <div key={item.uuid} className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="relative h-48">
-              <img src={`${API_URL}${item.image_path}`} alt={item.name} className="w-full h-full object-cover" />
+              <OptimizedImage 
+                src={item.image_path} 
+                alt={item.name} 
+                size="preview"
+                className="w-full h-full object-cover" 
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               <div className="absolute bottom-4 left-4 right-4">
                 <div className="flex items-center justify-between">

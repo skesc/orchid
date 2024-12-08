@@ -14,8 +14,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN mkdir -p /app/cache && chmod 777 /app/cache
+
 EXPOSE 5000
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
+VOLUME ["/app/cache"]
 ENTRYPOINT ["/start.sh"]

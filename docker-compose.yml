@@ -20,6 +20,7 @@ services:
       - "5000:5000"
     volumes:
       - ./server/instance:/app/instance
+      - image_cache:/app/cache
     env_file:
       - ./server/.env
 
@@ -38,3 +39,5 @@ services:
 
 volumes:
   uploads:
+  image_cache:
+    driver: local

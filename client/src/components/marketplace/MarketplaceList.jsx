@@ -1,3 +1,4 @@
+import {useInfiniteQuery, useQueryClient} from "@tanstack/react-query";
 import {LogIn, Search} from "lucide-react";
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {useAuth} from "../../contexts/AuthContext";
@@ -5,169 +6,111 @@ import {API_URL} from "../../utils/fetchConfig";
 import MarketplaceBookmarks from "./MarketplaceBookmarks";
 import MarketplaceItem from "./MarketplaceItem";
 
+const ITEMS_PER_PAGE = 9;
+
 const MarketplaceList = forwardRef(({canvas}, ref) => {
   const {user} = useAuth();
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const scrollContainerRef = useRef(null);
-  const [bookmarkedItems, setBookmarkedItems] = useState([]);
-  const [myItems, setMyItems] = useState([]);
+  const queryClient = useQueryClient();
 
-  const fetchItems = useCallback(
-    async (resetItems = true) => {
-      try {
-        setLoading(resetItems);
-        setIsLoadingMore(!resetItems);
-
-        const response = await fetch(`${API_URL}/api/marketplace/items?page=${page}&per_page=9`, {
-          credentials: "include",
-        });
-        const data = await response.json();
-
-        if (user) {
-          const filteredItems = data.items.filter((item) => item.author.uuid !== user.uuid && !bookmarkedItems.some((b) => b.uuid === item.uuid));
-          setItems((prevItems) => (resetItems ? filteredItems : [...prevItems, ...filteredItems]));
-
-          const userItems = data.items.filter((item) => item.author.uuid === user.uuid);
-          if (resetItems) {
-            setMyItems(userItems);
-          } else {
-            setMyItems((prev) => {
-              const existingUuids = new Set(prev.map((item) => item.uuid));
-              const newItems = userItems.filter((item) => !existingUuids.has(item.uuid));
-              return [...prev, ...newItems];
-            });
-          }
-        } else {
-          setItems((prevItems) => (resetItems ? data.items : [...prevItems, ...data.items]));
-        }
-
-        setHasMore(data.has_next);
-      } catch (error) {
-        console.error("Error fetching marketplace items:", error);
-      } finally {
-        setLoading(false);
-        setIsLoadingMore(false);
-      }
+  // Fetch marketplace items with infinite scroll
+  const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch} = useInfiniteQuery({
+    queryKey: ["marketplace-items"],
+    queryFn: async ({pageParam = 1}) => {
+      const response = await fetch(`${API_URL}/api/marketplace/items?page=${pageParam}&per_page=${ITEMS_PER_PAGE}`, {credentials: "include"});
+      if (!response.ok) throw new Error("Failed to fetch items");
+      const data = await response.json();
+      return data.items || []; // Ensure we always return an array
     },
-    [page, user, bookmarkedItems]
-  );
+    getNextPageParam: (lastPage, pages) => {
+      if (!lastPage || lastPage.length < ITEMS_PER_PAGE) return undefined;
+      return pages.length + 1;
+    },
+    initialPageParam: 1,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep cache for 30 minutes
+  });
 
-  const forceRefresh = useCallback(async () => {
-    setPage(1);
-    setItems([]);
-    setMyItems([]);
-    setBookmarkedItems([]);
-    await fetchItems(true);
-
-    if (user) {
-      try {
-        const response = await fetch(`${API_URL}/api/marketplace/bookmarks`, {
-          credentials: "include",
-        });
-        const data = await response.json();
-        setBookmarkedItems(data.bookmarks);
-      } catch (error) {
-        console.error("Error fetching bookmarks:", error);
-      }
-    }
-  }, [fetchItems, user]);
-
+  // Expose refetch method to parent components
   useImperativeHandle(ref, () => ({
-    fetchItems: forceRefresh,
+    fetchItems: refetch,
   }));
 
-  useEffect(() => {
-    if (user) {
-      const fetchBookmarks = async () => {
-        try {
-          const response = await fetch(`${API_URL}/api/marketplace/bookmarks`, {
-            credentials: "include",
-          });
-          const data = await response.json();
-          setBookmarkedItems(data.bookmarks);
-        } catch (error) {
-          console.error("Error fetching bookmarks:", error);
-        }
-      };
-      fetchBookmarks();
-    } else {
-      setBookmarkedItems([]);
-      setMyItems([]);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    fetchItems(true);
-  }, []);
-
+  // Handle infinite scroll
   const handleScroll = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!scrollContainerRef.current) return;
 
-    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 300;
+    const {scrollTop, scrollHeight, clientHeight} = scrollContainerRef.current;
+    const scrollThreshold = 100; // px from bottom
 
-    if (isNearBottom && hasMore && !loading && !isLoadingMore) {
-      setPage((prevPage) => prevPage + 1);
+    if (scrollHeight - (scrollTop + clientHeight) < scrollThreshold && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-  }, [hasMore, loading, isLoadingMore]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
-
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
   }, [handleScroll]);
 
-  useEffect(() => {
-    if (page > 1) {
-      fetchItems(false);
-    }
-  }, [page, fetchItems]);
+  // Filter items based on search term
+  const allItems = (data?.pages || []).flatMap(page => page || []);
+  const filteredItems = allItems.filter((item) => {
+    if (!item || !searchTerm) return true;
+    const searchTerms = searchTerm.toLowerCase().split(",").map((term) => term.trim());
+    return searchTerms.some(
+      (term) =>
+        (item.name && item.name.toLowerCase().includes(term)) ||
+        (item.categories && item.categories.some((category) => category.toLowerCase().includes(term)))
+    );
+  });
 
-  const handleItemDeleted = useCallback(() => {
-    forceRefresh();
-  }, [forceRefresh]);
+  // Separate user's items and bookmarked items
+  const myItems = user ? filteredItems.filter((item) => item?.author?.uuid === user.uuid) : [];
+  const bookmarkedItems = user ? filteredItems.filter((item) => item?.is_bookmarked) : [];
+
+  // Main listing should exclude items that are in bookmarks or user's own items
+  const mainListingItems = filteredItems.filter((item) => {
+    if (!item) return false;
+    const isOwnItem = user && item?.author?.uuid === user.uuid;
+    const isBookmarked = user && item?.is_bookmarked;
+    return !isOwnItem && !isBookmarked;
+  });
+
+  const handleItemDeleted = () => {
+    // Invalidate and refetch marketplace items
+    queryClient.invalidateQueries({queryKey: ["marketplace-items"]});
+  };
 
   const handleToggleBookmark = async (item) => {
-    if (!user) return;
-
-    const isBookmarked = bookmarkedItems.some((bookmarked) => bookmarked.uuid === item.uuid);
+    if (!user || !item) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/marketplace/bookmarks/${item.uuid}`, {
-        method: isBookmarked ? "DELETE" : "POST",
+      const response = await fetch(`${API_URL}/api/marketplace/items/${item.uuid}/bookmark`, {
+        method: item.is_bookmarked ? "DELETE" : "POST",
         credentials: "include",
       });
 
       if (response.ok) {
-        setBookmarkedItems((prev) => (isBookmarked ? prev.filter((bookmarked) => bookmarked.uuid !== item.uuid) : [...prev, item]));
-        await fetchItems(true);
+        // Update the item in the cache
+        queryClient.setQueryData(["marketplace-items"], (oldData) => {
+          if (!oldData?.pages) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => (page || []).map((i) => (i?.uuid === item.uuid ? {...i, is_bookmarked: !i.is_bookmarked} : i))),
+          };
+        });
       }
     } catch (error) {
       console.error("Error toggling bookmark:", error);
     }
   };
 
-  const filterItems = (items, searchTerm) => {
-    if (!searchTerm) return items;
-    const searchTerms = searchTerm
-      .toLowerCase()
-      .split(",")
-      .map((term) => term.trim());
-    return items.filter((item) => {
-      return searchTerms.some((term) => item.name.toLowerCase().includes(term) || (item.categories && item.categories.some((category) => category.toLowerCase().includes(term))));
-    });
-  };
-
-  const filteredItems = filterItems(items, searchTerm);
-
-  if (loading && page === 1) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
@@ -209,17 +152,13 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         </div>
       )}
 
-      {filteredItems.length === 0 ? (
+      {mainListingItems.length === 0 ? (
         <div className="text-center text-neutral-500 py-8 flex-grow">No items found. Try adjusting your search or add some items to the marketplace!</div>
       ) : (
         <div ref={scrollContainerRef} className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
-            {filteredItems.map((item) => (
-              <MarketplaceItem key={item.uuid} item={item} canvas={canvas} onUpdate={handleItemDeleted} onBookmark={() => handleToggleBookmark(item)} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked.uuid === item.uuid)} isOwn={user && item.author.uuid === user.uuid} />
-            ))}
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">{mainListingItems.map((item) => item && <MarketplaceItem key={item.uuid} item={item} canvas={canvas} onUpdate={handleItemDeleted} onBookmark={() => handleToggleBookmark(item)} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked?.uuid === item.uuid)} isOwn={user && item.author?.uuid === user.uuid} />)}</div>
 
-          {isLoadingMore && (
+          {isFetchingNextPage && (
             <div className="flex justify-center my-4">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500"></div>
             </div>

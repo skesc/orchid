@@ -2,7 +2,7 @@ import {FabricImage} from "fabric";
 import {Tag, Trash2} from "lucide-react";
 import React from "react";
 import {useAuth} from "../../contexts/AuthContext";
-import {API_URL} from "../../utils/fetchConfig";
+import {getFullQualityUrl, OptimizedImage} from "../../utils/ImageLoader.jsx";
 
 export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   const {user} = useAuth();
@@ -30,7 +30,7 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   const handleUse = () => {
     if (!canvas) return;
 
-    const imageUrl = `${API_URL}${item.image_path}`;
+    const imageUrl = getFullQualityUrl(item.image_path);
     const img = new Image();
     img.crossOrigin = "anonymous";
 
@@ -62,7 +62,12 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   return (
     <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group h-full flex flex-col">
       <div className="relative">
-        <img src={`${API_URL}${item.image_path}`} alt={item.name} className="h-32 w-full object-cover" />
+        <OptimizedImage
+          src={item.image_path}
+          alt={item.name}
+          size="thumbnail"
+          className="h-32 w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 

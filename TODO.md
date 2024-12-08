@@ -8,8 +8,8 @@
 - [x] If you delete an image, then add it again, it doesn't show up.
 - [x] If you select multiple objects with shift, then delete, it does nothing.
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
-- [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling
-- [ ] Marketplace gliching after adding new item
+- [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling (@nam can you add shit ton of items so i can test this thx)
+- [x] Marketplace gliching after adding new item
 - [x] reordering does not work inside a group
 - [x] undo and redo state do not update on the layers panel sometimes
 - [x] undo/redo broken for crop since it makes multiple layers
@@ -18,8 +18,8 @@
 
 ### High Priotity
 
-- [ ] speed up s3 fetching, implement heavy caching
-- [ ] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
+- [x] speed up s3 fetching, implement heavy caching
+- [x] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
 - [ ] Maybe try using the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)

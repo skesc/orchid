@@ -2,6 +2,7 @@ import {FabricImage} from "fabric";
 import {AlertTriangle, Loader2, X} from "lucide-react";
 import React from "react";
 import {API_URL} from "../../utils/fetchConfig";
+import {getFullQualityUrl} from "../../utils/ImageLoader.jsx";
 
 export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
   const [loading, setLoading] = React.useState(false);
@@ -51,7 +52,8 @@ export default function BackgroundRemovalModal({isOpen, onClose, canvas}) {
       const flipX = activeObject.flipX;
       const flipY = activeObject.flipY;
 
-      const img = await FabricImage.fromURL(`${API_URL}${data.image_path}`, {
+      const imageUrl = getFullQualityUrl(data.image_path);
+      const img = await FabricImage.fromURL(imageUrl, {
         crossOrigin: "anonymous",
       });
 
