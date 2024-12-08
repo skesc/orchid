@@ -3,6 +3,7 @@ import {Tag, Trash2} from "lucide-react";
 import React from "react";
 import {useAuth} from "../../contexts/AuthContext";
 import {getFullQualityUrl, OptimizedImage} from "../../utils/ImageLoader.jsx";
+import {API_URL} from "../../utils/fetchConfig";
 
 export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   const {user} = useAuth();
