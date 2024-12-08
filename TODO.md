@@ -13,12 +13,11 @@
 - [x] reordering does not work inside a group
 - [x] undo and redo state do not update on the layers panel sometimes
 - [x] undo/redo broken for crop since it makes multiple layers
+- [x] deleting is slightly broken in admin panel, works but causes an error. sometimes?
 - [ ] undoing on a group, removes the group 💀
-- [ ] deleting is slightly broken in admin panel, works but causes an error.
 
 ### High Priotity
 
-- [ ] update the marketplace route to use UUIDs only, and not routes like `/api/marketplace/items/1` (switch out the 1 for the uuid)
 - [ ] speed up s3 fetching, implement heavy caching
 - [ ] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
@@ -33,6 +32,7 @@
 - [ ] FREE HAND DRAWING
 - [ ] Just put a lot of items in market place (assigned to nam)
 - [ ] Warping Images and Groups // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
+- [x] update ALL MODELS to use UUIDs, and not routes like `/api/marketplace/items/1` (switch out the 1 for the uuid)
 - [x] litestream for sqlite db (for backup)
 - [x] switch out filenames for uuids for marketplace and nobg
 - [x] make all routes compatible with s3, some are still using local. mainly marketplace/admin

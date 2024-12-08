@@ -30,7 +30,7 @@ export default function AdminMarketplace() {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const response = await apiFetch(`/api/admin/marketplace/${itemUuid}`, {
+      const response = await fetch(`${API_URL}/api/admin/marketplace/${itemUuid}`, {
         method: "DELETE",
         credentials: "include",
       });
