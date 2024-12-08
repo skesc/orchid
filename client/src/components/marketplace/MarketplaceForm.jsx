@@ -127,7 +127,7 @@ export default function MarketplaceForm({setMod, onSuccess}) {
       onSuccess?.();
       setTimeout(() => {
         setMod(false);
-      }, 1500);
+      }, 1000);
     } catch (err) {
       setError(err.message || "Failed to create item");
     } finally {
