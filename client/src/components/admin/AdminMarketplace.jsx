@@ -26,11 +26,11 @@ export default function AdminMarketplace() {
     fetchItems();
   }, []);
 
-  const handleDelete = async (itemId) => {
+  const handleDelete = async (itemUuid) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const response = await apiFetch(`/api/admin/marketplace/${itemId}`, {
+      const response = await apiFetch(`/api/admin/marketplace/${itemUuid}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -91,7 +91,7 @@ export default function AdminMarketplace() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item) => (
-          <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div key={item.uuid} className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="relative h-48">
               <img src={`${API_URL}${item.image_path}`} alt={item.name} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -110,7 +110,7 @@ export default function AdminMarketplace() {
                   <div className="text-sm font-medium">{item.author.name}</div>
                   <div className="text-sm text-neutral-400">{item.author.email}</div>
                 </div>
-                <button onClick={() => handleDelete(item.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                <button onClick={() => handleDelete(item.uuid)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                   <Trash2 size={18} />
                 </button>
               </div>

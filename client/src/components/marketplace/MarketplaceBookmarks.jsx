@@ -45,7 +45,7 @@ export function MarketplaceBookmarks({canvas, myItems, bookmarkedItems, onToggle
   }
 
   // filter out duplicates (items that are both owned and bookmarked)
-  const bookmarkedNotOwned = bookmarkedItems.filter((item) => !myItems.some((myItem) => myItem.id === item.id));
+  const bookmarkedNotOwned = bookmarkedItems.filter((item) => !myItems.some((myItem) => myItem.uuid === item.uuid));
 
   return (
     <div className="mb-6 bg-neutral-300/50 rounded-lg p-4">
@@ -71,14 +71,14 @@ export function MarketplaceBookmarks({canvas, myItems, bookmarkedItems, onToggle
 
       <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300 pb-2">
         {myItems.map((item) => (
-          <div key={`my-${item.id}`} className="flex-none w-64">
-            <MarketplaceItem item={item} canvas={canvas} onBookmark={() => onToggleBookmark(item)} onUpdate={onUpdate} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked.id === item.id)} isOwn={true} />
+          <div key={`my-${item.uuid}`} className="flex-none w-64">
+            <MarketplaceItem item={item} canvas={canvas} onBookmark={() => onToggleBookmark(item)} onUpdate={onUpdate} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked.uuid === item.uuid)} isOwn={true} />
           </div>
         ))}
 
         {bookmarkedNotOwned.map((item) => (
-          <div key={`bookmarked-${item.id}`} className="flex-none w-64">
-            <MarketplaceItem item={item} canvas={canvas} onBookmark={() => onToggleBookmark(item)} onUpdate={onUpdate} isBookmarked={true} />
+          <div key={`bookmarked-${item.uuid}`} className="flex-none w-64">
+            <MarketplaceItem item={item} canvas={canvas} onBookmark={() => onToggleBookmark(item)} onUpdate={onUpdate} isBookmarked={true} isOwn={false} />
           </div>
         ))}
       </div>

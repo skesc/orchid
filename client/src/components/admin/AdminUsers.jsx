@@ -49,7 +49,7 @@ export default function AdminUsers() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredUsers.map((user) => (
-          <div key={user.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div key={user.uuid} className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="p-6">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-full bg-violet-100 flex items-center justify-center text-violet-600 text-lg font-medium">{user.name[0].toUpperCase()}</div>

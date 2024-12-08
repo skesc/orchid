@@ -1,5 +1,4 @@
 import json
-import time
 
 from extensions import db, limiter
 from flask import Blueprint, jsonify, request
@@ -7,7 +6,6 @@ from flask_login import current_user, login_required
 from models import Bookmark, MarketplaceItem
 from s3 import delete_file, upload_file
 from utils import allowed_file, sanitize_marketplace_input, validate_marketplace_item
-from werkzeug.utils import secure_filename
 
 marketplace_bp = Blueprint("marketplace", __name__)
 
@@ -17,28 +15,32 @@ def get_marketplace_items():
     page = max(1, request.args.get("page", 1, type=int))
     per_page = min(100, request.args.get("per_page", 9, type=int))
     category = request.args.get("category")
-    author_id = request.args.get("author_id")
+    author_uuid = request.args.get("author_uuid")
 
     query = MarketplaceItem.query.filter_by(is_private=False)
     if category:
         query = query.filter(MarketplaceItem.categories.contains([category]))
-    if author_id:
-        query = query.filter_by(author_id=int(author_id))
+    if author_uuid:
+        query = query.filter_by(author_uuid=author_uuid)
 
     query = query.order_by(MarketplaceItem.created_at.desc())
     paginated_items = query.paginate(page=page, per_page=per_page, error_out=False)
 
-    return jsonify(
+    items = [
         {
-            "items": [item.to_dict() for item in paginated_items.items],
-            "total_items": paginated_items.total,
-            "total_pages": paginated_items.pages,
-            "current_page": page,
-            "per_page": per_page,
-            "has_next": paginated_items.has_next,
-            "has_prev": paginated_items.has_prev,
+            "uuid": item.uuid,
+            "name": item.name,
+            "description": item.description,
+            "image_path": item.image_path,
+            "categories": item.categories,
+            "is_private": item.is_private,
+            "created_at": item.created_at.isoformat(),
+            "author": {"name": item.author.name, "uuid": item.author.uuid},
         }
-    )
+        for item in paginated_items.items
+    ]
+
+    return jsonify({"items": items, "has_next": paginated_items.has_next})
 
 
 @marketplace_bp.route("/api/marketplace/items", methods=["POST"])
@@ -81,18 +83,19 @@ def create_marketplace_item():
             description=sanitized_data["description"],
             categories=sanitized_data["categories"],
             is_private=sanitized_data["is_private"],
-            author_id=current_user.id,
+            author_uuid=current_user.uuid,
         )
+
         db.session.add(new_item)
-        db.session.flush()  # this generates the UUID
+        db.session.commit()
 
         try:
             upload_file(file, "marketplace", new_item.uuid)
-            db.session.commit()
             return jsonify(new_item.to_dict()), 201
 
         except Exception as e:
-            db.session.rollback()
+            db.session.delete(new_item)
+            db.session.commit()
             return jsonify({"error": f"Failed to upload file: {str(e)}"}), 500
 
     except json.JSONDecodeError:
@@ -102,13 +105,13 @@ def create_marketplace_item():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["DELETE"])
+@marketplace_bp.route("/api/marketplace/items/<string:item_uuid>", methods=["DELETE"])
 @login_required
 @limiter.limit("5 per minute")
-def delete_marketplace_item(item_id):
-    item = MarketplaceItem.query.get_or_404(item_id)
+def delete_marketplace_item(item_uuid):
+    item = MarketplaceItem.query.filter_by(uuid=item_uuid).first_or_404()
 
-    if item.author_id != current_user.id:
+    if item.author_uuid != current_user.uuid:
         return jsonify({"error": "Unauthorized"}), 403
 
     try:
@@ -123,13 +126,13 @@ def delete_marketplace_item(item_id):
         return jsonify({"error": str(e)}), 500
 
 
-@marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["PUT"])
+@marketplace_bp.route("/api/marketplace/items/<string:item_uuid>", methods=["PUT"])
 @login_required
 @limiter.limit("5 per minute")
-def update_marketplace_item(item_id):
-    item = MarketplaceItem.query.get_or_404(item_id)
+def update_marketplace_item(item_uuid):
+    item = MarketplaceItem.query.filter_by(uuid=item_uuid).first_or_404()
 
-    if item.author_id != current_user.id:
+    if item.author_uuid != current_user.uuid:
         return jsonify({"error": "Unauthorized"}), 403
 
     try:
@@ -169,12 +172,12 @@ def update_marketplace_item(item_id):
         return jsonify({"error": "Internal server error"}), 500
 
 
-@marketplace_bp.route("/api/marketplace/items/<int:item_id>", methods=["GET"])
-def get_marketplace_item(item_id):
-    item = MarketplaceItem.query.get_or_404(item_id)
+@marketplace_bp.route("/api/marketplace/items/<string:item_uuid>", methods=["GET"])
+def get_marketplace_item(item_uuid):
+    item = MarketplaceItem.query.filter_by(uuid=item_uuid).first_or_404()
 
     if item.is_private and (
-        not current_user.is_authenticated or item.author_id != current_user.id
+        not current_user.is_authenticated or item.author_uuid != current_user.uuid
     ):
         return jsonify({"error": "Not found"}), 404
 
@@ -184,31 +187,35 @@ def get_marketplace_item(item_id):
 @marketplace_bp.route("/api/marketplace/bookmarks", methods=["GET"])
 @login_required
 def get_bookmarks():
-    bookmarks = Bookmark.query.filter_by(user_id=current_user.id).all()
+    bookmarks = Bookmark.query.filter_by(user_uuid=current_user.uuid).all()
     return jsonify({"bookmarks": [bookmark.item.to_dict() for bookmark in bookmarks]})
 
 
-@marketplace_bp.route("/api/marketplace/bookmarks/<int:item_id>", methods=["POST"])
+@marketplace_bp.route("/api/marketplace/bookmarks/<string:item_uuid>", methods=["POST"])
 @login_required
-def add_bookmark(item_id):
+def add_bookmark(item_uuid):
+    item = MarketplaceItem.query.filter_by(uuid=item_uuid).first_or_404()
+
     existing = Bookmark.query.filter_by(
-        user_id=current_user.id, item_id=item_id
+        user_uuid=current_user.uuid, item_uuid=item.uuid
     ).first()
     if existing:
         return jsonify({"message": "Already bookmarked"}), 400
 
-    bookmark = Bookmark(user_id=current_user.id, item_id=item_id)
+    bookmark = Bookmark(user_uuid=current_user.uuid, item_uuid=item.uuid)
     db.session.add(bookmark)
     db.session.commit()
 
     return jsonify({"message": "Bookmarked successfully"}), 201
 
 
-@marketplace_bp.route("/api/marketplace/bookmarks/<int:item_id>", methods=["DELETE"])
+@marketplace_bp.route(
+    "/api/marketplace/bookmarks/<string:item_uuid>", methods=["DELETE"]
+)
 @login_required
-def remove_bookmark(item_id):
+def remove_bookmark(item_uuid):
     bookmark = Bookmark.query.filter_by(
-        user_id=current_user.id, item_id=item_id
+        user_uuid=current_user.uuid, item_uuid=item_uuid
     ).first_or_404()
 
     db.session.delete(bookmark)

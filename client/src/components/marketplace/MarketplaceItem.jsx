@@ -4,16 +4,15 @@ import React from "react";
 import {useAuth} from "../../contexts/AuthContext";
 import {API_URL} from "../../utils/fetchConfig";
 
-export default function MarketplaceItem({item, onUpdate, canvas}) {
+export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   const {user} = useAuth();
-  const isAuthor = user && user.id === item.author.id;
   const hasCategories = item.categories && Array.isArray(item.categories) && item.categories.length > 0;
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/marketplace/items/${item.id}`, {
+      const response = await fetch(`${API_URL}/api/marketplace/items/${item.uuid}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -70,7 +69,7 @@ export default function MarketplaceItem({item, onUpdate, canvas}) {
       <div className="p-3 flex flex-col flex-1">
         <div className="flex justify-between items-start gap-2">
           <h3 className="text-base font-medium text-neutral-900 line-clamp-1">{item.name}</h3>
-          {isAuthor && (
+          {isOwn && (
             <button onClick={handleDelete} className="p-1 rounded-full hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors">
               <Trash2 size={16} />
             </button>

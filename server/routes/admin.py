@@ -43,7 +43,7 @@ def get_all_marketplace_items():
             {
                 **item.to_dict(),
                 "author": {
-                    "id": item.author.id,
+                    "uuid": item.author.uuid,
                     "name": item.author.name,
                     "email": item.author.email,
                 },
@@ -60,7 +60,7 @@ def get_all_users():
     return jsonify(
         [
             {
-                "id": user.id,
+                "uuid": user.uuid,
                 "name": user.name,
                 "email": user.email,
                 "marketplace_items_count": len(user.marketplace_items),
@@ -71,10 +71,10 @@ def get_all_users():
     )
 
 
-@admin_bp.route("/api/admin/marketplace/<int:item_id>", methods=["DELETE"])
+@admin_bp.route("/api/admin/marketplace/<string:item_uuid>", methods=["DELETE"])
 @admin_required
-def admin_delete_marketplace_item(item_id):
-    item = MarketplaceItem.query.get_or_404(item_id)
+def admin_delete_marketplace_item(item_uuid):
+    item = MarketplaceItem.query.filter_by(uuid=item_uuid).first_or_404()
 
     try:
         if item.image_path:
@@ -97,9 +97,7 @@ def get_admin_stats():
     public_items = total_items - private_items
 
     last_24h = datetime.now() - timedelta(days=1)
-    new_users_24h = User.query.filter(
-        User.id >= User.query.order_by(User.id.desc()).first().id - 10
-    ).count()
+    new_users_24h = User.query.filter(User.created_at >= last_24h).count()
     new_items_24h = MarketplaceItem.query.filter(
         MarketplaceItem.created_at >= last_24h
     ).count()

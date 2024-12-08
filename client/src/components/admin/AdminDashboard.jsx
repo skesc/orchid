@@ -119,7 +119,7 @@ export default function AdminDashboard() {
           <h2 className="text-lg font-medium mb-4">Recent Items</h2>
           <div className="space-y-4">
             {recentItems.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-neutral-50 transition-colors">
+              <div key={item.uuid} className="flex items-center gap-4 p-3 rounded-lg hover:bg-neutral-50 transition-colors">
                 <img src={`${API_URL}${item.image_path}`} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-neutral-900 truncate">{item.name}</h3>

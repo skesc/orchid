@@ -52,7 +52,7 @@ def get_user():
             {
                 "authenticated": True,
                 "user": {
-                    "id": current_user.id,
+                    "uuid": current_user.uuid,
                     "email": current_user.email,
                     "name": current_user.name,
                     "oauth_providers": [
@@ -123,7 +123,7 @@ def google_callback():
             # create new user and OAuth connection
             user = User(email=user_info["email"], name=user_info["name"])
             db.session.add(user)
-            db.session.flush()  # flush to get user.id
+            db.session.flush()
 
             oauth_connection = OAuthConnection(
                 user=user, provider="google", oauth_id=user_info["id"]
@@ -200,7 +200,7 @@ def github_callback():
             # create new user and OAuth connection
             user = User(email=email, name=user_info.get("name", user_info["login"]))
             db.session.add(user)
-            db.session.flush()  # flush to get user.id
+            db.session.flush()
 
             oauth_connection = OAuthConnection(
                 user=user, provider="github", oauth_id=str(user_info["id"])

@@ -23,18 +23,24 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         setLoading(resetItems);
         setIsLoadingMore(!resetItems);
 
-        const response = await fetch(`${API_URL}/api/marketplace/items?page=${page}&per_page=9`);
+        const response = await fetch(`${API_URL}/api/marketplace/items?page=${page}&per_page=9`, {
+          credentials: "include",
+        });
         const data = await response.json();
 
         if (user) {
-          const filteredItems = data.items.filter((item) => item.author.id !== user.id);
+          const filteredItems = data.items.filter((item) => item.author.uuid !== user.uuid && !bookmarkedItems.some((b) => b.uuid === item.uuid));
           setItems((prevItems) => (resetItems ? filteredItems : [...prevItems, ...filteredItems]));
 
-          const userItems = data.items.filter((item) => item.author.id === user.id);
+          const userItems = data.items.filter((item) => item.author.uuid === user.uuid);
           if (resetItems) {
             setMyItems(userItems);
           } else {
-            setMyItems((prev) => [...prev, ...userItems]);
+            setMyItems((prev) => {
+              const existingUuids = new Set(prev.map((item) => item.uuid));
+              const newItems = userItems.filter((item) => !existingUuids.has(item.uuid));
+              return [...prev, ...newItems];
+            });
           }
         } else {
           setItems((prevItems) => (resetItems ? data.items : [...prevItems, ...data.items]));
@@ -48,7 +54,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         setIsLoadingMore(false);
       }
     },
-    [page, user]
+    [page, user, bookmarkedItems]
   );
 
   const forceRefresh = useCallback(async () => {
@@ -89,12 +95,15 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         }
       };
       fetchBookmarks();
+    } else {
+      setBookmarkedItems([]);
+      setMyItems([]);
     }
   }, [user]);
 
   useEffect(() => {
     fetchItems(true);
-  }, []);
+  }, [fetchItems]);
 
   const handleScroll = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -128,16 +137,17 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   const handleToggleBookmark = async (item) => {
     if (!user) return;
 
-    const isBookmarked = bookmarkedItems.some((bookmarked) => bookmarked.id === item.id);
+    const isBookmarked = bookmarkedItems.some((bookmarked) => bookmarked.uuid === item.uuid);
 
     try {
-      const response = await fetch(`${API_URL}/api/marketplace/bookmarks/${item.id}`, {
+      const response = await fetch(`${API_URL}/api/marketplace/bookmarks/${item.uuid}`, {
         method: isBookmarked ? "DELETE" : "POST",
         credentials: "include",
       });
 
       if (response.ok) {
-        setBookmarkedItems((prev) => (isBookmarked ? prev.filter((bookmarked) => bookmarked.id !== item.id) : [...prev, item]));
+        setBookmarkedItems((prev) => (isBookmarked ? prev.filter((bookmarked) => bookmarked.uuid !== item.uuid) : [...prev, item]));
+        await fetchItems(true);
       }
     } catch (error) {
       console.error("Error toggling bookmark:", error);
@@ -205,7 +215,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
         <div ref={scrollContainerRef} className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
             {filteredItems.map((item) => (
-              <MarketplaceItem key={item.id} item={item} canvas={canvas} onUpdate={handleItemDeleted} onBookmark={handleToggleBookmark} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked.id === item.id)} isOwn={user && item.author.id === user.id} />
+              <MarketplaceItem key={item.uuid} item={item} canvas={canvas} onUpdate={handleItemDeleted} onBookmark={() => handleToggleBookmark(item)} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked.uuid === item.uuid)} isOwn={user && item.author.uuid === user.uuid} />
             ))}
           </div>
 
