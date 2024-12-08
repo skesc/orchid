@@ -7,13 +7,13 @@
 - [x] CSP causes the login success page to not auto close, and also not load styles.
 - [x] If you delete an image, then add it again, it doesn't show up.
 - [x] If you select multiple objects with shift, then delete, it does nothing.
-- [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
-- [ ] Marketplace cannot search for items that have not been loaded yet by infinite scrolling (@nam can you add shit ton of items so i can test this thx)
+- [x] Marketplace cannot search for items that have not been loaded yet by infinite scrolling (@nam can you add shit ton of items so i can test this thx)
 - [x] Marketplace gliching after adding new item
 - [x] reordering does not work inside a group
 - [x] undo and redo state do not update on the layers panel sometimes
 - [x] undo/redo broken for crop since it makes multiple layers
 - [x] deleting is slightly broken in admin panel, works but causes an error. sometimes?
+- [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 - [ ] undoing on a group, removes the group 💀
 
 ### High Priotity

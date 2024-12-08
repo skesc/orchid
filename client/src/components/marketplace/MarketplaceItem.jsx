@@ -62,12 +62,7 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   return (
     <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group h-full flex flex-col">
       <div className="relative">
-        <OptimizedImage
-          src={item.image_path}
-          alt={item.name}
-          size="thumbnail"
-          className="h-32 w-full object-cover"
-        />
+        <OptimizedImage src={item.image_path} alt={item.name} size="preview" className="h-32 w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 

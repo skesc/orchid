@@ -14,30 +14,28 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   const scrollContainerRef = useRef(null);
   const queryClient = useQueryClient();
 
-  // Fetch marketplace items with infinite scroll
+  // fetch marketplace items with infinite scroll
   const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch} = useInfiniteQuery({
     queryKey: ["marketplace-items"],
     queryFn: async ({pageParam = 1}) => {
       const response = await fetch(`${API_URL}/api/marketplace/items?page=${pageParam}&per_page=${ITEMS_PER_PAGE}`, {credentials: "include"});
       if (!response.ok) throw new Error("Failed to fetch items");
       const data = await response.json();
-      return data.items || []; // Ensure we always return an array
+      return data.items || [];
     },
     getNextPageParam: (lastPage, pages) => {
       if (!lastPage || lastPage.length < ITEMS_PER_PAGE) return undefined;
       return pages.length + 1;
     },
     initialPageParam: 1,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep cache for 30 minutes
+    staleTime: 5 * 60 * 1000, // consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // keep cache for 30 minutes
   });
 
-  // Expose refetch method to parent components
   useImperativeHandle(ref, () => ({
     fetchItems: refetch,
   }));
 
-  // Handle infinite scroll
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
 
@@ -57,23 +55,19 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
     }
   }, [handleScroll]);
 
-  // Filter items based on search term
-  const allItems = (data?.pages || []).flatMap(page => page || []);
+  const allItems = (data?.pages || []).flatMap((page) => page || []);
   const filteredItems = allItems.filter((item) => {
     if (!item || !searchTerm) return true;
-    const searchTerms = searchTerm.toLowerCase().split(",").map((term) => term.trim());
-    return searchTerms.some(
-      (term) =>
-        (item.name && item.name.toLowerCase().includes(term)) ||
-        (item.categories && item.categories.some((category) => category.toLowerCase().includes(term)))
-    );
+    const searchTerms = searchTerm
+      .toLowerCase()
+      .split(",")
+      .map((term) => term.trim());
+    return searchTerms.some((term) => (item.name && item.name.toLowerCase().includes(term)) || (item.categories && item.categories.some((category) => category.toLowerCase().includes(term))));
   });
 
-  // Separate user's items and bookmarked items
   const myItems = user ? filteredItems.filter((item) => item?.author?.uuid === user.uuid) : [];
   const bookmarkedItems = user ? filteredItems.filter((item) => item?.is_bookmarked) : [];
 
-  // Main listing should exclude items that are in bookmarks or user's own items
   const mainListingItems = filteredItems.filter((item) => {
     if (!item) return false;
     const isOwnItem = user && item?.author?.uuid === user.uuid;
@@ -82,7 +76,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   });
 
   const handleItemDeleted = () => {
-    // Invalidate and refetch marketplace items
+    // invalidate and refetch marketplace items
     queryClient.invalidateQueries({queryKey: ["marketplace-items"]});
   };
 
@@ -96,7 +90,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
       });
 
       if (response.ok) {
-        // Update the item in the cache
+        // update the item in the cache
         queryClient.setQueryData(["marketplace-items"], (oldData) => {
           if (!oldData?.pages) return oldData;
           return {
