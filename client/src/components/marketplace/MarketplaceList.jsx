@@ -103,7 +103,7 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
 
   useEffect(() => {
     fetchItems(true);
-  }, [fetchItems]);
+  }, []);
 
   const handleScroll = useCallback(() => {
     const container = scrollContainerRef.current;
