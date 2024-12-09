@@ -4,9 +4,9 @@ const THUMBNAIL_SIZE = 200;
 const PREVIEW_SIZE = 800;
 
 // match server-side quality settings
-const THUMBNAIL_QUALITY = 30; // small size, lower quality is fine
-const PREVIEW_QUALITY = 50; // medium size, balanced quality
-const FULL_QUALITY = 75; // full size, good quality but still optimized
+const THUMBNAIL_QUALITY = 30; // not used anywhere for now
+const PREVIEW_QUALITY = 50; // used in admin dash and marketplace
+const FULL_QUALITY = 90; // used in canvas
 
 export function getOptimizedImageUrl(path, options = {}) {
   if (!path) return "";
@@ -18,7 +18,7 @@ export function getOptimizedImageUrl(path, options = {}) {
 
   if (width) params.set("w", width);
   if (height) params.set("h", height);
-  if (quality !== PREVIEW_QUALITY) params.set("q", quality);
+  if (quality) params.set("q", quality);
 
   const queryString = params.toString();
   return queryString ? `${baseUrl}?${queryString}` : baseUrl;

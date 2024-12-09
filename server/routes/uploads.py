@@ -1,7 +1,8 @@
 import hashlib
 import io
 import os
-from datetime import timedelta
+from datetime import datetime, timedelta
+from pathlib import Path
 
 from config import Config
 from flask import Blueprint, abort, redirect, request, send_file
@@ -15,11 +16,12 @@ VALID_FOLDERS = ["nobg", "marketplace"]
 VALID_FORMATS = ["webp"]
 CACHE_DIR = "cache"
 CACHE_DURATION = timedelta(days=7)
+MAX_CACHE_SIZE_BYTES = 1000 * 1024 * 1024  # 1GB default max cache size
 
 # Image quality presets
 THUMBNAIL_QUALITY = 30
 PREVIEW_QUALITY = 50
-FULL_QUALITY = 75
+FULL_QUALITY = 90
 
 
 def get_cache_key(key, width, height, quality):
@@ -31,7 +33,7 @@ def optimize_image(image_data, width=None, height=None, quality=PREVIEW_QUALITY)
     img = Image.open(io.BytesIO(image_data))
 
     if img.mode not in ("RGBA", "RGB"):
-        img = img.convert("RGBA")
+        img = img.convert("RGB")
 
     if width or height:
         original_width, original_height = img.size
@@ -46,15 +48,7 @@ def optimize_image(image_data, width=None, height=None, quality=PREVIEW_QUALITY)
         img = img.resize(new_size, Image.Resampling.LANCZOS)
 
     output = io.BytesIO()
-    has_transparency = img.mode == "RGBA" and any(px[3] < 255 for px in img.getdata())
-
-    if has_transparency:
-        img.save(output, format="WEBP", lossless=True, quality=100)
-    else:
-        if img.mode == "RGBA":
-            img = img.convert("RGB")
-        img.save(output, format="WEBP", quality=quality, method=6)
-
+    img.save(output, format="WEBP", quality=quality, method=4)
     output.seek(0)
     return output
 
@@ -70,6 +64,64 @@ def add_cache_headers(response, max_age=None):
     return response
 
 
+def cleanup_old_cache_files():
+    now = datetime.now().timestamp()
+    cache_dir = Path(CACHE_DIR)
+
+    if not cache_dir.exists():
+        return
+
+    for cache_file in cache_dir.iterdir():
+        if not cache_file.is_file():
+            continue
+        file_age = now - cache_file.stat().st_mtime
+        if file_age > CACHE_DURATION.total_seconds():
+            try:
+                cache_file.unlink()
+            except OSError:
+                pass
+
+
+def maintain_cache_size():
+    cache_dir = Path(CACHE_DIR)
+    if not cache_dir.exists():
+        return
+
+    cache_files = []
+    total_size = 0
+
+    for cache_file in cache_dir.iterdir():
+        if not cache_file.is_file():
+            continue
+        stats = cache_file.stat()
+        total_size += stats.st_size
+        cache_files.append((stats.st_mtime, stats.st_size, cache_file))
+
+    if total_size > MAX_CACHE_SIZE_BYTES:
+        cache_files.sort()
+
+        for mtime, size, file_path in cache_files:
+            if total_size <= MAX_CACHE_SIZE_BYTES:
+                break
+            try:
+                file_path.unlink()
+                total_size -= size
+            except OSError:
+                pass
+
+
+def cache_image(cache_path: str, image_data: bytes):
+    """Cache image data and maintain cache limits."""
+    os.makedirs(CACHE_DIR, exist_ok=True)
+
+    cleanup_old_cache_files()
+
+    with open(cache_path, "wb") as f:
+        f.write(image_data)
+
+    maintain_cache_size()
+
+
 @uploads_bp.route("/uploads/<folder>/<path:filename>")
 def serve_uploaded_file(folder, filename):
     if folder not in VALID_FOLDERS:
@@ -80,19 +132,21 @@ def serve_uploaded_file(folder, filename):
 
     width = request.args.get("w", type=int)
     height = request.args.get("h", type=int)
-    quality = request.args.get("q", PREVIEW_QUALITY, type=int)
+    requested_quality = request.args.get("q", PREVIEW_QUALITY, type=int)
 
-    if quality < 1 or quality > 100:
+    if requested_quality <= THUMBNAIL_QUALITY:
+        quality = THUMBNAIL_QUALITY
+    elif requested_quality <= PREVIEW_QUALITY:
         quality = PREVIEW_QUALITY
+    else:
+        quality = FULL_QUALITY
 
     try:
         s3 = get_s3_client()
-
-        if not any([width, height]):
-            quality = FULL_QUALITY
-
         cache_key = get_cache_key(key, width, height, quality)
         cache_path = os.path.join(CACHE_DIR, cache_key)
+
+        print(f"Cache key for {key}: {cache_key} (quality={quality})")
 
         if os.path.exists(cache_path):
             response = send_file(
@@ -109,6 +163,8 @@ def serve_uploaded_file(folder, filename):
         os.makedirs(CACHE_DIR, exist_ok=True)
         with open(cache_path, "wb") as f:
             f.write(optimized.getvalue())
+
+        cache_image(cache_path, optimized.getvalue())
 
         response = send_file(
             io.BytesIO(optimized.getvalue()), mimetype="image/webp", conditional=True

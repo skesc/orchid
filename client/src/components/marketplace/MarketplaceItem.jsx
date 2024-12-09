@@ -2,7 +2,7 @@ import {FabricImage} from "fabric";
 import {Tag, Trash2} from "lucide-react";
 import React from "react";
 import {useAuth} from "../../contexts/AuthContext";
-import {getFullQualityUrl, OptimizedImage} from "../../utils/ImageLoader.jsx";
+import {getOptimizedImageUrl, OptimizedImage} from "../../utils/ImageLoader.jsx";
 import {API_URL} from "../../utils/fetchConfig";
 
 export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
@@ -31,7 +31,7 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   const handleUse = () => {
     if (!canvas) return;
 
-    const imageUrl = getFullQualityUrl(item.image_path);
+    const previewUrl = getOptimizedImageUrl(item.image_path, {quality: 50});
     const img = new Image();
     img.crossOrigin = "anonymous";
 
@@ -55,9 +55,22 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
       canvas.centerObject(fabricImage);
       canvas.setActiveObject(fabricImage);
       canvas.renderAll();
+
+      // upgrade to full quality after the image is loaded
+      const fullQualityUrl = getOptimizedImageUrl(item.image_path, {quality: 90});
+      const fullQualityImg = new Image();
+      fullQualityImg.crossOrigin = "anonymous";
+
+      fullQualityImg.onload = () => {
+        fabricImage.setSrc(fullQualityImg.src, () => {
+          canvas.renderAll();
+        });
+      };
+
+      fullQualityImg.src = fullQualityUrl;
     };
 
-    img.src = imageUrl;
+    img.src = previewUrl;
   };
 
   return (
