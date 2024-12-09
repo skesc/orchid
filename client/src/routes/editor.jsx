@@ -30,6 +30,7 @@ function RouteComponent() {
   const [showBgRemovalModal, setShowBgRemovalModal] = React.useState(false);
   const [showTextPanel, setShowTextPanel] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [showError, setShowError] = React.useState(false);
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900); // Only show layers on screens >= 900px
@@ -96,7 +97,7 @@ function RouteComponent() {
 
       const keyboardHandler = createKeyboardHandler(initCanvas, {
         onUpload: () => fileInputRef.current?.click(),
-        onExport: () => HandleExportImage(initCanvas),
+        onExport: () => HandleExportImage(initCanvas, setError),
         onMarket: () => setMarket((prev) => !prev),
         onCrop: () => (isCropping ? cancelCrop() : startCropping()),
         onPfp: () => setShowPFPModal(true),
@@ -121,6 +122,14 @@ function RouteComponent() {
       };
     }
   }, []);
+
+  React.useEffect(() => {
+    if (error) {
+      setShowError(true);
+      const timer = setTimeout(() => setShowError(false), 2900);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const handleLocalDragOver = (e) => {
     setIsDragging(handleDragOver(e));
@@ -181,7 +190,7 @@ function RouteComponent() {
           <div className="flex gap-4 flex-col items-center">
             <ButtonWithTooltip icon={Upload} tooltip="Upload Image" shortcut="U" onClick={() => fileInputRef.current?.click()} />
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLocalImageUpload} style={{display: "none"}} />
-            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" shortcut="E" onClick={() => HandleExportImage(canvas)} />
+            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" shortcut="E" onClick={() => HandleExportImage(canvas, setError)} />
             <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" shortcut="M" onClick={() => setMarket(!market)} active={market} />
             <ButtonWithTooltip icon={Crop} tooltip="Crop Image" shortcut="C" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
             <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" shortcut="P" onClick={() => setShowPFPModal(true)} />
@@ -214,7 +223,13 @@ function RouteComponent() {
       {market && <Market canvas={canvas} />}
       <CropControls canvas={canvas} isActive={isCropping} onComplete={applyCrop} onCancel={cancelCrop} />
 
-      {error && <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">{error}</div>}
+      <div
+        className={`fixed top-4 left-1/2 transform -translate-x-1/2 
+          bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50
+          transition-all duration-300 ease-in-out
+          ${showError ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}`}>
+        {error}
+      </div>
 
       <PFPModal isOpen={showPFPModal} onClose={() => setShowPFPModal(false)} onSelect={handlePFPSelect} />
       <BackgroundRemovalModal isOpen={showBgRemovalModal} onClose={() => setShowBgRemovalModal(false)} canvas={canvas} />
