@@ -10,7 +10,7 @@ from flask import (
     url_for,
 )
 from flask_cors import cross_origin
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_login import current_user, login_user, logout_user
 from models import OAuthConnection, User
 from requests_oauthlib import OAuth2Session
 

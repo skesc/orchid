@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -38,7 +39,7 @@ class Config:
     GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 
     # Application Settings
-    FRONTEND_URL = os.getenv("FRONTEND_URL")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
     ENV = os.getenv("ENV", "production")
     ADMIN_EMAILS = [
         email.strip()
@@ -54,4 +55,12 @@ class Config:
     S3_ENDPOINT = os.getenv("S3_ENDPOINT")
     S3_ACCESS_KEY = os.getenv("S3_ACCESS_KEY")
     S3_SECRET_KEY = os.getenv("S3_SECRET_KEY")
-    S3_BUCKET = os.getenv("S3_BUCKET", "orchid")
+    S3_BUCKET = os.getenv("S3_BUCKET")
+
+    # Image Cache
+    MAX_CACHE_SIZE_BYTES = 1000 * 1024 * 1024  # 1GB max cache size
+    CACHE_DIR = os.getenv("CACHE_DIR", "cache")
+    CACHE_DURATION = timedelta(days=7)
+    THUMBNAIL_QUALITY = 30
+    PREVIEW_QUALITY = 50
+    FULL_QUALITY = 90

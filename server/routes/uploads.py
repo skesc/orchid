@@ -1,11 +1,11 @@
 import hashlib
 import io
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 from config import Config
-from flask import Blueprint, abort, redirect, request, send_file
+from flask import Blueprint, abort, request, send_file
 from PIL import Image
 from s3 import get_s3_client
 from werkzeug.utils import secure_filename
@@ -13,15 +13,12 @@ from werkzeug.utils import secure_filename
 uploads_bp = Blueprint("uploads", __name__)
 
 VALID_FOLDERS = ["nobg", "marketplace"]
-VALID_FORMATS = ["webp"]
-CACHE_DIR = "cache"
-CACHE_DURATION = timedelta(days=7)
-MAX_CACHE_SIZE_BYTES = 1000 * 1024 * 1024  # 1GB default max cache size
-
-# Image quality presets
-THUMBNAIL_QUALITY = 30
-PREVIEW_QUALITY = 50
-FULL_QUALITY = 90
+CACHE_DIR = Config.CACHE_DIR
+CACHE_DURATION = Config.CACHE_DURATION
+MAX_CACHE_SIZE_BYTES = Config.MAX_CACHE_SIZE_BYTES
+THUMBNAIL_QUALITY = Config.THUMBNAIL_QUALITY
+PREVIEW_QUALITY = Config.PREVIEW_QUALITY
+FULL_QUALITY = Config.FULL_QUALITY
 
 
 def get_cache_key(key, width, height, quality):
