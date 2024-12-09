@@ -2,7 +2,7 @@ import {FabricImage} from "fabric";
 import {Tag, Trash2} from "lucide-react";
 import React from "react";
 import {useAuth} from "../../contexts/AuthContext";
-import {getOptimizedImageUrl, OptimizedImage} from "../../utils/ImageLoader.jsx";
+import {getOptimizedImageUrl, OptimizedImage} from "../../utils/ImageLoader";
 import {API_URL} from "../../utils/fetchConfig";
 
 export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
@@ -31,7 +31,13 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   const handleUse = () => {
     if (!canvas) return;
 
-    const previewUrl = getOptimizedImageUrl(item.image_path, {quality: 50});
+    // use preview quality for initial quick load
+    const previewUrl = getOptimizedImageUrl(item.image_path, {
+      width: item.width,
+      quality: 50,
+      originalWidth: item.width,
+    });
+
     const img = new Image();
     img.crossOrigin = "anonymous";
 
@@ -41,6 +47,7 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
         name: item.name,
       });
 
+      // scale image if it's too large for viewport
       const maxWidth = window.innerWidth * 0.9;
       const maxHeight = window.innerHeight * 0.9;
 
@@ -56,8 +63,11 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
       canvas.setActiveObject(fabricImage);
       canvas.renderAll();
 
-      // upgrade to full quality after the image is loaded
-      const fullQualityUrl = getOptimizedImageUrl(item.image_path, {quality: 90});
+      const fullQualityUrl = getOptimizedImageUrl(item.image_path, {
+        quality: 90,
+        originalWidth: item.width,
+      });
+
       const fullQualityImg = new Image();
       fullQualityImg.crossOrigin = "anonymous";
 
@@ -76,7 +86,7 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   return (
     <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group h-full flex flex-col">
       <div className="relative">
-        <OptimizedImage src={item.image_path} alt={item.name} size="preview" className="h-32 w-full object-cover" />
+        <OptimizedImage src={item.image_path} alt={item.name} size="preview" originalWidth={item.width} className="h-32 w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 

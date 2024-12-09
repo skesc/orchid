@@ -13,11 +13,13 @@
 - [x] undo and redo state do not update on the layers panel sometimes
 - [x] undo/redo broken for crop since it makes multiple layers
 - [x] deleting is slightly broken in admin panel, works but causes an error. sometimes?
+- [x] prevent upscaling of images
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 - [ ] undoing on a group, removes the group 💀
 
 ### High Priotity
 
+- [ ] svg support (main issue is with cropping, and properly displaying error messages such as "svg is not supported" or similar when the backend returns an error)
 - [ ] Move the selfhosted s3 to a faster server, setup caching over on cloudflare as well
 - [x] speed up s3 fetching, implement heavy caching
 - [x] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize

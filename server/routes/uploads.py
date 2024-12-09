@@ -34,6 +34,13 @@ def optimize_image(image_data, width=None, height=None, quality=PREVIEW_QUALITY)
 
     if width or height:
         original_width, original_height = img.size
+
+        # prevent upscaling
+        if width and width > original_width:
+            width = original_width
+        if height and height > original_height:
+            height = original_height
+
         if width and height:
             new_size = (int(width), int(height))
         elif width:
@@ -42,7 +49,9 @@ def optimize_image(image_data, width=None, height=None, quality=PREVIEW_QUALITY)
         else:
             ratio = float(height) / original_height
             new_size = (int(original_width * ratio), int(height))
-        img = img.resize(new_size, Image.Resampling.LANCZOS)
+
+        if new_size != img.size:
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
 
     output = io.BytesIO()
     img.save(output, format="WEBP", quality=quality, method=4)

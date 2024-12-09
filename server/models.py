@@ -44,6 +44,8 @@ class MarketplaceItem(db.Model):
     description = db.Column(db.Text)
     categories = db.Column(db.JSON)
     is_private = db.Column(db.Boolean, default=False)
+    width = db.Column(db.Integer)  # Added field
+    height = db.Column(db.Integer)  # Added field
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(
         db.DateTime,
@@ -55,7 +57,6 @@ class MarketplaceItem(db.Model):
 
     @property
     def image_path(self):
-        """Generate S3 path for the item"""
         return f"/uploads/marketplace/{self.uuid}"
 
     def to_dict(self):
@@ -64,6 +65,8 @@ class MarketplaceItem(db.Model):
             "name": self.name,
             "description": self.description,
             "image_path": self.image_path,
+            "width": self.width,
+            "height": self.height,
             "categories": self.categories,
             "is_private": self.is_private,
             "created_at": self.created_at.isoformat(),
