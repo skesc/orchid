@@ -133,7 +133,13 @@ async function handleImagePaste(event, canvas) {
     event.preventDefault();
     try {
       const blob = imageItem.getAsFile();
-      const blobUrl = window.URL.createObjectURL(blob);
+      // convert blob to base64 data URL
+      const reader = new FileReader();
+      const dataUrl = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Failed to read image file"));
+        reader.readAsDataURL(blob);
+      });
 
       const imgElement = document.createElement("img");
       imgElement.crossOrigin = "anonymous";
@@ -158,10 +164,9 @@ async function handleImagePaste(event, canvas) {
           resolve(image);
         };
         imgElement.onerror = () => reject(new Error("Failed to load pasted image"));
-        imgElement.src = blobUrl;
+        imgElement.src = dataUrl;
       });
 
-      window.URL.revokeObjectURL(blobUrl);
       canvas.add(fabricImage);
       canvas.centerObject(fabricImage);
       canvas.setActiveObject(fabricImage);

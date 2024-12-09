@@ -18,6 +18,7 @@
 
 ### High Priotity
 
+- [ ] Move the selfhosted s3 to a faster server, setup caching over on cloudflare as well
 - [x] speed up s3 fetching, implement heavy caching
 - [x] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
