@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 (cd server &&
     pip3 install -r requirements.txt &&
