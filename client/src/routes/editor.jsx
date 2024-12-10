@@ -1,9 +1,22 @@
-import {createFileRoute} from "@tanstack/react-router";
-import {Canvas, FabricImage} from "fabric";
-import {Crop, Eraser, ImageDown, Layers, Sliders, Store, Type, Upload, UserSquare2} from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Canvas, FabricImage } from "fabric";
+import {
+  Crop,
+  Eraser,
+  ImageDown,
+  Layers,
+  Sliders,
+  Store,
+  Type,
+  Upload,
+  UserSquare2,
+} from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
-import {CropControls, useCropManager} from "../components/editor/CropControls";
+import {
+  CropControls,
+  useCropManager,
+} from "../components/editor/CropControls";
 import HandleExportImage from "../components/editor/HandleExportImage";
 import History from "../components/editor/History";
 import ImageAdjustments from "../components/editor/ImageAdjustments";
@@ -12,11 +25,16 @@ import Market from "../components/editor/Market";
 import PFPModal from "../components/editor/PFPModal";
 import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
-import {ButtonWithTooltip} from "../components/editor/Tooltip";
+import { ButtonWithTooltip } from "../components/editor/Tooltip";
 import ZoomSlider from "../components/editor/ZoomSlider";
-import {useCanvasHistory} from "../hooks/useHistory";
-import {handleDragLeave, handleDragOver, handleDrop, handleImageUpload} from "../utils/ImageHandlers";
-import {createKeyboardHandler} from "../utils/KeyboardHandlers";
+import { useCanvasHistory } from "../hooks/useHistory";
+import {
+  handleDragLeave,
+  handleDragOver,
+  handleDrop,
+  handleImageUpload,
+} from "../utils/ImageHandlers";
+import { createKeyboardHandler } from "../utils/KeyboardHandlers";
 
 export const Route = createFileRoute("/editor")({
   component: RouteComponent,
@@ -39,7 +57,21 @@ function RouteComponent() {
   const undoRef = React.useRef(null);
   const redoRef = React.useRef(null);
 
-  const {undo, redo, history, historyRedo} = useCanvasHistory(canvas);
+  const [textOptions, setTextOptions] = React.useState({
+    text: "Click to edit",
+    fontSize: 32,
+    fontFamily: "Chakra Petch",
+    textAlign: "center",
+    fill: "#ffffff",
+    backgroundColor: "#00000000",
+    bold: false,
+    italic: false,
+    stroke: "#00000000",
+    strokeWidth: 0,
+    underline: false,
+  });
+
+  const { undo, redo, history, historyRedo } = useCanvasHistory(canvas);
   undoRef.current = undo;
   redoRef.current = redo;
 
@@ -60,7 +92,35 @@ function RouteComponent() {
         const activeObj = initCanvas.getActiveObject();
         if (activeObj && activeObj.type === "textbox") {
           setShowTextPanel(true);
+          setTextOptions({
+            text: activeObj.text,
+            fontSize: activeObj.fontSize,
+            fontFamily: activeObj.fontFamily,
+            textAlign: activeObj.textAlign,
+            fill: activeObj.fill,
+            backgroundColor: activeObj.backgroundColor,
+            bold: activeObj.fontWeight == "bold" ? true : false,
+            italic: activeObj.fontStyle == "italic" ? true : false,
+            stroke: activeObj.stroke,
+            strokeWidth: activeObj.strokeWidth,
+            underline: activeObj.underline,
+          });
           setTextMode("edit");
+        } else {
+          setTextMode("create");
+          setTextOptions({
+            text: "Click to edit",
+            fontSize: 32,
+            fontFamily: "Chakra Petch",
+            textAlign: "center",
+            fill: "#ffffff",
+            backgroundColor: "#00000000",
+            bold: false,
+            italic: false,
+            stroke: "#00000000",
+            strokeWidth: 0,
+            underline: false,
+          });
         }
         if (evt.ctrlKey) {
           const target = opt.target;
@@ -109,6 +169,34 @@ function RouteComponent() {
         onRedo: () => redoRef.current?.(),
       });
 
+      // TODO: very immature naming of functon also PLESAE do so keyboard handler is inside a functional component because my ass NEEDS to use hook
+      const resetModes = (ev) => {
+        const activeElement = document.activeElement;
+        const isInputField =
+          activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          activeElement.contentEditable === "true";
+
+        if (isInputField) return;
+        if (ev.key == "Backspace" || ev.key == "Delete") {
+          setTextMode("create");
+          setTextOptions({
+            text: "Click to edit",
+            fontSize: 32,
+            fontFamily: "Chakra Petch",
+            textAlign: "center",
+            fill: "#ffffff",
+            backgroundColor: "#00000000",
+            bold: false,
+            italic: false,
+            stroke: "#00000000",
+            strokeWidth: 0,
+            underline: false,
+          });
+        }
+      };
+
+      document.addEventListener("keydown", resetModes);
       document.addEventListener("keydown", keyboardHandler);
 
       setCanvas(initCanvas);
@@ -118,7 +206,10 @@ function RouteComponent() {
         initCanvas.dispose();
         window.removeEventListener("resize", handleResize);
         document.removeEventListener("keydown", keyboardHandler);
-        document.removeEventListener("paste", (e) => handlePaste(e, initCanvas));
+        document.removeEventListener("keydown", resetModes);
+        document.removeEventListener("paste", (e) =>
+          handlePaste(e, initCanvas),
+        );
       };
     }
   }, []);
@@ -148,7 +239,8 @@ function RouteComponent() {
     handleImageUpload(event, canvas, setError);
   };
 
-  const {isCropping, startCropping, applyCrop, cancelCrop} = useCropManager(canvas);
+  const { isCropping, startCropping, applyCrop, cancelCrop } =
+    useCropManager(canvas);
 
   const handlePFPSelect = async (url) => {
     if (!canvas || !url) return;
@@ -188,16 +280,72 @@ function RouteComponent() {
       <div className="fixed h-screen w-24 z-10 p-5">
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">
           <div className="flex gap-4 flex-col items-center">
-            <ButtonWithTooltip icon={Upload} tooltip="Upload Image" shortcut="U" onClick={() => fileInputRef.current?.click()} />
-            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleLocalImageUpload} style={{display: "none"}} />
-            <ButtonWithTooltip icon={ImageDown} tooltip="Export Image" shortcut="E" onClick={() => HandleExportImage(canvas, setError)} />
-            <ButtonWithTooltip icon={Store} tooltip="Toggle Marketplace" shortcut="M" onClick={() => setMarket(!market)} active={market} />
-            <ButtonWithTooltip icon={Crop} tooltip="Crop Image" shortcut="C" onClick={isCropping ? cancelCrop : startCropping} active={isCropping} />
-            <ButtonWithTooltip icon={UserSquare2} tooltip="Get Profile Picture" shortcut="P" onClick={() => setShowPFPModal(true)} />
-            <ButtonWithTooltip icon={Eraser} tooltip="Remove Background" shortcut="B" onClick={() => setShowBgRemovalModal(true)} />
-            <ButtonWithTooltip icon={Sliders} tooltip="Image Adjustments" shortcut="I" onClick={() => setShowAdjustments(!showAdjustments)} active={showAdjustments} />
-            <ButtonWithTooltip icon={Type} tooltip="Add Text" shortcut="T" onClick={() => setShowTextPanel(true)} active={showTextPanel} />
-            <ButtonWithTooltip icon={Layers} tooltip="Layers" shortcut="L" onClick={() => setShowLayers(!showLayers)} active={showLayers} />
+            <ButtonWithTooltip
+              icon={Upload}
+              tooltip="Upload Image"
+              shortcut="U"
+              onClick={() => fileInputRef.current?.click()}
+            />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={handleLocalImageUpload}
+              style={{ display: "none" }}
+            />
+            <ButtonWithTooltip
+              icon={ImageDown}
+              tooltip="Export Image"
+              shortcut="E"
+              onClick={() => HandleExportImage(canvas, setError)}
+            />
+            <ButtonWithTooltip
+              icon={Store}
+              tooltip="Toggle Marketplace"
+              shortcut="M"
+              onClick={() => setMarket(!market)}
+              active={market}
+            />
+            <ButtonWithTooltip
+              icon={Crop}
+              tooltip="Crop Image"
+              shortcut="C"
+              onClick={isCropping ? cancelCrop : startCropping}
+              active={isCropping}
+            />
+            <ButtonWithTooltip
+              icon={UserSquare2}
+              tooltip="Get Profile Picture"
+              shortcut="P"
+              onClick={() => setShowPFPModal(true)}
+            />
+            <ButtonWithTooltip
+              icon={Eraser}
+              tooltip="Remove Background"
+              shortcut="B"
+              onClick={() => setShowBgRemovalModal(true)}
+            />
+            <ButtonWithTooltip
+              icon={Sliders}
+              tooltip="Image Adjustments"
+              shortcut="I"
+              onClick={() => setShowAdjustments(!showAdjustments)}
+              active={showAdjustments}
+            />
+            <ButtonWithTooltip
+              icon={Type}
+              tooltip="Add Text"
+              shortcut="T"
+              onClick={() => setShowTextPanel(true)}
+              active={showTextPanel}
+            />
+            <ButtonWithTooltip
+              icon={Layers}
+              tooltip="Layers"
+              shortcut="L"
+              onClick={() => setShowLayers(!showLayers)}
+              active={showLayers}
+            />
           </div>
 
           <div className="flex flex-col items-center gap-5">
@@ -206,12 +354,22 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-      <div className={`w-screen h-screen overflow-hidden ${isDragging ? "bg-violet-500/20" : ""} transition-all duration-300 ease-in-out`} onDragOver={handleLocalDragOver} onDragLeave={handleLocalDragLeave} onDrop={handleLocalDrop}>
-        <canvas ref={canvasRef} className="w-full h-full transition-transform duration-300 ease-in-out" />
+      <div
+        className={`w-screen h-screen overflow-hidden ${isDragging ? "bg-violet-500/20" : ""} transition-all duration-300 ease-in-out`}
+        onDragOver={handleLocalDragOver}
+        onDragLeave={handleLocalDragLeave}
+        onDrop={handleLocalDrop}
+      >
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full transition-transform duration-300 ease-in-out"
+        />
         {isDragging && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform scale-100 opacity-100">
-              <p className="text-lg font-semibold text-violet-600 transition-colors duration-300">Drop your image here</p>
+              <p className="text-lg font-semibold text-violet-600 transition-colors duration-300">
+                Drop your image here
+              </p>
             </div>
           </div>
         )}
@@ -219,20 +377,42 @@ function RouteComponent() {
 
       {showLayers && <LayerPanel canvas={canvas} />}
       {showAdjustments && <ImageAdjustments canvas={canvas} />}
-      <TextEditor canvas={canvas} isOpen={showTextPanel} textMode={textMode} setTextMode={setTextMode} onClose={() => setShowTextPanel(false)} />
+      <TextEditor
+        canvas={canvas}
+        isOpen={showTextPanel}
+        textMode={textMode}
+        setTextMode={setTextMode}
+        textOptions={textOptions}
+        setTextOptions={setTextOptions}
+        onClose={() => setShowTextPanel(false)}
+      />
       {market && <Market canvas={canvas} />}
-      <CropControls canvas={canvas} isActive={isCropping} onComplete={applyCrop} onCancel={cancelCrop} />
+      <CropControls
+        canvas={canvas}
+        isActive={isCropping}
+        onComplete={applyCrop}
+        onCancel={cancelCrop}
+      />
 
       <div
         className={`fixed top-4 left-1/2 transform -translate-x-1/2 
           bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50
           transition-all duration-300 ease-in-out
-          ${showError ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}`}>
+          ${showError ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}`}
+      >
         {error}
       </div>
 
-      <PFPModal isOpen={showPFPModal} onClose={() => setShowPFPModal(false)} onSelect={handlePFPSelect} />
-      <BackgroundRemovalModal isOpen={showBgRemovalModal} onClose={() => setShowBgRemovalModal(false)} canvas={canvas} />
+      <PFPModal
+        isOpen={showPFPModal}
+        onClose={() => setShowPFPModal(false)}
+        onSelect={handlePFPSelect}
+      />
+      <BackgroundRemovalModal
+        isOpen={showBgRemovalModal}
+        onClose={() => setShowBgRemovalModal(false)}
+        canvas={canvas}
+      />
     </div>
   );
 }
