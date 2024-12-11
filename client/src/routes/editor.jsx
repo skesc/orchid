@@ -27,6 +27,7 @@ import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
 import { ButtonWithTooltip } from "../components/editor/Tooltip";
 import ZoomSlider from "../components/editor/ZoomSlider";
+import { useEditor } from "../contexts/EditorContext.jsx";
 import { useCanvasHistory } from "../hooks/useHistory";
 import {
   handleDragLeave,
@@ -57,19 +58,7 @@ function RouteComponent() {
   const undoRef = React.useRef(null);
   const redoRef = React.useRef(null);
 
-  const [textOptions, setTextOptions] = React.useState({
-    text: "Click to edit",
-    fontSize: 32,
-    fontFamily: "Chakra Petch",
-    textAlign: "center",
-    fill: "#ffffff",
-    backgroundColor: "#00000000",
-    bold: false,
-    italic: false,
-    stroke: "#00000000",
-    strokeWidth: 0,
-    underline: false,
-  });
+  const { textOptions, setTextOptions } = useEditor();
 
   const { undo, redo, history, historyRedo } = useCanvasHistory(canvas);
   undoRef.current = undo;
@@ -382,8 +371,6 @@ function RouteComponent() {
         isOpen={showTextPanel}
         textMode={textMode}
         setTextMode={setTextMode}
-        textOptions={textOptions}
-        setTextOptions={setTextOptions}
         onClose={() => setShowTextPanel(false)}
       />
       {market && <Market canvas={canvas} />}

@@ -1,4 +1,5 @@
 import { Textbox } from "fabric";
+import { useEditor } from "../../contexts/EditorContext.jsx";
 import {
   AlertCircle,
   AlignCenter,
@@ -25,15 +26,8 @@ const fonts = [
   "Helvetica",
 ];
 
-const TextEditor = ({
-  canvas,
-  isOpen,
-  onClose,
-  textMode,
-  setTextMode,
-  textOptions,
-  setTextOptions,
-}) => {
+const TextEditor = ({ canvas, isOpen, onClose, textMode, setTextMode }) => {
+  const { textOptions, setTextOptions } = useEditor();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showStrokePicker, setShowStrokePicker] = useState(false);
   const [showBgColorPicker, setShowBgColorPicker] = useState(false);

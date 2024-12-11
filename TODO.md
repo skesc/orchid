@@ -19,6 +19,8 @@
 
 ### High Priotity
 
+- [ ] EXTREMELY HIGH PRIORITY: MOVE ALL EDITOR SETTINGS LIKE TEXT SETTINGS INTO ITS OWN CONTENT
+- [ ] Make keyboard bindings a hook i guess because i need to run hooks inside it
 - [ ] svg support (main issue is with cropping, and properly displaying error messages such as "svg is not supported" or similar when the backend returns an error)
 - [ ] Move the selfhosted s3 to a faster server, setup caching over on cloudflare as well
 - [x] speed up s3 fetching, implement heavy caching
