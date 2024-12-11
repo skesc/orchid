@@ -53,12 +53,11 @@ function RouteComponent() {
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
   const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900); // Only show layers on screens >= 900px
-  const [textMode, setTextMode] = React.useState("create");
   const [isDragging, setIsDragging] = React.useState(false);
   const undoRef = React.useRef(null);
   const redoRef = React.useRef(null);
 
-  const { textOptions, setTextOptions } = useEditor();
+  const { textOptions, setTextOptions, textMode, setTextMode } = useEditor();
 
   const { undo, redo, history, historyRedo } = useCanvasHistory(canvas);
   undoRef.current = undo;
@@ -369,8 +368,6 @@ function RouteComponent() {
       <TextEditor
         canvas={canvas}
         isOpen={showTextPanel}
-        textMode={textMode}
-        setTextMode={setTextMode}
         onClose={() => setShowTextPanel(false)}
       />
       {market && <Market canvas={canvas} />}

@@ -16,10 +16,11 @@
 - [x] prevent upscaling of images
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 - [ ] undoing on a group, removes the group 💀
+- [ ] On editing a text, and then clicking modify, the content of text changes to whatever is in textOptions.text. Possible bugfix is to update the textOptions.text while the user is editing the text on canvas.
 
 ### High Priotity
 
-- [ ] EXTREMELY HIGH PRIORITY: MOVE ALL EDITOR SETTINGS LIKE TEXT SETTINGS INTO ITS OWN CONTENT
+- [x] EXTREMELY HIGH PRIORITY: MOVE ALL EDITOR SETTINGS LIKE TEXT SETTINGS INTO ITS OWN CONTEXT
 - [ ] Make keyboard bindings a hook i guess because i need to run hooks inside it
 - [ ] svg support (main issue is with cropping, and properly displaying error messages such as "svg is not supported" or similar when the backend returns an error)
 - [ ] Move the selfhosted s3 to a faster server, setup caching over on cloudflare as well
@@ -30,7 +31,7 @@
 - [ ] Maybe try using the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
 - [ ] Being able to add rectangles (color configurable)
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
-- [ ] (!!) Editing paramaters of already existing texts
+- [x] (!!) Editing paramaters of already existing texts
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [ ] Options to export by png,jpg,webp,json (can be imported)
 - [ ] (!!) Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)

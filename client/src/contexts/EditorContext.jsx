@@ -17,8 +17,12 @@ export function EditorProvider({ children }) {
     underline: false,
   });
 
+  const [textMode, setTextMode] = React.useState("create");
+
   return (
-    <EditorContext.Provider value={{ textOptions, setTextOptions }}>
+    <EditorContext.Provider
+      value={{ textOptions, setTextOptions, textMode, setTextMode }}
+    >
       {children}
     </EditorContext.Provider>
   );

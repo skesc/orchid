@@ -26,8 +26,8 @@ const fonts = [
   "Helvetica",
 ];
 
-const TextEditor = ({ canvas, isOpen, onClose, textMode, setTextMode }) => {
-  const { textOptions, setTextOptions } = useEditor();
+const TextEditor = ({ canvas, isOpen, onClose }) => {
+  const { textOptions, setTextOptions, textMode, setTextMode } = useEditor();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showStrokePicker, setShowStrokePicker] = useState(false);
   const [showBgColorPicker, setShowBgColorPicker] = useState(false);
