@@ -136,6 +136,11 @@ function RouteComponent() {
         }
       });
 
+      initCanvas.on("text:changed", (opt) => {
+        const textObj = opt.target;
+        setTextOptions({ ...textOptions, text: textObj.text });
+      });
+
       const handleResize = () => {
         initCanvas.setWidth(window.innerWidth);
         initCanvas.setHeight(window.innerHeight);
