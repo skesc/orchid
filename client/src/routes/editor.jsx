@@ -128,6 +128,23 @@ function RouteComponent() {
         }
       });
 
+      initCanvas.on("object:removed", (opt) => {
+        setTextMode("create");
+        setTextOptions({
+          text: "Click to edit",
+          fontSize: 32,
+          fontFamily: "Chakra Petch",
+          textAlign: "center",
+          fill: "#ffffff",
+          backgroundColor: "#00000000",
+          bold: false,
+          italic: false,
+          stroke: "#00000000",
+          strokeWidth: 0,
+          underline: false,
+        });
+      });
+
       // Update group interaction based on ctrl key
       initCanvas.on("mouse:move", (opt) => {
         const activeObj = initCanvas.getActiveObject();

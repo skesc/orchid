@@ -57,6 +57,8 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
       canvas.add(text);
       canvas.setActiveObject(text);
       canvas.renderAll();
+
+      setTextMode("edit");
     } else {
       const activeObject = canvas.getActiveObject();
       if (
@@ -82,7 +84,6 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
       canvas.renderAll();
       setTextMode("create");
     }
-    onClose();
   };
 
   const toggleAlign = (style) => {
