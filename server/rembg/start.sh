@@ -19,6 +19,3 @@ img = Image.new('RGB', (100, 100), color='red')
 remove(np.array(img), session=session)
 print(f'rembg preloaded successfully with model: {session.model_name}')
 "
-
-# start flask server
-gunicorn --bind 0.0.0.0:5001 --workers 2 --timeout 120 --preload --log-level info --access-logfile - --error-logfile - app:app
