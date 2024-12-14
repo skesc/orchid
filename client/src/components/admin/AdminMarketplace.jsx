@@ -1,7 +1,8 @@
 import { Eye, EyeOff, Search, Trash2 } from "lucide-react";
 import React from "react";
 import { API_URL, apiFetch } from "../../utils/fetchConfig";
-import { OptimizedImage } from "../../utils/ImageLoader.jsx";
+import ImageLoader from "../../utils/ImageLoader";
+const { OptimizedImage } = ImageLoader;
 
 export default function AdminMarketplace() {
   const [items, setItems] = React.useState([]);

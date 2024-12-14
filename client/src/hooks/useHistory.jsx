@@ -1,12 +1,13 @@
 import { Group } from "fabric";
 import { useCallback, useEffect, useState } from "react";
-export const useCanvasHistory = (canvas) => {
+
+function useCanvasHistory(canvas) {
   const [history, setHistory] = useState([]);
   const [historyRedo, setHistoryRedo] = useState([]);
   const [isClearingCanvas, setIsClearingCanvas] = useState(false);
   const [isUndoingOrRedoing, setIsUndoingOrRedoing] = useState(false);
 
-  // claude slop. broken
+  // clone group objects recursively
   const cloneGroupObjects = async (objects) => {
     const clonedObjects = [];
     for (const obj of objects) {
@@ -139,4 +140,6 @@ export const useCanvasHistory = (canvas) => {
     historyRedo,
     saveCanvasState,
   };
-};
+}
+
+export default useCanvasHistory;

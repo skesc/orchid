@@ -13,10 +13,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 import BackgroundRemovalModal from "../components/editor/BackgroundRemovalModal";
-import {
-  CropControls,
-  useCropManager,
-} from "../components/editor/CropControls";
+import CropControlsExports from "../components/editor/CropControls";
 import HandleExportImage from "../components/editor/HandleExportImage";
 import History from "../components/editor/History";
 import ImageAdjustments from "../components/editor/ImageAdjustments";
@@ -28,7 +25,7 @@ import TextEditor from "../components/editor/TextEditor";
 import { ButtonWithTooltip } from "../components/editor/Tooltip";
 import ZoomSlider from "../components/editor/ZoomSlider";
 import { useEditor } from "../contexts/EditorContext.jsx";
-import { useCanvasHistory } from "../hooks/useHistory";
+import useCanvasHistory from "../hooks/useHistory";
 import {
   handleDragLeave,
   handleDragOver,
@@ -58,6 +55,7 @@ function RouteComponent() {
   const redoRef = React.useRef(null);
 
   const { textOptions, setTextOptions, textMode, setTextMode } = useEditor();
+  const { CropControls, useCropManager } = CropControlsExports;
 
   const { undo, redo, history, historyRedo } = useCanvasHistory(canvas);
   undoRef.current = undo;
@@ -278,7 +276,7 @@ function RouteComponent() {
       };
 
       reader.readAsDataURL(blob);
-    } catch (error) {
+    } catch {
       setError("Failed to load profile picture. Please try again.");
     }
   };

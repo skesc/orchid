@@ -6,7 +6,7 @@ import {
   RotateCw,
   Sliders,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const ImageAdjustments = ({ canvas }) => {
   const [activeObject, setActiveObject] = useState(null);

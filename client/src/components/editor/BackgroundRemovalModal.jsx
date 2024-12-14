@@ -2,7 +2,8 @@ import { FabricImage } from "fabric";
 import { AlertTriangle, Loader2, X } from "lucide-react";
 import React from "react";
 import { API_URL } from "../../utils/fetchConfig";
-import { getFullQualityUrl } from "../../utils/ImageLoader.jsx";
+import ImageLoader from "../../utils/ImageLoader";
+const { getFullQualityUrl } = ImageLoader;
 
 export default function BackgroundRemovalModal({ isOpen, onClose, canvas }) {
   const [loading, setLoading] = React.useState(false);

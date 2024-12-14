@@ -1,5 +1,5 @@
 import { Check, ImageIcon, X } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { API_URL } from "../../utils/fetchConfig";
 
 export default function MarketplaceForm({ setMod, onSuccess }) {

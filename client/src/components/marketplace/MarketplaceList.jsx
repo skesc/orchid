@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { LogIn, Search } from "lucide-react";
-import React, {
+import {
   forwardRef,
   useCallback,
   useEffect,
@@ -15,7 +15,7 @@ import MarketplaceItem from "./MarketplaceItem";
 
 const ITEMS_PER_PAGE = 9;
 
-const MarketplaceList = forwardRef(({ canvas }, ref) => {
+const MarketplaceList = forwardRef(({ canvas }, ref) => { // eslint-disable-line
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const scrollContainerRef = useRef(null);

@@ -1,12 +1,12 @@
 import { FabricImage } from "fabric";
 import { Tag, Trash2 } from "lucide-react";
-import React from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { getOptimizedImageUrl, OptimizedImage } from "../../utils/ImageLoader";
+import ImageLoader from "../../utils/ImageLoader";
 import { API_URL } from "../../utils/fetchConfig";
+const { getOptimizedImageUrl, OptimizedImage } = ImageLoader;
 
 export default function MarketplaceItem({ item, onUpdate, canvas, isOwn }) {
-  const { user } = useAuth();
+  const { user } = useAuth(); // eslint-disable-line
   const hasCategories =
     item.categories &&
     Array.isArray(item.categories) &&

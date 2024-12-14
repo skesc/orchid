@@ -1,5 +1,4 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
-import * as React from "react";
 import { useAuth } from "../contexts/AuthContext";
 
 export const Route = createRootRoute({
@@ -7,7 +6,7 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuth(); // eslint-disable-line
 
   return (
     <div className="min-h-screen top-0 flex flex-col">

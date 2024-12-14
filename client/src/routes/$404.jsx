@@ -66,8 +66,8 @@ function NotFoundRoute() {
               Oops! Page Not Found
             </h1>
             <p className="text-neutral-600 mb-8">
-              Looks like you've wandered into uncharted territory. Don't worry
-              though, we can help you find your way back!
+              Looks like you&apos;ve wandered into uncharted territory.
+              Don&apos;t worry though, we can help you find your way back!
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

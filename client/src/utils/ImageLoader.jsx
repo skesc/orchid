@@ -9,7 +9,7 @@ const FULL_QUALITY = 90;
 const DEFAULT_PREVIEW_WIDTH = 800;
 const DEFAULT_THUMBNAIL_WIDTH = 200;
 
-export function getOptimizedImageUrl(path, options = {}) {
+function getOptimizedImageUrl(path, options = {}) {
   if (!path) return "";
 
   const { width, height, quality = PREVIEW_QUALITY, originalWidth } = options;
@@ -32,7 +32,7 @@ export function getOptimizedImageUrl(path, options = {}) {
   return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }
 
-export function getThumbnailUrl(path, originalWidth) {
+function getThumbnailUrl(path, originalWidth) {
   return getOptimizedImageUrl(path, {
     width: DEFAULT_THUMBNAIL_WIDTH,
     quality: THUMBNAIL_QUALITY,
@@ -40,7 +40,7 @@ export function getThumbnailUrl(path, originalWidth) {
   });
 }
 
-export function getPreviewUrl(path, originalWidth) {
+function getPreviewUrl(path, originalWidth) {
   return getOptimizedImageUrl(path, {
     width: DEFAULT_PREVIEW_WIDTH,
     quality: PREVIEW_QUALITY,
@@ -48,35 +48,43 @@ export function getPreviewUrl(path, originalWidth) {
   });
 }
 
-export function getFullQualityUrl(path) {
+function getFullQualityUrl(path) {
   return getOptimizedImageUrl(path, {
     quality: FULL_QUALITY,
   });
 }
 
-export function OptimizedImage({
-  src,
-  alt,
-  className,
-  size = "preview",
-  width,
-  originalWidth,
-  ...props
-}) {
-  const imageSrc =
-    size === "thumbnail"
-      ? getThumbnailUrl(src, originalWidth)
-      : size === "preview"
-        ? getPreviewUrl(src, originalWidth)
-        : getFullQualityUrl(src);
+const ImageLoader = {
+  getOptimizedImageUrl,
+  getThumbnailUrl,
+  getPreviewUrl,
+  getFullQualityUrl,
+  OptimizedImage: function OptimizedImage({
+    src,
+    alt,
+    className,
+    size = "preview",
+    width,
+    originalWidth,
+    ...props
+  }) {
+    const imageSrc =
+      size === "thumbnail"
+        ? getThumbnailUrl(src, originalWidth)
+        : size === "preview"
+          ? getPreviewUrl(src, originalWidth)
+          : getFullQualityUrl(src);
 
-  return (
-    <img
-      src={imageSrc}
-      alt={alt}
-      className={className}
-      loading="lazy"
-      {...props}
-    />
-  );
-}
+    return (
+      <img
+        src={imageSrc}
+        alt={alt}
+        className={className}
+        loading="lazy"
+        {...props}
+      />
+    );
+  },
+};
+
+export default ImageLoader;

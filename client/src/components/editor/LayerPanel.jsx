@@ -11,7 +11,7 @@ import {
   Ungroup,
   Unlock,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const LayerPanel = ({ canvas }) => {
   const [layers, setLayers] = useState([]);

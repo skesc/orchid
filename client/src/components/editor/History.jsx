@@ -1,5 +1,5 @@
 import { Redo, Undo } from "lucide-react";
-import { useCanvasHistory } from "../../hooks/useHistory";
+import useCanvasHistory from "../../hooks/useHistory";
 
 export default function History({ canvas }) {
   const { undo, redo, history, historyRedo } = useCanvasHistory(canvas);

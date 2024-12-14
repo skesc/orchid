@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CropManager } from "./CropManager";
 
 export function CropControls({ canvas, isActive, onComplete, onCancel }) {
@@ -22,43 +22,43 @@ export function CropControls({ canvas, isActive, onComplete, onCancel }) {
 }
 
 export function useCropManager(canvas) {
-  const cropManagerRef = React.useRef(null);
-  const [isCropping, setIsCropping] = React.useState(false);
+  const [cropManager, setCropManager] = useState(null);
+  const [isCropping, setIsCropping] = useState(false);
 
-  React.useEffect(() => {
-    if (canvas && !cropManagerRef.current) {
-      cropManagerRef.current = new CropManager(canvas);
+  useEffect(() => {
+    if (canvas && !cropManager) {
+      setCropManager(new CropManager(canvas));
     }
-  }, [canvas]);
+  }, [canvas, cropManager]);
 
-  const startCropping = React.useCallback(() => {
-    if (!cropManagerRef.current) return;
+  const startCropping = useCallback(() => {
+    if (!cropManager) return;
 
-    const success = cropManagerRef.current.startCropping();
+    const success = cropManager.startCropping();
     if (success) {
       setIsCropping(true);
     } else {
       alert("Please select an image to crop");
     }
-  }, []);
+  }, [cropManager]);
 
-  const applyCrop = React.useCallback(async () => {
-    if (!cropManagerRef.current) return;
+  const applyCrop = useCallback(async () => {
+    if (!cropManager) return;
 
-    const success = await cropManagerRef.current.applyCrop();
+    const success = await cropManager.applyCrop();
     if (success) {
       setIsCropping(false);
     }
-  }, []);
+  }, [cropManager]);
 
-  const cancelCrop = React.useCallback(() => {
-    if (!cropManagerRef.current) return;
+  const cancelCrop = useCallback(() => {
+    if (!cropManager) return;
 
-    const success = cropManagerRef.current.cancelCrop();
+    const success = cropManager.cancelCrop();
     if (success) {
       setIsCropping(false);
     }
-  }, []);
+  }, [cropManager]);
 
   return {
     isCropping,
@@ -67,3 +67,10 @@ export function useCropManager(canvas) {
     cancelCrop,
   };
 }
+
+const CropControlsExports = {
+  CropControls,
+  useCropManager,
+};
+
+export default CropControlsExports;

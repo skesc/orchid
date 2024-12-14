@@ -16,28 +16,30 @@
 - [x] prevent upscaling of images
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
 - [ ] undoing on a group, removes the group 💀
+- [ ] when cropping, i can actually move the box around of the crop selection which shouldnt happen
 - [x] On editing a text, and then clicking modify, the content of text changes to whatever is in textOptions.text. Possible bugfix is to update the textOptions.text while the user is editing the text on canvas.
 
 ### High Priotity
 
-- [x] EXTREMELY HIGH PRIORITY: MOVE ALL EDITOR SETTINGS LIKE TEXT SETTINGS INTO ITS OWN CONTEXT
+- [ ] sometimes there is stuff in s3 which is not in db, add a feature to admin to delete orphaned files?
 - [ ] Make keyboard bindings a hook i guess because i need to run hooks inside it
 - [ ] svg support (main issue is with cropping, and properly displaying error messages such as "svg is not supported" or similar when the backend returns an error)
-- [ ] Move the selfhosted s3 to a faster server, setup caching over on cloudflare as well
-- [x] speed up s3 fetching, implement heavy caching
-- [x] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
 - [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
 - [ ] Maybe try using the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
 - [ ] Being able to add rectangles (color configurable)
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
-- [x] (!!) Editing paramaters of already existing texts
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
 - [ ] Options to export by png,jpg,webp,json (can be imported)
 - [ ] (!!) Bunch of options just above the selected item (move front, move back, delete, remove background, for text put in bold, underline, italics)
 - [ ] FREE HAND DRAWING
 - [ ] Just put a lot of items in market place (assigned to nam)
 - [ ] Warping Images and Groups // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
+- [x] (!!) Editing paramaters of already existing texts
+- [x] (!!) Move all editor settings like text settings into its own context
+- [x] Move the selfhosted s3 to a faster server, setup caching over on cloudflare as well
+- [x] speed up s3 fetching, implement heavy caching
+- [x] dont serve images at full quality from s3, serve compressed versions by adding handlers in backend to resize
 - [x] update ALL MODELS to use UUIDs, and not routes like `/api/marketplace/items/1` (switch out the 1 for the uuid)
 - [x] litestream for sqlite db (for backup)
 - [x] switch out filenames for uuids for marketplace and nobg
