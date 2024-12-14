@@ -14,19 +14,16 @@
 - [x] undo/redo broken for crop since it makes multiple layers
 - [x] deleting is slightly broken in admin panel, works but causes an error. sometimes?
 - [x] prevent upscaling of images
-- [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority)
+- [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority) // the event handler for paste is messed up, refactor it to be like all the other ones
 - [ ] undoing on a group, removes the group 💀
 - [ ] when cropping, i can actually move the box around of the crop selection which shouldnt happen
 - [x] On editing a text, and then clicking modify, the content of text changes to whatever is in textOptions.text. Possible bugfix is to update the textOptions.text while the user is editing the text on canvas.
 
 ### High Priotity
 
-- [x] sometimes there is stuff in s3 which is not in db, add a feature to admin to delete orphaned files?
 - [ ] Make keyboard bindings a hook i guess because i need to run hooks inside it
 - [ ] svg support (main issue is with cropping, and properly displaying error messages such as "svg is not supported" or similar when the backend returns an error)
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
-- [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
-- [ ] Maybe try using the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
 - [ ] Being able to add rectangles (color configurable)
 - [ ] Eraser tool (can be used to remove inconsistencies from the removed background)
 - [ ] Snapping selections and moving wrt to edges of neighbouring elements
@@ -35,6 +32,9 @@
 - [ ] FREE HAND DRAWING
 - [ ] Just put a lot of items in market place (assigned to nam)
 - [ ] Warping Images and Groups // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
+- [ ] Segment things ai boom wow magick thing which splits a single image into a group of images
+- [ ] Maybe try using the segment thing to select stuff to REMOVE from the picutre (ie also adding some fill)
+- [x] sometimes there is stuff in s3 which is not in db, add a feature to admin to delete orphaned files?
 - [x] off-site s3 backup
 - [x] (!!) Editing paramaters of already existing texts
 - [x] (!!) Move all editor settings like text settings into its own context
@@ -62,6 +62,8 @@
 
 ### Low Priority
 
+- [ ] better dev scripts, and environments
+- [ ] is litestream really a viable solution? or switch to postgres or something
 - [ ] text panel doesn't render properly on low res screens (768p)
 - [ ] Need a better/faster background removing thing
 - [ ] Go over API rate limits properly

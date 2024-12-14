@@ -24,7 +24,7 @@ import ProfileSection from "../components/editor/ProfileSection";
 import TextEditor from "../components/editor/TextEditor";
 import { ButtonWithTooltip } from "../components/editor/Tooltip";
 import ZoomSlider from "../components/editor/ZoomSlider";
-import { useEditor } from "../contexts/EditorContext.jsx";
+import { useEditor } from "../contexts/EditorContext";
 import useCanvasHistory from "../hooks/useHistory";
 import {
   handleDragLeave,
