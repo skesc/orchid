@@ -15,7 +15,7 @@ import MarketplaceItem from "./MarketplaceItem";
 
 const ITEMS_PER_PAGE = 9;
 
-const MarketplaceList = forwardRef(({ canvas }, ref) => { // eslint-disable-line
+const MarketplaceList = forwardRef(({ canvas }, ref) => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const scrollContainerRef = useRef(null);
@@ -241,5 +241,7 @@ const MarketplaceList = forwardRef(({ canvas }, ref) => { // eslint-disable-line
     </div>
   );
 });
+
+MarketplaceList.displayName = "MarketplaceList";
 
 export default MarketplaceList;
