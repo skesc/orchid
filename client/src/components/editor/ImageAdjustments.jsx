@@ -1,6 +1,12 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import {filters} from "fabric";
-import {FlipHorizontal, FlipVertical, RefreshCw, RotateCw, Sliders} from "lucide-react";
+import { filters } from "fabric";
+import {
+  FlipHorizontal,
+  FlipVertical,
+  RefreshCw,
+  RotateCw,
+  Sliders,
+} from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const ImageAdjustments = ({ canvas }) => {
   const [activeObject, setActiveObject] = useState(null);
@@ -30,56 +36,60 @@ const ImageAdjustments = ({ canvas }) => {
     if (!canvas) return;
 
     const selectionEvents = [
-      'selection:created', 
-      'selection:cleared', 
-      'selection:updated'
+      "selection:created",
+      "selection:cleared",
+      "selection:updated",
     ];
 
-    selectionEvents.forEach(event => {
+    selectionEvents.forEach((event) => {
       canvas.on(event, handleSelection);
     });
 
     handleSelection();
 
     return () => {
-      selectionEvents.forEach(event => {
+      selectionEvents.forEach((event) => {
         canvas.off(event, handleSelection);
       });
     };
   }, [canvas, handleSelection]);
 
-  const applyFilter = useCallback((filterType, value) => {
-    if (!activeObject || !canvas) return;
+  const applyFilter = useCallback(
+    (filterType, value) => {
+      if (!activeObject || !canvas) return;
 
-    setAdjustments(prev => ({...prev, [filterType]: value}));
+      setAdjustments((prev) => ({ ...prev, [filterType]: value }));
 
-    requestAnimationFrame(() => {
-      const currentFilters = activeObject.filters || [];
-      const newFilters = currentFilters.filter(f => 
-        !['Blur', 'Brightness', 'Contrast', 'Saturation'].some(type => 
-          f instanceof filters[type]
-        )
-      );
-      const filterMap = {
-        blur: () => new filters.Blur({ blur: value / 10 }),
-        brightness: () => new filters.Brightness({ brightness: value / 100 }),
-        contrast: () => new filters.Contrast({ contrast: value / 100 }),
-        saturation: () => new filters.Saturation({ saturation: value / 100 })
-      };
+      requestAnimationFrame(() => {
+        const currentFilters = activeObject.filters || [];
+        const newFilters = currentFilters.filter(
+          (f) =>
+            !["Blur", "Brightness", "Contrast", "Saturation"].some(
+              (type) => f instanceof filters[type],
+            ),
+        );
+        const filterMap = {
+          blur: () => new filters.Blur({ blur: value / 10 }),
+          brightness: () => new filters.Brightness({ brightness: value / 100 }),
+          contrast: () => new filters.Contrast({ contrast: value / 100 }),
+          saturation: () => new filters.Saturation({ saturation: value / 100 }),
+        };
 
-      if (filterMap[filterType]) {
-        newFilters.push(filterMap[filterType]());
-      }
+        if (filterMap[filterType]) {
+          newFilters.push(filterMap[filterType]());
+        }
 
-      activeObject.filters = newFilters;
-      activeObject.applyFilters();
-      canvas.renderAll();
-    });
-  }, [activeObject, canvas]);
+        activeObject.filters = newFilters;
+        activeObject.applyFilters();
+        canvas.renderAll();
+      });
+    },
+    [activeObject, canvas],
+  );
 
   const handleRotate = useCallback(() => {
     if (!activeObject || !canvas) return;
-    
+
     requestAnimationFrame(() => {
       const currentAngle = activeObject.angle || 0;
       activeObject.rotate((currentAngle + 90) % 360);
@@ -87,18 +97,21 @@ const ImageAdjustments = ({ canvas }) => {
     });
   }, [activeObject, canvas]);
 
-  const handleFlip = useCallback((direction) => {
-    if (!activeObject || !canvas) return;
-    
-    requestAnimationFrame(() => {
-      if (direction === "horizontal") {
-        activeObject.set("flipX", !activeObject.flipX);
-      } else {
-        activeObject.set("flipY", !activeObject.flipY);
-      }
-      canvas.renderAll();
-    });
-  }, [activeObject, canvas]);
+  const handleFlip = useCallback(
+    (direction) => {
+      if (!activeObject || !canvas) return;
+
+      requestAnimationFrame(() => {
+        if (direction === "horizontal") {
+          activeObject.set("flipX", !activeObject.flipX);
+        } else {
+          activeObject.set("flipY", !activeObject.flipY);
+        }
+        canvas.renderAll();
+      });
+    },
+    [activeObject, canvas],
+  );
 
   const resetAdjustments = useCallback(() => {
     if (!activeObject || !canvas) return;
@@ -124,22 +137,25 @@ const ImageAdjustments = ({ canvas }) => {
   }, [activeObject, canvas]);
 
   // Render optimization
-  const renderSlider = useCallback((label, value, onChange, min = -100, max = 100) => (
-    <div className="space-y-2">
-      <div className="flex justify-between">
-        <label className="text-sm">{label}</label>
-        <span className="text-sm text-neutral-500">{value}</span>
+  const renderSlider = useCallback(
+    (label, value, onChange, min = -100, max = 100) => (
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <label className="text-sm">{label}</label>
+          <span className="text-sm text-neutral-500">{value}</span>
+        </div>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(parseInt(e.target.value))}
+          className="w-full accent-violet-500 hover:cursor-pointer"
+        />
       </div>
-      <input 
-        type="range" 
-        min={min} 
-        max={max} 
-        value={value} 
-        onChange={(e) => onChange(parseInt(e.target.value))}
-        className="w-full accent-violet-500 hover:cursor-pointer"
-      />
-    </div>
-  ), []);
+    ),
+    [],
+  );
 
   if (!activeObject) {
     return (
@@ -156,32 +172,50 @@ const ImageAdjustments = ({ canvas }) => {
           <Sliders size={16} />
           <h3 className="font-bold">Image Adjustments</h3>
         </div>
-        <button 
-          onClick={resetAdjustments} 
-          className="p-2 hover:bg-neutral-700 rounded-full transition-colors" 
-          title="Reset all adjustments"
-        >
+        <button
+          onClick={resetAdjustments}
+          className="p-2 hover:bg-neutral-700 rounded-full transition-colors"
+          title="Reset all adjustments">
           <RefreshCw size={16} />
         </button>
       </div>
 
       <div className="space-y-4">
-        {renderSlider('Brightness', adjustments.brightness, (val) => applyFilter('brightness', val))}
-        {renderSlider('Contrast', adjustments.contrast, (val) => applyFilter('contrast', val))}
-        {renderSlider('Saturation', adjustments.saturation, (val) => applyFilter('saturation', val))}
-        {renderSlider('Blur', adjustments.blur, (val) => applyFilter('blur', val), 0, 100)}
+        {renderSlider("Brightness", adjustments.brightness, (val) =>
+          applyFilter("brightness", val),
+        )}
+        {renderSlider("Contrast", adjustments.contrast, (val) =>
+          applyFilter("contrast", val),
+        )}
+        {renderSlider("Saturation", adjustments.saturation, (val) =>
+          applyFilter("saturation", val),
+        )}
+        {renderSlider(
+          "Blur",
+          adjustments.blur,
+          (val) => applyFilter("blur", val),
+          0,
+          100,
+        )}
 
         <div className="flex justify-between pt-2 gap-2">
           {[
-            { icon: RotateCw, label: 'Rotate', onClick: handleRotate },
-            { icon: FlipHorizontal, label: 'Flip H', onClick: () => handleFlip('horizontal') },
-            { icon: FlipVertical, label: 'Flip V', onClick: () => handleFlip('vertical') }
+            { icon: RotateCw, label: "Rotate", onClick: handleRotate },
+            {
+              icon: FlipHorizontal,
+              label: "Flip H",
+              onClick: () => handleFlip("horizontal"),
+            },
+            {
+              icon: FlipVertical,
+              label: "Flip V",
+              onClick: () => handleFlip("vertical"),
+            },
           ].map(({ icon: Icon, label, onClick }) => (
-            <button 
+            <button
               key={label}
-              onClick={onClick} 
-              className="flex-1 p-2 bg-neutral-300 rounded hover:bg-neutral-400 transition-colors flex items-center justify-center gap-2"
-            >
+              onClick={onClick}
+              className="flex-1 p-2 bg-neutral-300 rounded hover:bg-neutral-400 transition-colors flex items-center justify-center gap-2">
               <Icon size={16} />
               <span className="text-sm">{label}</span>
             </button>

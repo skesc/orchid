@@ -21,8 +21,7 @@ export function EditorProvider({ children }) {
 
   return (
     <EditorContext.Provider
-      value={{ textOptions, setTextOptions, textMode, setTextMode }}
-    >
+      value={{ textOptions, setTextOptions, textMode, setTextMode }}>
       {children}
     </EditorContext.Provider>
   );

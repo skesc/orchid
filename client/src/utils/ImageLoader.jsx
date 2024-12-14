@@ -1,4 +1,4 @@
-import {API_URL} from "./fetchConfig";
+import { API_URL } from "./fetchConfig";
 
 // quality presets
 const THUMBNAIL_QUALITY = 30;
@@ -12,7 +12,7 @@ const DEFAULT_THUMBNAIL_WIDTH = 200;
 export function getOptimizedImageUrl(path, options = {}) {
   if (!path) return "";
 
-  const {width, height, quality = PREVIEW_QUALITY, originalWidth} = options;
+  const { width, height, quality = PREVIEW_QUALITY, originalWidth } = options;
   const params = new URLSearchParams();
 
   if (quality) params.set("q", quality);
@@ -54,8 +54,29 @@ export function getFullQualityUrl(path) {
   });
 }
 
-export function OptimizedImage({src, alt, className, size = "preview", width, originalWidth, ...props}) {
-  const imageSrc = size === "thumbnail" ? getThumbnailUrl(src, originalWidth) : size === "preview" ? getPreviewUrl(src, originalWidth) : getFullQualityUrl(src);
+export function OptimizedImage({
+  src,
+  alt,
+  className,
+  size = "preview",
+  width,
+  originalWidth,
+  ...props
+}) {
+  const imageSrc =
+    size === "thumbnail"
+      ? getThumbnailUrl(src, originalWidth)
+      : size === "preview"
+        ? getPreviewUrl(src, originalWidth)
+        : getFullQualityUrl(src);
 
-  return <img src={imageSrc} alt={alt} className={className} loading="lazy" {...props} />;
+  return (
+    <img
+      src={imageSrc}
+      alt={alt}
+      className={className}
+      loading="lazy"
+      {...props}
+    />
+  );
 }

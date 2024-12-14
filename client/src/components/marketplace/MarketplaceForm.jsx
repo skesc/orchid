@@ -1,8 +1,8 @@
-import {Check, ImageIcon, X} from "lucide-react";
-import React, {useState} from "react";
-import {API_URL} from "../../utils/fetchConfig";
+import { Check, ImageIcon, X } from "lucide-react";
+import React, { useState } from "react";
+import { API_URL } from "../../utils/fetchConfig";
 
-export default function MarketplaceForm({setMod, onSuccess}) {
+export default function MarketplaceForm({ setMod, onSuccess }) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -18,7 +18,7 @@ export default function MarketplaceForm({setMod, onSuccess}) {
   const [dragActive, setDragActive] = useState(false);
 
   const handleInputChange = (e) => {
-    const {name, value, type, checked} = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -160,7 +160,9 @@ export default function MarketplaceForm({setMod, onSuccess}) {
 
         <div className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1.5">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-neutral-700 mb-1.5">
               Name
             </label>
             <input
@@ -178,7 +180,9 @@ export default function MarketplaceForm({setMod, onSuccess}) {
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1.5">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-neutral-700 mb-1.5">
               Description
             </label>
             <textarea
@@ -195,7 +199,9 @@ export default function MarketplaceForm({setMod, onSuccess}) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Categories</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+              Categories
+            </label>
             <div className="space-y-3">
               <div className="relative">
                 <input
@@ -209,7 +215,9 @@ export default function MarketplaceForm({setMod, onSuccess}) {
                            transition duration-200"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="text-xs text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded">Enter ↵</div>
+                  <div className="text-xs text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded">
+                    Enter ↵
+                  </div>
                 </div>
               </div>
 
@@ -237,7 +245,9 @@ export default function MarketplaceForm({setMod, onSuccess}) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Image</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+              Image
+            </label>
             <div
               className={`relative rounded-lg transition-all duration-200 ${dragActive ? "border-violet-500 bg-violet-50" : "border-neutral-300 bg-white"} ${preview ? "border border-dashed" : "border-2 border-dashed"}`}
               onDragOver={(e) => {
@@ -249,12 +259,16 @@ export default function MarketplaceForm({setMod, onSuccess}) {
               <div className="p-8">
                 {preview ? (
                   <div className="flex items-center justify-center relative group">
-                    <img src={preview} alt="Preview" className="max-h-64 rounded-lg object-contain" />
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="max-h-64 rounded-lg object-contain"
+                    />
                     <button
                       type="button"
                       onClick={() => {
                         setPreview(null);
-                        setFormData((prev) => ({...prev, image: null}));
+                        setFormData((prev) => ({ ...prev, image: null }));
                       }}
                       className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 text-white 
                                 shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200
@@ -269,11 +283,23 @@ export default function MarketplaceForm({setMod, onSuccess}) {
                     </div>
                     <div className="text-center">
                       <label className="block">
-                        <span className="text-violet-600 font-medium hover:text-violet-700 cursor-pointer">Click to upload</span>
-                        <span className="text-neutral-600"> or drag and drop</span>
-                        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                        <span className="text-violet-600 font-medium hover:text-violet-700 cursor-pointer">
+                          Click to upload
+                        </span>
+                        <span className="text-neutral-600">
+                          {" "}
+                          or drag and drop
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
                       </label>
-                      <p className="text-sm text-neutral-500 mt-1">PNG, JPG up to 1MB</p>
+                      <p className="text-sm text-neutral-500 mt-1">
+                        PNG, JPG up to 1MB
+                      </p>
                     </div>
                   </div>
                 )}
@@ -283,14 +309,22 @@ export default function MarketplaceForm({setMod, onSuccess}) {
 
           <div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" name="is_private" checked={formData.is_private} onChange={handleInputChange} className="sr-only peer" />
+              <input
+                type="checkbox"
+                name="is_private"
+                checked={formData.is_private}
+                onChange={handleInputChange}
+                className="sr-only peer"
+              />
               <div
                 className="w-11 h-6 bg-neutral-300 peer-focus:outline-none peer-focus:ring-4 
                             peer-focus:ring-violet-300 rounded-full peer peer-checked:after:translate-x-full 
                             peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
                             after:left-[2px] after:bg-white after:border-neutral-300 after:border 
                             after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
-              <span className="ml-3 text-sm font-medium text-neutral-700">Make this item private</span>
+              <span className="ml-3 text-sm font-medium text-neutral-700">
+                Make this item private
+              </span>
             </label>
           </div>
         </div>
@@ -311,9 +345,24 @@ export default function MarketplaceForm({setMod, onSuccess}) {
                      transition duration-200 min-w-[100px] flex items-center justify-center">
             {loading ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
                 </svg>
                 Creating
               </>

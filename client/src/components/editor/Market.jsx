@@ -1,25 +1,33 @@
-import {Plus, X} from "lucide-react";
-import React, {useState} from "react";
-import {useAuth} from "../../contexts/AuthContext";
+import { Plus, X } from "lucide-react";
+import React, { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import MarketplaceForm from "../marketplace/MarketplaceForm";
 import MarketplaceList from "../marketplace/MarketplaceList";
 
-function Market({canvas}) {
+function Market({ canvas }) {
   const [showForm, setShowForm] = useState(false);
-  const {user} = useAuth();
+  const { user } = useAuth();
   const listRef = React.useRef();
 
   return (
     <>
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowForm(false)} />
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowForm(false)}
+          />
           <div className="relative w-full max-w-3xl bg-neutral-200 max-h-[90vh] rounded-xl shadow-xl transform transition-all mx-4">
-            <button onClick={() => setShowForm(false)} className="absolute right-4 top-4 text-neutral-400 hover:text-violet-600 transition-colors">
+            <button
+              onClick={() => setShowForm(false)}
+              className="absolute right-4 top-4 text-neutral-400 hover:text-violet-600 transition-colors">
               <X size={24} />
             </button>
             <div className="overflow-y-auto max-h-[90vh] scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300 px-8 py-6">
-              <MarketplaceForm setMod={setShowForm} onSuccess={() => listRef.current?.fetchItems()} />
+              <MarketplaceForm
+                setMod={setShowForm}
+                onSuccess={() => listRef.current?.fetchItems()}
+              />
             </div>
           </div>
         </div>
@@ -30,8 +38,13 @@ function Market({canvas}) {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <h2 className="text-2xl font-bold tracking-tight">Marketplace</h2>
               {user && (
-                <button onClick={() => setShowForm(true)} className="group flex items-center gap-2 bg-gradient-to-r from-violet-500 to-violet-600 text-white px-2 py-[5px] rounded-lg hover:from-violet-600 hover:to-violet-700 transition-all duration-200 shadow-lg hover:shadow-violet-500/25">
-                  <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="group flex items-center gap-2 bg-gradient-to-r from-violet-500 to-violet-600 text-white px-2 py-[5px] rounded-lg hover:from-violet-600 hover:to-violet-700 transition-all duration-200 shadow-lg hover:shadow-violet-500/25">
+                  <Plus
+                    size={20}
+                    className="group-hover:rotate-90 transition-transform duration-200"
+                  />
                   <span>Add Item</span>
                 </button>
               )}

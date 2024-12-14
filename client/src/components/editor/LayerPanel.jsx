@@ -291,20 +291,17 @@ const LayerPanel = ({ canvas }) => {
           ${canvas && canvas.getActiveObject() === layer.object ? "bg-violet-800/80 shadow-lg shadow-violet-500/20" : layer.type === "group" ? "bg-neutral-800/80 hover:bg-neutral-700/80" : "bg-neutral-800/40 hover:bg-neutral-700/40"}
           ${selectedLayers.has(layer.id) ? "ring-2 ring-violet-500 ring-opacity-50" : ""}
           ${layer.type === "group" ? "border border-neutral-700" : ""}`}
-        onClick={(e) => handleLayerClick(layer, e)}
-      >
+        onClick={(e) => handleLayerClick(layer, e)}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className="flex items-center gap-1">
             <button
               onClick={(e) => toggleVisibility(layer, e)}
-              className="hover:bg-neutral-600/50 p-1 rounded transition-colors"
-            >
+              className="hover:bg-neutral-600/50 p-1 rounded transition-colors">
               {layer.visible ? <Eye size={16} /> : <EyeOff size={16} />}
             </button>
             <button
               onClick={(e) => toggleLock(layer, e)}
-              className="hover:bg-neutral-600/50 p-1 rounded transition-colors"
-            >
+              className="hover:bg-neutral-600/50 p-1 rounded transition-colors">
               {layer.locked ? <Lock size={16} /> : <Unlock size={16} />}
             </button>
           </div>
@@ -327,14 +324,12 @@ const LayerPanel = ({ canvas }) => {
                 </div>
               )}
               <span
-                className={`text-sm truncate flex-1 ${layer.type === "group" ? "font-medium text-violet-200" : "text-neutral-200"}`}
-              >
+                className={`text-sm truncate flex-1 ${layer.type === "group" ? "font-medium text-violet-200" : "text-neutral-200"}`}>
                 {layer.name}
               </span>
               <button
                 onClick={(e) => handleNameEdit(layer, e)}
-                className="hover:bg-neutral-600/50 p-1 rounded opacity-0 group-hover:opacity-100 transition-all"
-              >
+                className="hover:bg-neutral-600/50 p-1 rounded opacity-0 group-hover:opacity-100 transition-all">
                 <Edit2 size={14} />
               </button>
             </div>
@@ -346,16 +341,14 @@ const LayerPanel = ({ canvas }) => {
             <button
               className="p-1 hover:bg-violet-600/50 rounded transition-colors"
               onClick={(e) => ungroupLayer(layer, e)}
-              title="Ungroup"
-            >
+              title="Ungroup">
               <Ungroup size={16} />
             </button>
           )}
           <button
             className="p-1 hover:bg-neutral-600/50 rounded transition-colors"
             onClick={(e) => moveLayer(index, "up", e, parentGroup)}
-            disabled={parentGroup ? index === 0 : index === 0}
-          >
+            disabled={parentGroup ? index === 0 : index === 0}>
             <ChevronUp size={16} className={index === 0 ? "opacity-50" : ""} />
           </button>
           <button
@@ -365,8 +358,7 @@ const LayerPanel = ({ canvas }) => {
               parentGroup
                 ? index === layer.items?.length - 1
                 : index === layers.length - 1
-            }
-          >
+            }>
             <ChevronDown
               size={16}
               className={
@@ -382,8 +374,7 @@ const LayerPanel = ({ canvas }) => {
           </button>
           <button
             className="p-1 hover:bg-red-600/50 rounded transition-colors"
-            onClick={(e) => deleteLayer(layer, e)}
-          >
+            onClick={(e) => deleteLayer(layer, e)}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -407,8 +398,7 @@ const LayerPanel = ({ canvas }) => {
           {selectedLayers.size >= 2 && (
             <button
               onClick={groupSelectedLayers}
-              className="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-lg flex items-center gap-2 text-sm"
-            >
+              className="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-lg flex items-center gap-2 text-sm">
               <GroupIcon size={14} />
               Group Selected
             </button>

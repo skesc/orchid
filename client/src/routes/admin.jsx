@@ -1,24 +1,24 @@
-import {createFileRoute, Navigate} from "@tanstack/react-router";
-import {BarChart3, FileImage, Users} from "lucide-react";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { BarChart3, FileImage, Users } from "lucide-react";
 import React from "react";
 import AdminDashboard from "../components/admin/AdminDashboard";
 import AdminMarketplace from "../components/admin/AdminMarketplace";
 import AdminUsers from "../components/admin/AdminUsers";
-import {useAuth} from "../contexts/AuthContext";
-import {apiFetch} from "../utils/fetchConfig";
+import { useAuth } from "../contexts/AuthContext";
+import { apiFetch } from "../utils/fetchConfig";
 
 export const Route = createFileRoute("/admin")({
   component: AdminRoute,
 });
 
 const TABS = [
-  {id: "dashboard", label: "Dashboard", icon: BarChart3},
-  {id: "marketplace", label: "Marketplace", icon: FileImage},
-  {id: "users", label: "Users", icon: Users},
+  { id: "dashboard", label: "Dashboard", icon: BarChart3 },
+  { id: "marketplace", label: "Marketplace", icon: FileImage },
+  { id: "users", label: "Users", icon: Users },
 ];
 
 function AdminRoute() {
-  const {user, loading: authLoading} = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("dashboard");
   const [loading, setLoading] = React.useState(true);
@@ -76,16 +76,23 @@ function AdminRoute() {
       <div className="bg-neutral-900 text-white p-4 shadow-lg">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-violet-600 bg-clip-text text-transparent">Admin Panel</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-violet-600 bg-clip-text text-transparent">
+              Admin Panel
+            </h1>
             <div className="flex items-center gap-4">
-              <div className="text-sm text-neutral-400">Logged in as {user.email}</div>
+              <div className="text-sm text-neutral-400">
+                Logged in as {user.email}
+              </div>
             </div>
           </div>
           <div className="mt-6 flex gap-4">
             {TABS.map((tab) => {
               const Icon = tab.icon;
               return (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${activeTab === tab.id ? "bg-violet-500 text-white" : "text-neutral-400 hover:text-white hover:bg-neutral-800"}`}>
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${activeTab === tab.id ? "bg-violet-500 text-white" : "text-neutral-400 hover:text-white hover:bg-neutral-800"}`}>
                   <Icon size={18} />
                   <span>{tab.label}</span>
                 </button>

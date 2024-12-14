@@ -62,8 +62,7 @@ const ProfileSection = () => {
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="text-neutral-900 hover:text-violet-600 transition-colors flex flex-col items-center gap-1"
-            >
+              className="text-neutral-900 hover:text-violet-600 transition-colors flex flex-col items-center gap-1">
               <LogOut size={20} className={isLoggingOut ? "opacity-50" : ""} />
               <span className="text-xs">
                 {isLoggingOut ? "Signing out..." : "Logout"}
@@ -73,8 +72,7 @@ const ProfileSection = () => {
         ) : (
           <button
             onClick={() => setShowLoginModal(true)}
-            className="group flex flex-col items-center gap-2"
-          >
+            className="group flex flex-col items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-neutral-300 flex items-center justify-center group-hover:bg-violet-600 transition-colors">
               <LogIn
                 size={16}

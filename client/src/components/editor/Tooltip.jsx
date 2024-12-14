@@ -14,14 +14,12 @@ export const Tooltip = ({ text, children, position = "right", shortcut }) => {
     <div className="relative flex items-center">
       <div
         onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-      >
+        onMouseLeave={() => setShow(false)}>
         {children}
       </div>
       <div
         className={`absolute z-50 px-2 py-1 text-sm font-medium text-white bg-neutral-900 rounded-md whitespace-nowrap ${positionClasses[position]} transition-opacity duration-200 ${show ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        role="tooltip"
-      >
+        role="tooltip">
         <div className="flex items-center gap-2">
           <span>{text}</span>
           {shortcut && (
@@ -54,8 +52,7 @@ export const ButtonWithTooltip = ({
       <button
         onClick={onClick}
         disabled={disabled}
-        className={`text-neutral-900 relative hover:text-violet-600 transition-colors ${active ? "text-violet-600" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-      >
+        className={`text-neutral-900 relative hover:text-violet-600 transition-colors ${active ? "text-violet-600" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
         <Icon size={24} />
       </button>
     </Tooltip>

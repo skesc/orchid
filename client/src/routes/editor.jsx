@@ -368,8 +368,7 @@ function RouteComponent() {
         className={`w-screen h-screen overflow-hidden ${isDragging ? "bg-violet-500/20" : ""} transition-all duration-300 ease-in-out`}
         onDragOver={handleLocalDragOver}
         onDragLeave={handleLocalDragLeave}
-        onDrop={handleLocalDrop}
-      >
+        onDrop={handleLocalDrop}>
         <canvas
           ref={canvasRef}
           className="w-full h-full transition-transform duration-300 ease-in-out"
@@ -404,8 +403,7 @@ function RouteComponent() {
         className={`fixed top-4 left-1/2 transform -translate-x-1/2 
           bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50
           transition-all duration-300 ease-in-out
-          ${showError ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}`}
-      >
+          ${showError ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}`}>
         {error}
       </div>
 

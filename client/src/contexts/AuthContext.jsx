@@ -1,9 +1,9 @@
 import * as React from "react";
-import {apiFetch} from "../utils/fetchConfig";
+import { apiFetch } from "../utils/fetchConfig";
 
 const AuthContext = React.createContext(null);
 
-export function AuthProvider({children}) {
+export function AuthProvider({ children }) {
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -38,7 +38,7 @@ export function AuthProvider({children}) {
       checkAuth,
       logout,
     }),
-    [user, loading, checkAuth, logout]
+    [user, loading, checkAuth, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

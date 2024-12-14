@@ -1,5 +1,5 @@
-import {Group} from "fabric";
-import {useCallback, useEffect, useState} from "react";
+import { Group } from "fabric";
+import { useCallback, useEffect, useState } from "react";
 export const useCanvasHistory = (canvas) => {
   const [history, setHistory] = useState([]);
   const [historyRedo, setHistoryRedo] = useState([]);
@@ -18,7 +18,9 @@ export const useCanvasHistory = (canvas) => {
         });
         clonedObjects.push(group);
       } else {
-        clonedObjects.push(await obj.clone(["id", "name", "selectable", "evented"]));
+        clonedObjects.push(
+          await obj.clone(["id", "name", "selectable", "evented"]),
+        );
       }
     }
     return clonedObjects;
@@ -58,7 +60,10 @@ export const useCanvasHistory = (canvas) => {
       }
 
       canvas.on("object:added", () => !isUndoingOrRedoing && saveCanvasState());
-      canvas.on("object:modified", () => !isUndoingOrRedoing && saveCanvasState());
+      canvas.on(
+        "object:modified",
+        () => !isUndoingOrRedoing && saveCanvasState(),
+      );
       canvas.on("object:removed", () => {
         if (!isClearingCanvas && !isUndoingOrRedoing) {
           saveCanvasState();
@@ -70,7 +75,13 @@ export const useCanvasHistory = (canvas) => {
 
       canvas.fire("history:changed");
     },
-    [canvas, clearCanvas, saveCanvasState, isClearingCanvas, isUndoingOrRedoing]
+    [
+      canvas,
+      clearCanvas,
+      saveCanvasState,
+      isClearingCanvas,
+      isUndoingOrRedoing,
+    ],
   );
 
   const undo = useCallback(async () => {

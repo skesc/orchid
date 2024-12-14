@@ -1,22 +1,28 @@
-import {FabricImage} from "fabric";
-import {Tag, Trash2} from "lucide-react";
+import { FabricImage } from "fabric";
+import { Tag, Trash2 } from "lucide-react";
 import React from "react";
-import {useAuth} from "../../contexts/AuthContext";
-import {getOptimizedImageUrl, OptimizedImage} from "../../utils/ImageLoader";
-import {API_URL} from "../../utils/fetchConfig";
+import { useAuth } from "../../contexts/AuthContext";
+import { getOptimizedImageUrl, OptimizedImage } from "../../utils/ImageLoader";
+import { API_URL } from "../../utils/fetchConfig";
 
-export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
-  const {user} = useAuth();
-  const hasCategories = item.categories && Array.isArray(item.categories) && item.categories.length > 0;
+export default function MarketplaceItem({ item, onUpdate, canvas, isOwn }) {
+  const { user } = useAuth();
+  const hasCategories =
+    item.categories &&
+    Array.isArray(item.categories) &&
+    item.categories.length > 0;
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/marketplace/items/${item.uuid}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${API_URL}/api/marketplace/items/${item.uuid}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
 
       if (response.ok) {
         onUpdate?.();
@@ -86,29 +92,45 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
   return (
     <div className="bg-neutral-300 rounded-lg overflow-hidden transition-all duration-200 hover:brightness-95 relative group h-full flex flex-col">
       <div className="relative">
-        <OptimizedImage src={item.image_path} alt={item.name} size="preview" originalWidth={item.width} className="h-32 w-full object-cover" />
+        <OptimizedImage
+          src={item.image_path}
+          alt={item.name}
+          size="preview"
+          originalWidth={item.width}
+          className="h-32 w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 
       <div className="p-3 flex flex-col flex-1">
         <div className="flex justify-between items-start gap-2">
-          <h3 className="text-base font-medium text-neutral-900 line-clamp-1">{item.name}</h3>
+          <h3 className="text-base font-medium text-neutral-900 line-clamp-1">
+            {item.name}
+          </h3>
           {isOwn && (
-            <button onClick={handleDelete} className="p-1 rounded-full hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors">
+            <button
+              onClick={handleDelete}
+              className="p-1 rounded-full hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors">
               <Trash2 size={16} />
             </button>
           )}
         </div>
 
         <div className="flex-1 flex flex-col min-h-0">
-          {item.description && <p className="text-sm text-neutral-600 mt-1.5 line-clamp-2">{item.description}</p>}
+          {item.description && (
+            <p className="text-sm text-neutral-600 mt-1.5 line-clamp-2">
+              {item.description}
+            </p>
+          )}
 
           {hasCategories && (
             <div className="flex items-center gap-1.5 mt-2">
               <Tag size={14} className="text-neutral-500 shrink-0" />
               <div className="flex gap-1 flex-wrap">
                 {item.categories.map((category, index) => (
-                  <span key={index} className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-600 rounded-md">
+                  <span
+                    key={index}
+                    className="text-xs px-1.5 py-0.5 bg-violet-100 text-violet-600 rounded-md">
                     {category}
                   </span>
                 ))}
@@ -118,8 +140,12 @@ export default function MarketplaceItem({item, onUpdate, canvas, isOwn}) {
         </div>
 
         <div className="flex items-center justify-between mt-2 pt-2 border-t border-neutral-400/20">
-          <span className="text-[10px] text-neutral-500">by {item.author.name}</span>
-          <button onClick={handleUse} className="px-3 py-1 bg-violet-500 text-white text-sm rounded-md hover:bg-violet-600 transition-colors">
+          <span className="text-[10px] text-neutral-500">
+            by {item.author.name}
+          </span>
+          <button
+            onClick={handleUse}
+            className="px-3 py-1 bg-violet-500 text-white text-sm rounded-md hover:bg-violet-600 transition-colors">
             Use
           </button>
         </div>

@@ -1,4 +1,4 @@
-import {createFileRoute, Navigate} from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import * as React from "react";
 
 export const Route = createFileRoute("/")({

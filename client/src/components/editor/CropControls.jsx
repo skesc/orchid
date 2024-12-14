@@ -1,16 +1,20 @@
-import {X} from "lucide-react";
+import { X } from "lucide-react";
 import React from "react";
-import {CropManager} from "./CropManager";
+import { CropManager } from "./CropManager";
 
-export function CropControls({canvas, isActive, onComplete, onCancel}) {
+export function CropControls({ canvas, isActive, onComplete, onCancel }) {
   if (!isActive) return null;
 
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-neutral-900 p-4 rounded-lg flex gap-4">
-      <button className="px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600 transition" onClick={onComplete}>
+      <button
+        className="px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600 transition"
+        onClick={onComplete}>
         Apply Crop
       </button>
-      <button className="px-4 py-2 bg-neutral-700 text-white rounded hover:bg-neutral-800 transition" onClick={onCancel}>
+      <button
+        className="px-4 py-2 bg-neutral-700 text-white rounded hover:bg-neutral-800 transition"
+        onClick={onCancel}>
         <X size={24} />
       </button>
     </div>

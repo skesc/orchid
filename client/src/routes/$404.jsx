@@ -1,5 +1,5 @@
-import {createFileRoute, Link} from "@tanstack/react-router";
-import {Home, MoveLeft, MoveRight} from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Home, MoveLeft, MoveRight } from "lucide-react";
 import React from "react";
 
 export const Route = createFileRoute("/$404")({
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/$404")({
 });
 
 function NotFoundRoute() {
-  const [position, setPosition] = React.useState({x: 0, y: 0});
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = React.useState(false);
 
   React.useEffect(() => {
@@ -41,26 +41,45 @@ function NotFoundRoute() {
                 boxShadow: "6px 6px 0px #222",
                 transform: `translate(${position.x}px, ${position.y}px)`,
               }}>
-              <div className="text-8xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">4</div>
-              <div className="absolute w-24 h-24 bg-neutral-200 rounded-full -right-8 top-4 flex items-center justify-center" style={{boxShadow: "4px 4px 0px #222"}}>
-                <div className="text-6xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">0</div>
+              <div className="text-8xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">
+                4
               </div>
-              <div className="absolute w-24 h-24 bg-neutral-200 rounded-full -left-8 bottom-4 flex items-center justify-center" style={{boxShadow: "4px 4px 0px #222"}}>
-                <div className="text-6xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">4</div>
+              <div
+                className="absolute w-24 h-24 bg-neutral-200 rounded-full -right-8 top-4 flex items-center justify-center"
+                style={{ boxShadow: "4px 4px 0px #222" }}>
+                <div className="text-6xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">
+                  0
+                </div>
+              </div>
+              <div
+                className="absolute w-24 h-24 bg-neutral-200 rounded-full -left-8 bottom-4 flex items-center justify-center"
+                style={{ boxShadow: "4px 4px 0px #222" }}>
+                <div className="text-6xl font-bold bg-gradient-to-r from-violet-500 to-purple-600 bg-clip-text text-transparent">
+                  4
+                </div>
               </div>
             </div>
           </div>
 
           <div className="mt-24">
-            <h1 className="text-4xl font-bold text-neutral-900 mb-4">Oops! Page Not Found</h1>
-            <p className="text-neutral-600 mb-8">Looks like you've wandered into uncharted territory. Don't worry though, we can help you find your way back!</p>
+            <h1 className="text-4xl font-bold text-neutral-900 mb-4">
+              Oops! Page Not Found
+            </h1>
+            <p className="text-neutral-600 mb-8">
+              Looks like you've wandered into uncharted territory. Don't worry
+              though, we can help you find your way back!
+            </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/" className="flex items-center gap-2 px-6 py-3 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-colors w-full sm:w-auto">
+              <Link
+                to="/"
+                className="flex items-center gap-2 px-6 py-3 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-colors w-full sm:w-auto">
                 <Home size={20} />
                 Back to Home
               </Link>
-              <Link to="/editor" className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-white rounded-lg hover:bg-neutral-900 transition-colors w-full sm:w-auto">
+              <Link
+                to="/editor"
+                className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-white rounded-lg hover:bg-neutral-900 transition-colors w-full sm:w-auto">
                 <MoveLeft size={20} className="animate-bounce-x" />
                 Go to Editor
                 <MoveRight size={20} className="animate-bounce-x" />

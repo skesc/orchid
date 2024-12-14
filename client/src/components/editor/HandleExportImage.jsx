@@ -1,4 +1,4 @@
-import {format} from "date-fns";
+import { format } from "date-fns";
 
 const HandleExportImage = (canvas, setError) => {
   if (!canvas) {
@@ -13,7 +13,7 @@ const HandleExportImage = (canvas, setError) => {
       return;
     }
 
-    const {filename, dataURL} = exportCanvasToImage(canvas);
+    const { filename, dataURL } = exportCanvasToImage(canvas);
     downloadImage(filename, dataURL);
   } catch (error) {
     console.error("Export failed:", error);
@@ -43,7 +43,7 @@ function exportSingleObject(object) {
     quality: 1.0,
   });
 
-  return {filename, dataURL};
+  return { filename, dataURL };
 }
 
 function exportEntireCanvas(canvas) {
@@ -60,7 +60,7 @@ function exportEntireCanvas(canvas) {
     height: bounds.height,
   });
 
-  return {filename, dataURL};
+  return { filename, dataURL };
 }
 
 function calculateContentBounds(canvas) {

@@ -1,24 +1,41 @@
-import {useInfiniteQuery, useQueryClient} from "@tanstack/react-query";
-import {LogIn, Search} from "lucide-react";
-import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
-import {useAuth} from "../../contexts/AuthContext";
-import {API_URL} from "../../utils/fetchConfig";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { LogIn, Search } from "lucide-react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { API_URL } from "../../utils/fetchConfig";
 import MarketplaceBookmarks from "./MarketplaceBookmarks";
 import MarketplaceItem from "./MarketplaceItem";
 
 const ITEMS_PER_PAGE = 9;
 
-const MarketplaceList = forwardRef(({canvas}, ref) => {
-  const {user} = useAuth();
+const MarketplaceList = forwardRef(({ canvas }, ref) => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const scrollContainerRef = useRef(null);
   const queryClient = useQueryClient();
 
   // fetch marketplace items with infinite scroll
-  const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch} = useInfiniteQuery({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+  } = useInfiniteQuery({
     queryKey: ["marketplace-items"],
-    queryFn: async ({pageParam = 1}) => {
-      const response = await fetch(`${API_URL}/api/marketplace/items?page=${pageParam}&per_page=${ITEMS_PER_PAGE}`, {credentials: "include"});
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await fetch(
+        `${API_URL}/api/marketplace/items?page=${pageParam}&per_page=${ITEMS_PER_PAGE}`,
+        { credentials: "include" },
+      );
       if (!response.ok) throw new Error("Failed to fetch items");
       const data = await response.json();
       return data.items || [];
@@ -39,10 +56,15 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
 
-    const {scrollTop, scrollHeight, clientHeight} = scrollContainerRef.current;
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
     const scrollThreshold = 100; // px from bottom
 
-    if (scrollHeight - (scrollTop + clientHeight) < scrollThreshold && hasNextPage && !isFetchingNextPage) {
+    if (
+      scrollHeight - (scrollTop + clientHeight) < scrollThreshold &&
+      hasNextPage &&
+      !isFetchingNextPage
+    ) {
       fetchNextPage();
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
@@ -62,11 +84,22 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
       .toLowerCase()
       .split(",")
       .map((term) => term.trim());
-    return searchTerms.some((term) => (item.name && item.name.toLowerCase().includes(term)) || (item.categories && item.categories.some((category) => category.toLowerCase().includes(term))));
+    return searchTerms.some(
+      (term) =>
+        (item.name && item.name.toLowerCase().includes(term)) ||
+        (item.categories &&
+          item.categories.some((category) =>
+            category.toLowerCase().includes(term),
+          )),
+    );
   });
 
-  const myItems = user ? filteredItems.filter((item) => item?.author?.uuid === user.uuid) : [];
-  const bookmarkedItems = user ? filteredItems.filter((item) => item?.is_bookmarked) : [];
+  const myItems = user
+    ? filteredItems.filter((item) => item?.author?.uuid === user.uuid)
+    : [];
+  const bookmarkedItems = user
+    ? filteredItems.filter((item) => item?.is_bookmarked)
+    : [];
 
   const mainListingItems = filteredItems.filter((item) => {
     if (!item) return false;
@@ -77,17 +110,20 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
 
   const handleItemDeleted = () => {
     // invalidate and refetch marketplace items
-    queryClient.invalidateQueries({queryKey: ["marketplace-items"]});
+    queryClient.invalidateQueries({ queryKey: ["marketplace-items"] });
   };
 
   const handleToggleBookmark = async (item) => {
     if (!user || !item) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/marketplace/items/${item.uuid}/bookmark`, {
-        method: item.is_bookmarked ? "DELETE" : "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${API_URL}/api/marketplace/items/${item.uuid}/bookmark`,
+        {
+          method: item.is_bookmarked ? "DELETE" : "POST",
+          credentials: "include",
+        },
+      );
 
       if (response.ok) {
         // update the item in the cache
@@ -95,7 +131,13 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
           if (!oldData?.pages) return oldData;
           return {
             ...oldData,
-            pages: oldData.pages.map((page) => (page || []).map((i) => (i?.uuid === item.uuid ? {...i, is_bookmarked: !i.is_bookmarked} : i))),
+            pages: oldData.pages.map((page) =>
+              (page || []).map((i) =>
+                i?.uuid === item.uuid
+                  ? { ...i, is_bookmarked: !i.is_bookmarked }
+                  : i,
+              ),
+            ),
           };
         });
       }
@@ -126,11 +168,22 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
                      focus:border-violet-400 focus:bg-white
                      transition-all duration-200"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400"
+            size={20}
+          />
         </div>
       </div>
 
-      {(myItems.length > 0 || bookmarkedItems.length > 0) && <MarketplaceBookmarks canvas={canvas} myItems={myItems} bookmarkedItems={bookmarkedItems} onToggleBookmark={handleToggleBookmark} onUpdate={handleItemDeleted} />}
+      {(myItems.length > 0 || bookmarkedItems.length > 0) && (
+        <MarketplaceBookmarks
+          canvas={canvas}
+          myItems={myItems}
+          bookmarkedItems={bookmarkedItems}
+          onToggleBookmark={handleToggleBookmark}
+          onUpdate={handleItemDeleted}
+        />
+      )}
 
       {!user && (
         <div className="bg-violet-100 border-2 border-violet-200 rounded-lg p-4 mb-6">
@@ -139,18 +192,44 @@ const MarketplaceList = forwardRef(({canvas}, ref) => {
               <LogIn className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-violet-900 font-medium">Want to add your own items?</h3>
-              <p className="text-violet-700 text-sm mt-0.5">Sign in to create and share your items with the community!</p>
+              <h3 className="text-violet-900 font-medium">
+                Want to add your own items?
+              </h3>
+              <p className="text-violet-700 text-sm mt-0.5">
+                Sign in to create and share your items with the community!
+              </p>
             </div>
           </div>
         </div>
       )}
 
       {mainListingItems.length === 0 ? (
-        <div className="text-center text-neutral-500 py-8 flex-grow">No items found. Try adjusting your search or add some items to the marketplace!</div>
+        <div className="text-center text-neutral-500 py-8 flex-grow">
+          No items found. Try adjusting your search or add some items to the
+          marketplace!
+        </div>
       ) : (
-        <div ref={scrollContainerRef} className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">{mainListingItems.map((item) => item && <MarketplaceItem key={item.uuid} item={item} canvas={canvas} onUpdate={handleItemDeleted} onBookmark={() => handleToggleBookmark(item)} isBookmarked={bookmarkedItems.some((bookmarked) => bookmarked?.uuid === item.uuid)} isOwn={user && item.author?.uuid === user.uuid} />)}</div>
+        <div
+          ref={scrollContainerRef}
+          className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-neutral-300">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
+            {mainListingItems.map(
+              (item) =>
+                item && (
+                  <MarketplaceItem
+                    key={item.uuid}
+                    item={item}
+                    canvas={canvas}
+                    onUpdate={handleItemDeleted}
+                    onBookmark={() => handleToggleBookmark(item)}
+                    isBookmarked={bookmarkedItems.some(
+                      (bookmarked) => bookmarked?.uuid === item.uuid,
+                    )}
+                    isOwn={user && item.author?.uuid === user.uuid}
+                  />
+                ),
+            )}
+          </div>
 
           {isFetchingNextPage && (
             <div className="flex justify-center my-4">

@@ -1,5 +1,4 @@
 import { Textbox } from "fabric";
-import { useEditor } from "../../contexts/EditorContext.jsx";
 import {
   AlertCircle,
   AlignCenter,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { ChromePicker } from "react-color";
+import { useEditor } from "../../contexts/EditorContext.jsx";
 
 const fonts = [
   "Chakra Petch",
@@ -114,8 +114,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-violet-600 transition-colors"
-          >
+            className="text-neutral-400 hover:text-violet-600 transition-colors">
             <X size={14} />
           </button>
         </div>
@@ -142,8 +141,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
                   setShowBgColorPicker(false);
                   setShowStrokePicker(false);
                 }}
-                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors"
-              >
+                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
                 <div
                   className="w-4 h-4 rounded mr-2"
                   style={{ backgroundColor: textOptions.fill }}
@@ -178,8 +176,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
                   setShowColorPicker(false);
                   setShowStrokePicker(false);
                 }}
-                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors"
-              >
+                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
                 <div className="w-4 h-4 rounded mr-2 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==')] border border-neutral-400">
                   <div
                     className="w-full h-full rounded"
@@ -241,8 +238,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
                   fontFamily: e.target.value,
                 }))
               }
-              className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm"
-            >
+              className="w-full px-2 py-1 bg-neutral-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm">
               {fonts.map((font) => (
                 <option key={font} value={font} style={{ fontFamily: font }}>
                   {font}
@@ -282,8 +278,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
                   setShowBgColorPicker(false);
                   setShowColorPicker(false);
                 }}
-                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors"
-              >
+                className="w-full h-7 rounded-lg flex items-center px-2 bg-neutral-300 hover:bg-neutral-400 transition-colors">
                 <div className="w-4 h-4 rounded mr-2 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==')] border border-neutral-400">
                   <div
                     className="w-4 h-4 rounded mr-2"
@@ -322,8 +317,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
               <button
                 key={key}
                 onClick={() => toggleStyle(key)}
-                className={`p-1.5 rounded-lg transition-colors ${textOptions[key] ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-600"}`}
-              >
+                className={`p-1.5 rounded-lg transition-colors ${textOptions[key] ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-600"}`}>
                 <Icon size={14} />
               </button>
             ))}
@@ -338,8 +332,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
               <button
                 key={key}
                 onClick={() => toggleAlign(key)}
-                className={`p-1.5 rounded-lg transition-colors ${textOptions.textAlign == key ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-600"}`}
-              >
+                className={`p-1.5 rounded-lg transition-colors ${textOptions.textAlign == key ? "bg-violet-500 text-white" : "bg-neutral-300 text-neutral-600"}`}>
                 <Icon size={14} />
               </button>
             ))}
@@ -347,8 +340,7 @@ const TextEditor = ({ canvas, isOpen, onClose }) => {
         </div>
         <button
           onClick={addText}
-          className="px-4 w-full py-1.5 bg-violet-500 text-white text-sm rounded-lg hover:bg-violet-600 transition-colors"
-        >
+          className="px-4 w-full py-1.5 bg-violet-500 text-white text-sm rounded-lg hover:bg-violet-600 transition-colors">
           {textMode == "create" ? "Add" : "Modify"}
         </button>
       </div>
