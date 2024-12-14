@@ -50,7 +50,7 @@ function RouteComponent() {
   const [showError, setShowError] = React.useState(false);
   const fileInputRef = React.useRef(null);
   const [showAdjustments, setShowAdjustments] = React.useState(false);
-  const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900); // Only show layers on screens >= 900px
+  const [showLayers, setShowLayers] = React.useState(window.innerWidth >= 900);
   const [isDragging, setIsDragging] = React.useState(false);
   const undoRef = React.useRef(null);
   const redoRef = React.useRef(null);
@@ -62,6 +62,24 @@ function RouteComponent() {
   const { undo, redo, history, historyRedo } = useCanvasHistory(canvas);
   undoRef.current = undo;
   redoRef.current = redo;
+
+  const handleMarketToggle = React.useCallback(() => {
+    setMarket((prev) => {
+      if (!prev) {
+        setShowLayers(false);
+      }
+      return !prev;
+    });
+  }, []);
+
+  const handleLayerToggle = React.useCallback(() => {
+    setShowLayers((prev) => {
+      if (!prev) {
+        setMarket(false);
+      }
+      return !prev;
+    });
+  }, []);
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -174,13 +192,13 @@ function RouteComponent() {
       const keyboardHandler = createKeyboardHandler(initCanvas, {
         onUpload: () => fileInputRef.current?.click(),
         onExport: () => HandleExportImage(initCanvas, setError),
-        onMarket: () => setMarket((prev) => !prev),
+        onMarket: handleMarketToggle,
         onCrop: () => (isCropping ? cancelCrop() : startCropping()),
         onPfp: () => setShowPFPModal(true),
         onBgRemove: () => setShowBgRemovalModal(true),
         onAdjustments: () => setShowAdjustments((prev) => !prev),
         onText: () => setShowTextPanel(true),
-        onLayers: () => setShowLayers((prev) => !prev),
+        onLayers: handleLayerToggle,
         onUndo: () => undoRef.current?.(),
         onRedo: () => redoRef.current?.(),
       });
@@ -223,9 +241,6 @@ function RouteComponent() {
         window.removeEventListener("resize", handleResize);
         document.removeEventListener("keydown", keyboardHandler);
         document.removeEventListener("keydown", resetModes);
-        document.removeEventListener("paste", (e) =>
-          handlePaste(e, initCanvas),
-        );
       };
     }
   }, []);
@@ -323,7 +338,7 @@ function RouteComponent() {
               icon={Store}
               tooltip="Toggle Marketplace"
               shortcut="M"
-              onClick={() => setMarket(!market)}
+              onClick={handleMarketToggle}
               active={market}
             />
             <ButtonWithTooltip
@@ -363,7 +378,7 @@ function RouteComponent() {
               icon={Layers}
               tooltip="Layers"
               shortcut="L"
-              onClick={() => setShowLayers(!showLayers)}
+              onClick={handleLayerToggle}
               active={showLayers}
             />
           </div>

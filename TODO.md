@@ -16,9 +16,9 @@
 - [x] prevent upscaling of images
 - [x] On editing a text, and then clicking modify, the content of text changes to whatever is in textOptions.text. Possible bugfix is to update the textOptions.text while the user is editing the text on canvas.
 - [x] when cropping, i can actually move the box around of the crop selection which shouldnt happen
+- [x] if i have marketplace open, and i click on layers, it does nothing as i have to close the marketplace first. unintuitive UX
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority) // the event handler for paste is messed up, refactor it to be like all the other ones
 - [ ] undoing on a group, removes the group 💀 // useHistory.jsx needs to be refactored anyway..
-- [ ] if i have marketplace open, and i click on layers, it does nothing as i have to close the marketplace first. unintuitive UX
 
 ### High Priotity
 
