@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { CropManager } from "./CropManager";
 
-export function CropControls({ canvas, isActive, onComplete, onCancel }) {
+export function CropControls({ _canvas, isActive, onComplete, onCancel }) {
   if (!isActive) return null;
 
   return (
