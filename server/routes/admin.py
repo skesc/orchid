@@ -6,7 +6,7 @@ from extensions import db
 from flask import Blueprint, jsonify
 from flask_login import current_user, login_required
 from models import MarketplaceItem, User
-from s3 import delete_file
+from s3 import delete_file, get_s3_client
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -112,3 +112,48 @@ def get_admin_stats():
             "new_items_24h": new_items_24h,
         }
     )
+
+
+@admin_bp.route("/api/admin/orphaned-files", methods=["GET"])
+@admin_required
+def get_orphaned_files():
+    try:
+        s3 = get_s3_client()
+        response = s3.list_objects_v2(Bucket=Config.S3_BUCKET, Prefix="marketplace/")
+
+        if "Contents" not in response:
+            return jsonify([])
+
+        db_items = MarketplaceItem.query.all()
+        db_uuids = set(item.uuid for item in db_items)
+
+        orphaned_files = []
+        for obj in response["Contents"]:
+            key = obj["Key"]
+            filename = key.split("/")[-1]
+
+            if filename not in db_uuids:
+                orphaned_files.append(
+                    {
+                        "key": key,
+                        "size": obj["Size"],
+                        "last_modified": obj["LastModified"].isoformat(),
+                        "url": f"/uploads/{key}",
+                    }
+                )
+
+        return jsonify(orphaned_files)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@admin_bp.route("/api/admin/orphaned-files/<path:key>", methods=["DELETE"])
+@admin_required
+def delete_orphaned_file(key):
+    try:
+        s3 = get_s3_client()
+        s3.delete_object(Bucket=Config.S3_BUCKET, Key=key)
+        return "", 204
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

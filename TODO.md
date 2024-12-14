@@ -21,7 +21,7 @@
 
 ### High Priotity
 
-- [ ] sometimes there is stuff in s3 which is not in db, add a feature to admin to delete orphaned files?
+- [x] sometimes there is stuff in s3 which is not in db, add a feature to admin to delete orphaned files?
 - [ ] Make keyboard bindings a hook i guess because i need to run hooks inside it
 - [ ] svg support (main issue is with cropping, and properly displaying error messages such as "svg is not supported" or similar when the backend returns an error)
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
@@ -35,6 +35,7 @@
 - [ ] FREE HAND DRAWING
 - [ ] Just put a lot of items in market place (assigned to nam)
 - [ ] Warping Images and Groups // https://codesandbox.io/p/sandbox/image-distort-filter-for-fabric-qjbcl?file=%2Fsrc%2Ffilter.js%3A4%2C1
+- [x] off-site s3 backup
 - [x] (!!) Editing paramaters of already existing texts
 - [x] (!!) Move all editor settings like text settings into its own context
 - [x] Move the selfhosted s3 to a faster server, setup caching over on cloudflare as well

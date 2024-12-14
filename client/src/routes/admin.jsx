@@ -1,8 +1,9 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { BarChart3, FileImage, Users } from "lucide-react";
+import { BarChart3, FileImage, FileWarning, Users } from "lucide-react";
 import React from "react";
 import AdminDashboard from "../components/admin/AdminDashboard";
 import AdminMarketplace from "../components/admin/AdminMarketplace";
+import AdminOrphanedFiles from "../components/admin/AdminOrphanedFiles";
 import AdminUsers from "../components/admin/AdminUsers";
 import { useAuth } from "../contexts/AuthContext";
 import { apiFetch } from "../utils/fetchConfig";
@@ -15,6 +16,7 @@ const TABS = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
   { id: "marketplace", label: "Marketplace", icon: FileImage },
   { id: "users", label: "Users", icon: Users },
+  { id: "orphaned", label: "Orphaned Files", icon: FileWarning },
 ];
 
 function AdminRoute() {
@@ -49,7 +51,7 @@ function AdminRoute() {
   if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500" />
       </div>
     );
   }
@@ -66,6 +68,8 @@ function AdminRoute() {
         return <AdminMarketplace />;
       case "users":
         return <AdminUsers />;
+      case "orphaned":
+        return <AdminOrphanedFiles />;
       default:
         return <AdminDashboard />;
     }
@@ -92,7 +96,11 @@ function AdminRoute() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${activeTab === tab.id ? "bg-violet-500 text-white" : "text-neutral-400 hover:text-white hover:bg-neutral-800"}`}>
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? "bg-violet-500 text-white"
+                      : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  }`}>
                   <Icon size={18} />
                   <span>{tab.label}</span>
                 </button>
