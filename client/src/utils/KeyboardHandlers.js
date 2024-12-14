@@ -1,19 +1,40 @@
-import {ActiveSelection, FabricImage, Group} from "fabric";
+import { ActiveSelection, FabricImage, Group } from "fabric";
 
 let fabricClipboard = null;
 
-export function createKeyboardHandler(canvas, {onUpload, onExport, onMarket, onCrop, onPfp, onBgRemove, onAdjustments, onText, onLayers, onUndo, onRedo} = {}) {
+export function createKeyboardHandler(
+  canvas,
+  {
+    onUpload,
+    onExport,
+    onMarket,
+    onCrop,
+    onPfp,
+    onBgRemove,
+    onAdjustments,
+    onText,
+    onLayers,
+    onUndo,
+    onRedo,
+  } = {},
+) {
   // Add paste event listener
   document.addEventListener("paste", (e) => {
     const activeElement = document.activeElement;
-    const isInputField = activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.contentEditable === "true";
+    const isInputField =
+      activeElement.tagName === "INPUT" ||
+      activeElement.tagName === "TEXTAREA" ||
+      activeElement.contentEditable === "true";
     if (isInputField) return;
     handleImagePaste(e, canvas);
   });
 
   return (event) => {
     const activeElement = document.activeElement;
-    const isInputField = activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.contentEditable === "true";
+    const isInputField =
+      activeElement.tagName === "INPUT" ||
+      activeElement.tagName === "TEXTAREA" ||
+      activeElement.contentEditable === "true";
 
     if (isInputField) return;
 
@@ -163,7 +184,8 @@ async function handleImagePaste(event, canvas) {
 
           resolve(image);
         };
-        imgElement.onerror = () => reject(new Error("Failed to load pasted image"));
+        imgElement.onerror = () =>
+          reject(new Error("Failed to load pasted image"));
         imgElement.src = dataUrl;
       });
 
@@ -178,7 +200,8 @@ async function handleImagePaste(event, canvas) {
 }
 
 async function handleObjectPaste(event, canvas) {
-  if (!(event.ctrlKey && event.key === "v") || !fabricClipboard || !canvas) return;
+  if (!(event.ctrlKey && event.key === "v") || !fabricClipboard || !canvas)
+    return;
 
   event.preventDefault();
   try {
@@ -224,7 +247,7 @@ function handleUngroup(event, canvas) {
   items.forEach((item) => canvas.add(item));
 
   canvas.discardActiveObject();
-  const selection = new ActiveSelection(items, {canvas});
+  const selection = new ActiveSelection(items, { canvas });
   canvas.setActiveObject(selection);
   canvas.renderAll();
 }

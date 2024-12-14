@@ -1,11 +1,11 @@
-import {FabricImage} from "fabric";
+import { FabricImage } from "fabric";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+export const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const UNSUPPORTED_TYPES = ["image/svg+xml", "image/gif"];
 
 export function validateImageFile(file) {
   if (!file) {
-    return {isValid: false, error: "No file provided"};
+    return { isValid: false, error: "No file provided" };
   }
 
   const fileType = file.type.toLowerCase();
@@ -13,7 +13,8 @@ export function validateImageFile(file) {
   if (UNSUPPORTED_TYPES.includes(fileType)) {
     return {
       isValid: false,
-      error: "SVG and GIF files are not supported. Please upload a static, raster image format (PNG or JPEG).",
+      error:
+        "SVG and GIF files are not supported. Please upload a static, raster image format (PNG or JPEG).",
     };
   }
 
@@ -24,7 +25,7 @@ export function validateImageFile(file) {
     };
   }
 
-  return {isValid: true, error: null};
+  return { isValid: true, error: null };
 }
 
 export function createImageFromFile(file, canvas) {
@@ -37,7 +38,9 @@ export function createImageFromFile(file, canvas) {
 
     reader.onload = (e) => {
       const imgSrc = e.target.result;
-      convertToFabricImage(imgSrc, file.name, canvas).then(resolve).catch(reject);
+      convertToFabricImage(imgSrc, file.name, canvas)
+        .then(resolve)
+        .catch(reject);
     };
 
     reader.readAsDataURL(file);
@@ -63,7 +66,11 @@ function convertToFabricImage(imgSrc, fileName, canvas) {
       convertedImage.src = tempCanvas.toDataURL("image/png");
 
       convertedImage.onload = () => {
-        const fabricImage = createAndConfigureFabricImage(convertedImage, fileName, canvas);
+        const fabricImage = createAndConfigureFabricImage(
+          convertedImage,
+          fileName,
+          canvas,
+        );
         resolve(fabricImage);
       };
     };
@@ -148,7 +155,7 @@ export function handleDrop(e, canvas, setError) {
   const imageFile = files.find((file) => file.type.startsWith("image/"));
 
   if (imageFile) {
-    const event = {target: {files: [imageFile]}};
+    const event = { target: { files: [imageFile] } };
     handleImageUpload(event, canvas, setError);
   }
 

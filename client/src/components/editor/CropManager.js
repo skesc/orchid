@@ -1,4 +1,4 @@
-import {FabricImage, Rect} from "fabric";
+import { FabricImage, Rect } from "fabric";
 
 export class CropManager {
   constructor(canvas) {
@@ -52,7 +52,7 @@ export class CropManager {
     const flipX = imageObject.flipX;
     const flipY = imageObject.flipY;
 
-    imageObject.set({angle: 0});
+    imageObject.set({ angle: 0 });
     this.canvas.renderAll();
 
     const rect = cropRect.getBoundingRect();
@@ -75,7 +75,17 @@ export class CropManager {
 
     const img = imageObject.getElement();
 
-    tempCtx.drawImage(img, cropX / (imageObject.scaleX || 1), cropY / (imageObject.scaleY || 1), cropWidth / (imageObject.scaleX || 1), cropHeight / (imageObject.scaleY || 1), 0, 0, cropWidth, cropHeight);
+    tempCtx.drawImage(
+      img,
+      cropX / (imageObject.scaleX || 1),
+      cropY / (imageObject.scaleY || 1),
+      cropWidth / (imageObject.scaleX || 1),
+      cropHeight / (imageObject.scaleY || 1),
+      0,
+      0,
+      cropWidth,
+      cropHeight,
+    );
 
     return new Promise((resolve) => {
       const croppedImg = new Image();

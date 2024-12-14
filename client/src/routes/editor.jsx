@@ -27,6 +27,7 @@ import ZoomSlider from "../components/editor/ZoomSlider";
 import { useEditor } from "../contexts/EditorContext";
 import useCanvasHistory from "../hooks/useHistory";
 import {
+  ALLOWED_TYPES,
   handleDragLeave,
   handleDragOver,
   handleDrop,
@@ -297,7 +298,7 @@ function RouteComponent() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/png,image/jpeg,image/webp"
+              accept={ALLOWED_TYPES.join(",")}
               onChange={handleLocalImageUpload}
               style={{ display: "none" }}
             />
