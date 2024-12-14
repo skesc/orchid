@@ -1,5 +1,5 @@
-import os
 from datetime import timedelta
+from os import getenv
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -11,13 +11,13 @@ load_dotenv(env_path)
 
 class Config:
     # Security
-    SECRET_KEY = os.getenv("SECRET_KEY")
-    SESSION_COOKIE_SECURE = os.getenv("ENV") != "dev"
+    SECRET_KEY = getenv("SECRET_KEY")
+    SESSION_COOKIE_SECURE = getenv("ENV") != "dev"
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Lax" if os.getenv("ENV") == "dev" else "Strict"
-    REMEMBER_COOKIE_SECURE = os.getenv("ENV") != "dev"
+    SESSION_COOKIE_SAMESITE = "Lax" if getenv("ENV") == "dev" else "Strict"
+    REMEMBER_COOKIE_SECURE = getenv("ENV") != "dev"
     REMEMBER_COOKIE_HTTPONLY = True
-    REMEMBER_COOKIE_SAMESITE = "Lax" if os.getenv("ENV") == "dev" else "Strict"
+    REMEMBER_COOKIE_SAMESITE = "Lax" if getenv("ENV") == "dev" else "Strict"
 
     # File Upload
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2MB limit
@@ -33,17 +33,17 @@ class Config:
     }
 
     # OAuth Configuration
-    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-    GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
-    GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+    GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = getenv("GOOGLE_CLIENT_SECRET")
+    GITHUB_CLIENT_ID = getenv("GITHUB_CLIENT_ID")
+    GITHUB_CLIENT_SECRET = getenv("GITHUB_CLIENT_SECRET")
 
     # Application Settings
-    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-    ENV = os.getenv("ENV", "production")
+    FRONTEND_URL = getenv("FRONTEND_URL", "http://localhost:5173")
+    ENV = getenv("ENV", "production")
     ADMIN_EMAILS = [
         email.strip()
-        for email in os.getenv("ADMIN_EMAILS", "").split(",")
+        for email in getenv("ADMIN_EMAILS", "").split(",")
         if email.strip()
     ]
 
@@ -52,14 +52,14 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # S3 Storage
-    S3_ENDPOINT = os.getenv("S3_ENDPOINT")
-    S3_ACCESS_KEY = os.getenv("S3_ACCESS_KEY")
-    S3_SECRET_KEY = os.getenv("S3_SECRET_KEY")
-    S3_BUCKET = os.getenv("S3_BUCKET")
+    S3_ENDPOINT = getenv("S3_ENDPOINT")
+    S3_ACCESS_KEY = getenv("S3_ACCESS_KEY")
+    S3_SECRET_KEY = getenv("S3_SECRET_KEY")
+    S3_BUCKET = getenv("S3_BUCKET")
 
     # Image Cache
     MAX_CACHE_SIZE_BYTES = 1000 * 1024 * 1024  # 1GB max cache size
-    CACHE_DIR = os.getenv("CACHE_DIR", "cache")
+    CACHE_DIR = getenv("CACHE_DIR", "cache")
     CACHE_DURATION = timedelta(days=7)
     THUMBNAIL_QUALITY = 30
     PREVIEW_QUALITY = 50

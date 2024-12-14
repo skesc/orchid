@@ -1,15 +1,20 @@
 from io import BytesIO
+from os import getenv
 
-import numpy as np
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from PIL import Image
-from rembg import remove
+from rembg import new_session, remove
+
+load_dotenv()
 
 app = Flask(__name__)
 
 
 @app.route("/remove", methods=["POST"])
 def remove_background():
+    # load model from .env
+    session = new_session(getenv("MODEL_NAME"))
     if "image" not in request.files:
         return jsonify({"error": "No image file provided"}), 400
 
@@ -19,7 +24,7 @@ def remove_background():
 
     try:
         input_image = file.read()
-        output_image = remove(input_image)
+        output_image = remove(input_image, session=session)
 
         buffer = BytesIO()
         buffer.write(output_image)
@@ -43,6 +48,11 @@ def remove_background():
 
     except Exception as e:
         return jsonify({"error": f"Error processing image: {str(e)}"}), 500
+
+
+@app.route("/")
+def index():
+    return jsonify({"message": "healthy!"}), 200
 
 
 if __name__ == "__main__":
