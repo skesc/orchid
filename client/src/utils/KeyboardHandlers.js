@@ -29,6 +29,34 @@ export function createKeyboardHandler(
     handleImagePaste(e, canvas);
   });
 
+  // Handle browser zoom controls
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) {
+      e.preventDefault();
+      const delta = (e.key === '-') ? -100 : 100;
+      const zoom = canvas.getZoom();
+      const newZoom = Math.min(Math.max(zoom + (delta * 0.001), 0.01), 20);
+      const center = { x: canvas.width / 2, y: canvas.height / 2 };
+      canvas.zoomToPoint(center, newZoom);
+      canvas.fire('zoom:changed');
+      canvas.renderAll();
+    }
+  });
+
+  // Handle Ctrl + mousewheel zoom
+  document.addEventListener('wheel', (e) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const delta = e.deltaY;
+      const zoom = canvas.getZoom();
+      const newZoom = Math.min(Math.max(zoom * (0.999 ** delta), 0.01), 20);
+      const point = { x: e.offsetX, y: e.offsetY };
+      canvas.zoomToPoint(point, newZoom);
+      canvas.fire('zoom:changed');
+      canvas.renderAll();
+    }
+  }, { passive: false });
+
   return (event) => {
     const activeElement = document.activeElement;
     const isInputField =

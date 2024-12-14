@@ -1,12 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
-export const ZoomSlider = ({ canvas, onZoomChange }) => {
-  const [zoomLevel, setZoomLevel] = useState(100);
-
+export const ZoomSlider = ({ canvas, zoomLevel, onZoomChange }) => {
   const handleZoomChange = useCallback(
     (event) => {
       const newZoomLevel = Number(event.target.value);
-      setZoomLevel(newZoomLevel);
 
       if (canvas) {
         const centerPoint = {
@@ -14,6 +11,7 @@ export const ZoomSlider = ({ canvas, onZoomChange }) => {
           y: canvas.height / 2,
         };
         canvas.zoomToPoint(centerPoint, newZoomLevel / 100);
+        canvas.fire('zoom:changed');
         canvas.renderAll();
       }
 
@@ -36,7 +34,7 @@ export const ZoomSlider = ({ canvas, onZoomChange }) => {
           step="1"
           value={zoomLevel}
           onChange={handleZoomChange}
-          className="w-48 accent-violet-500 h-2  rounded-lg  cursor-pointer"
+          className="w-48 accent-violet-500 h-2 rounded-lg cursor-pointer"
         />
 
         <span className="text-sm text-neutral-600 font-semibold w-12 text-right">

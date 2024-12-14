@@ -54,6 +54,7 @@ function RouteComponent() {
   const [isDragging, setIsDragging] = React.useState(false);
   const undoRef = React.useRef(null);
   const redoRef = React.useRef(null);
+  const [zoomLevel, setZoomLevel] = React.useState(100);
 
   const { textOptions, setTextOptions, textMode, setTextMode } = useEditor();
   const { CropControls, useCropManager } = CropControlsExports;
@@ -116,6 +117,12 @@ function RouteComponent() {
             initCanvas.renderAll();
           }
         }
+      });
+
+      // add zoom change handler
+      initCanvas.on("zoom:changed", () => {
+        const zoom = initCanvas.getZoom();
+        setZoomLevel(Math.round(zoom * 100));
       });
 
       // Modify the selection behavior
@@ -284,7 +291,11 @@ function RouteComponent() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-violet-400 bg-[linear-gradient(to_right,#80808042_1px,transparent_1px),linear-gradient(to_bottom,#80808042_1px,transparent_1px)] bg-[size:48px_48px] inset-0">
-      <ZoomSlider canvas={canvas} />
+      <ZoomSlider
+        canvas={canvas}
+        zoomLevel={zoomLevel}
+        onZoomChange={setZoomLevel}
+      />
       <History canvas={canvas} />
       <div className="fixed h-screen w-24 z-10 p-5">
         <div className="w-full box-shadow-3d h-full flex flex-col items-center justify-between py-4 bg-neutral-200 rounded-lg">

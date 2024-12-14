@@ -15,12 +15,14 @@
 - [x] deleting is slightly broken in admin panel, works but causes an error. sometimes?
 - [x] prevent upscaling of images
 - [x] On editing a text, and then clicking modify, the content of text changes to whatever is in textOptions.text. Possible bugfix is to update the textOptions.text while the user is editing the text on canvas.
+- [x] when cropping, i can actually move the box around of the crop selection which shouldnt happen
 - [ ] If I Copy paste something on the canvas, and then after that I copy an image in my clipboard, Ctrl + V shows copied elements instead of image. (Give clipboard priority) // the event handler for paste is messed up, refactor it to be like all the other ones
-- [ ] undoing on a group, removes the group 💀
-- [ ] when cropping, i can actually move the box around of the crop selection which shouldnt happen
+- [ ] undoing on a group, removes the group 💀 // useHistory.jsx needs to be refactored anyway..
+- [ ] if i have marketplace open, and i click on layers, it does nothing as i have to close the marketplace first. unintuitive UX
 
 ### High Priotity
 
+- [x] take over the default zoom behavior of a browser and bind it to zoom
 - [ ] Make keyboard bindings a hook i guess because i need to run hooks inside it
 - [ ] svg support (main issue is with cropping, and properly displaying error messages such as "svg is not supported" or similar when the backend returns an error)
 - [ ] Make canvas infinite scrollable (middle mouse to pan)
@@ -62,6 +64,7 @@
 
 ### Low Priority
 
+- [ ] do we really need the zoom slider and undo/redo buttons visually there?
 - [ ] homepage? lol, current behavior is to redirect to `/editor`
 - [ ] better dev scripts, and environments
 - [ ] is litestream really a viable solution? or switch to postgres or something
