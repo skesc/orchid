@@ -31,6 +31,9 @@ export class CropManager {
       cornerStrokeColor: "black",
       cornerSize: 10,
       transparentCorners: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      hasControls: true,
     });
 
     this.canvas.add(this.cropRect);

@@ -44,8 +44,8 @@ class MarketplaceItem(db.Model):
     description = db.Column(db.Text)
     categories = db.Column(db.JSON)
     is_private = db.Column(db.Boolean, default=False)
-    width = db.Column(db.Integer)  # Added field
-    height = db.Column(db.Integer)  # Added field
+    width = db.Column(db.Integer)
+    height = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(
         db.DateTime,

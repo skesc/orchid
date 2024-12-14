@@ -1,12 +1,9 @@
 from datetime import timedelta
 from os import getenv
-from pathlib import Path
 
 from dotenv import load_dotenv
 
-root_dir = Path(__file__).resolve().parent.parent
-env_path = root_dir / ".env"
-load_dotenv(env_path)
+load_dotenv()
 
 
 class Config:

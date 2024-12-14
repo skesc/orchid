@@ -51,7 +51,7 @@ class CleanupScheduler:
                 objects_to_delete = []
                 for obj in response["Contents"]:
                     key = obj["Key"]
-                    filename = key.split("/")[-1]  # Get just the filename part
+                    filename = key.split("/")[-1]  # get just the filename part
 
                     timestamp = self.parse_timestamp(filename)
                     if timestamp is None:

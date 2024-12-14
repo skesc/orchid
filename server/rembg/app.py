@@ -13,7 +13,6 @@ app = Flask(__name__)
 
 @app.route("/remove", methods=["POST"])
 def remove_background():
-    # load model from .env
     session = new_session(getenv("MODEL_NAME"))
     if "image" not in request.files:
         return jsonify({"error": "No image file provided"}), 400
