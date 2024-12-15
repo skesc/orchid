@@ -152,8 +152,6 @@ def serve_uploaded_file(folder, filename):
         cache_key = get_cache_key(key, width, height, quality)
         cache_path = os.path.join(CACHE_DIR, cache_key)
 
-        print(f"Cache key for {key}: {cache_key} (quality={quality})")
-
         if os.path.exists(cache_path):
             response = send_file(
                 cache_path,
@@ -178,5 +176,4 @@ def serve_uploaded_file(folder, filename):
         return add_cache_headers(response)
 
     except Exception as e:
-        print(f"Error serving file: {str(e)}")
         return abort(404)
