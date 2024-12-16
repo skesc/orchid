@@ -104,21 +104,11 @@ export default function PFPModal({ isOpen, onClose, onSelect }) {
 
           <button
             onClick={() => handlePlatformChange("x")}
-            className={`flex-1 relative group flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all duration-200 ${platform === "x" ? "bg-violet-500 text-white" : "bg-neutral-300  text-neutral-600"}`}>
+            className={`flex-1 relative flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all duration-200 ${platform === "x" ? "bg-violet-500 text-white" : "bg-neutral-300  text-neutral-600"}`}>
             <div className="flex items-center gap-2">
               <Twitter size={20} />
               <span>X</span>
             </div>
-
-            {platform === "x" && (
-              <div className="absolute inset-0 group-hover:bg-black/5 dark:group-hover:bg-white/5">
-                <div className="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-neutral-900 text-white text-xs rounded-lg">
-                  Due to X not having a public API, fetching profile pictures
-                  may take 5-10 seconds.
-                  <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-neutral-900"></div>
-                </div>
-              </div>
-            )}
           </button>
         </div>
 
