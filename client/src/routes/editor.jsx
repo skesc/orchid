@@ -96,6 +96,13 @@ function RouteComponent() {
       initCanvas.on("mouse:down", (opt) => {
         const evt = opt.e;
         const activeObj = initCanvas.getActiveObject();
+
+        // close marketplace when clicking on canvas
+        if (!opt.target) {
+          setMarket(false);
+          setShowLayers(true);
+        }
+
         if (activeObj && activeObj.type === "textbox") {
           setShowTextPanel(true);
           setTextOptions({
