@@ -81,6 +81,8 @@ function RouteComponent() {
     });
   }, []);
 
+  const defaultLayersPanelState = window.innerWidth >= 900;
+
   React.useEffect(() => {
     if (canvasRef.current) {
       const initCanvas = new Canvas(canvasRef.current, {
@@ -97,10 +99,10 @@ function RouteComponent() {
         const evt = opt.e;
         const activeObj = initCanvas.getActiveObject();
 
-        // close marketplace when clicking on canvas
+        // close marketplace when clicking on canvas, restore layers panel to default state
         if (!opt.target) {
           setMarket(false);
-          setShowLayers(true);
+          setShowLayers(defaultLayersPanelState);
         }
 
         if (activeObj && activeObj.type === "textbox") {
