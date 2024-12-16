@@ -3,7 +3,7 @@ import random
 import time
 from typing import Optional
 
-from dotenv import load_dotenv
+from config import Config
 from httpx import Client
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,8 +12,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 # huge thx to https://github.com/trevorhobenshield/twitter-api-client
-
-load_dotenv()
 
 # Constants
 USER_AGENTS = [
@@ -31,9 +29,9 @@ class TwitterScraper:
             self.auth_token = auth_token
             self.ct0 = ct0
         # then try to use tokens from environment
-        elif os.getenv("TWITTER_AUTH_TOKEN") and os.getenv("TWITTER_CT0"):
-            self.auth_token = os.getenv("TWITTER_AUTH_TOKEN")
-            self.ct0 = os.getenv("TWITTER_CT0")
+        elif Config.TWITTER_AUTH_TOKEN and Config.TWITTER_CT0:
+            self.auth_token = Config.TWITTER_AUTH_TOKEN
+            self.ct0 = Config.TWITTER_CT0
         # finally, get new tokens if none are available
         else:
             self.auth_token, self.ct0 = self._renew_tokens()
@@ -45,7 +43,7 @@ class TwitterScraper:
         options = webdriver.ChromeOptions()
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
-        if os.getenv("ENV") != "dev":
+        if Config.ENV != "dev":
             options.add_argument("--headless=new")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-gpu")
@@ -65,7 +63,7 @@ class TwitterScraper:
                     (By.CSS_SELECTOR, 'input[autocomplete="username"]')
                 )
             )
-            username_input.send_keys(os.getenv("TWITTER_USERNAME"))
+            username_input.send_keys(Config.TWITTER_USERNAME)
             username_input.send_keys(Keys.ENTER)
 
             password_input = WebDriverWait(driver, 10).until(
@@ -73,7 +71,7 @@ class TwitterScraper:
                     (By.CSS_SELECTOR, 'input[name="password"]')
                 )
             )
-            password_input.send_keys(os.getenv("TWITTER_PASSWORD"))
+            password_input.send_keys(Config.TWITTER_PASSWORD)
             password_input.send_keys(Keys.ENTER)
 
             time.sleep(5)
@@ -86,59 +84,14 @@ class TwitterScraper:
             if not auth_token or not ct0:
                 raise Exception("Failed to obtain Twitter tokens")
 
+            # TODO: upadte to store tokens in a separate file?
             os.environ["TWITTER_AUTH_TOKEN"] = auth_token
             os.environ["TWITTER_CT0"] = ct0
-
-            self._update_env_file(auth_token, ct0)
 
             return auth_token, ct0
 
         finally:
             driver.quit()
-
-    def _update_env_file(self, auth_token: str, ct0: str) -> None:
-        env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
-
-        if not os.path.exists(env_path):
-            return
-
-        try:
-            with open(env_path, "r") as f:
-                lines = f.readlines()
-
-            env_dict = {}
-            for line in lines:
-                line = line.strip()
-                if line and not line.startswith("#"):
-                    try:
-                        key, value = line.split("=", 1)
-                        env_dict[key] = value
-                    except ValueError:
-                        continue
-
-            env_dict["TWITTER_AUTH_TOKEN"] = auth_token
-            env_dict["TWITTER_CT0"] = ct0
-
-            with open(env_path, "w") as f:
-                for line in lines:
-                    line = line.strip()
-                    if line.startswith("#") or not line:
-                        f.write(line + "\n")
-                        continue
-
-                    try:
-                        key = line.split("=", 1)[0]
-                        if key in env_dict:
-                            f.write(f"{key}={env_dict[key]}\n")
-                            del env_dict[key]
-                    except ValueError:
-                        f.write(line + "\n")
-
-                for key, value in env_dict.items():
-                    f.write(f"{key}={value}\n")
-
-        except Exception as e:
-            print(f"Error updating .env file: {e}")
 
     def _create_session(self, auth_token: str, ct0: str) -> Client:
         session = Client(
