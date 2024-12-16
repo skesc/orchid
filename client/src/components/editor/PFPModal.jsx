@@ -44,7 +44,19 @@ export default function PFPModal({ isOpen, onClose, onSelect }) {
       const response = await fetch(
         `${API_URL}/api/pfp/${endpoint}/${username}`,
       );
-      const data = await response.json();
+
+      if (response.status === 429) {
+        throw new Error(
+          "Rate limit exceeded. Please try again in a few seconds.",
+        );
+      }
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Failed to fetch profile picture");
+      }
 
       if (!data.success) {
         throw new Error(data.message || "Failed to fetch profile picture");

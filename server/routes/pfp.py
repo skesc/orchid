@@ -10,7 +10,7 @@ pfp_bp = Blueprint("pfp", __name__)
 
 
 @pfp_bp.route("/api/pfp/x/<username>")
-@limiter.limit("1 per minute")
+@limiter.limit("1 per 5 seconds")
 def fetch_x_profile_picture(username):
     if not re.match(r"^[a-zA-Z0-9_]+$", username):
         return (
