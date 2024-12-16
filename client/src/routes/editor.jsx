@@ -62,11 +62,14 @@ function RouteComponent() {
   const { undo, redo, history, historyRedo } = useCanvasHistory(canvas);
   undoRef.current = undo;
   redoRef.current = redo;
+  const defaultLayersPanelState = window.innerWidth >= 900;
 
   const handleMarketToggle = React.useCallback(() => {
     setMarket((prev) => {
       if (!prev) {
         setShowLayers(false);
+      } else {
+        setShowLayers(defaultLayersPanelState);
       }
       return !prev;
     });
@@ -80,8 +83,6 @@ function RouteComponent() {
       return !prev;
     });
   }, []);
-
-  const defaultLayersPanelState = window.innerWidth >= 900;
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -99,7 +100,7 @@ function RouteComponent() {
         const evt = opt.e;
         const activeObj = initCanvas.getActiveObject();
 
-        // close marketplace when clicking on canvas, restore layers panel to default state
+        // close marketplace when clicking on canvas
         if (!opt.target) {
           setMarket(false);
           setShowLayers(defaultLayersPanelState);
