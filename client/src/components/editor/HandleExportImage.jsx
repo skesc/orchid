@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { FabricImage } from "fabric";
 
 const HandleExportImage = (canvas, setError) => {
   if (!canvas) {
@@ -13,13 +14,68 @@ const HandleExportImage = (canvas, setError) => {
       return;
     }
 
-    const { filename, dataURL } = exportCanvasToImage(canvas);
-    downloadImage(filename, dataURL);
+    createExportableCanvas(canvas)
+      .then(({ exportCanvas, cleanup }) => {
+        try {
+          const { filename, dataURL } = exportCanvasToImage(exportCanvas);
+          downloadImage(filename, dataURL);
+        } finally {
+          cleanup();
+        }
+      })
+      .catch((error) => {
+        console.error("Export failed:", error);
+        setError("Failed to export image");
+      });
   } catch (error) {
     console.error("Export failed:", error);
     setError("Failed to export image");
   }
 };
+
+// this creates a temporary canvas with the same properties as the source canvas
+// this is necessary because the canvas.toDataURL() method does not support CORS-enabled images
+// so we need to clone the images and add them to the temporary canvas
+async function createExportableCanvas(sourceCanvas) {
+  const exportCanvas = new sourceCanvas.constructor({
+    width: sourceCanvas.width,
+    height: sourceCanvas.height,
+  });
+
+  exportCanvas.backgroundColor = sourceCanvas.backgroundColor;
+  exportCanvas.backgroundImage = sourceCanvas.backgroundImage;
+
+  const cloneImageWithCORS = async (obj) => {
+    if (obj instanceof FabricImage || obj.type === "image") {
+      return new Promise((resolve) => {
+        const imgElement = new Image();
+        imgElement.crossOrigin = "anonymous";
+        imgElement.onload = () => {
+          const newImage = new FabricImage(imgElement, {
+            ...obj.toObject(),
+            crossOrigin: "anonymous",
+          });
+          resolve(newImage);
+        };
+        imgElement.src = obj.getSrc();
+      });
+    }
+    return obj.clone();
+  };
+
+  const objects = sourceCanvas.getObjects();
+  const clonedObjects = await Promise.all(objects.map(cloneImageWithCORS));
+
+  clonedObjects.forEach((obj) => exportCanvas.add(obj));
+  exportCanvas.renderAll();
+
+  return {
+    exportCanvas,
+    cleanup: () => {
+      exportCanvas.dispose();
+    },
+  };
+}
 
 function exportCanvasToImage(canvas) {
   const activeObject = canvas.getActiveObject();
