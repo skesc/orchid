@@ -37,6 +37,19 @@ const HandleExportImage = (canvas, setError) => {
 // this is necessary because the canvas.toDataURL() method does not support CORS-enabled images
 // so we need to clone the images and add them to the temporary canvas
 async function createExportableCanvas(sourceCanvas) {
+  const objects = sourceCanvas.getObjects();
+  let minX = Infinity,
+    minY = Infinity;
+
+  // find minimum coordinates in original object space
+  objects.forEach((obj) => {
+    minX = Math.min(minX, obj.left);
+    minY = Math.min(minY, obj.top);
+  });
+
+  const offsetX = minX < 0 ? -minX : 0;
+  const offsetY = minY < 0 ? -minY : 0;
+
   const exportCanvas = new sourceCanvas.constructor({
     width: sourceCanvas.width,
     height: sourceCanvas.height,
@@ -46,6 +59,11 @@ async function createExportableCanvas(sourceCanvas) {
   exportCanvas.backgroundImage = sourceCanvas.backgroundImage;
 
   const cloneImageWithCORS = async (obj) => {
+    const adjustedPos = {
+      x: obj.left + offsetX,
+      y: obj.top + offsetY,
+    };
+
     if (obj instanceof FabricImage || obj.type === "image") {
       return new Promise((resolve) => {
         const imgElement = new Image();
@@ -53,6 +71,8 @@ async function createExportableCanvas(sourceCanvas) {
         imgElement.onload = () => {
           const newImage = new FabricImage(imgElement, {
             ...obj.toObject(),
+            left: adjustedPos.x,
+            top: adjustedPos.y,
             crossOrigin: "anonymous",
           });
           resolve(newImage);
@@ -60,12 +80,16 @@ async function createExportableCanvas(sourceCanvas) {
         imgElement.src = obj.getSrc();
       });
     }
-    return obj.clone();
+
+    const clone = obj.clone();
+    clone.set({
+      left: adjustedPos.x,
+      top: adjustedPos.y,
+    });
+    return clone;
   };
 
-  const objects = sourceCanvas.getObjects();
   const clonedObjects = await Promise.all(objects.map(cloneImageWithCORS));
-
   clonedObjects.forEach((obj) => exportCanvas.add(obj));
   exportCanvas.renderAll();
 
@@ -128,7 +152,7 @@ function calculateContentBounds(canvas) {
 
   objects.forEach((obj) => {
     try {
-      const bounds = obj.getBoundingRect();
+      const bounds = obj.getBoundingRect(true, true);
       minX = Math.min(minX, bounds.left);
       minY = Math.min(minY, bounds.top);
       maxX = Math.max(maxX, bounds.left + bounds.width);
@@ -141,8 +165,8 @@ function calculateContentBounds(canvas) {
   return {
     left: Math.max(0, minX),
     top: Math.max(0, minY),
-    width: maxX - minX,
-    height: maxY - minY,
+    width: Math.max(1, maxX - minX),
+    height: Math.max(1, maxY - minY),
   };
 }
 
