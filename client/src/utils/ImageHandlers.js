@@ -50,6 +50,7 @@ export function createImageFromFile(file, canvas) {
 function convertToFabricImage(imgSrc, fileName, canvas) {
   return new Promise((resolve, reject) => {
     const imageElement = new Image();
+    imageElement.crossOrigin = "anonymous";
 
     imageElement.onerror = () => {
       reject(new Error("Failed to load image. Please try a different file."));
@@ -63,6 +64,7 @@ function convertToFabricImage(imgSrc, fileName, canvas) {
       ctx.drawImage(imageElement, 0, 0);
 
       const convertedImage = new Image();
+      convertedImage.crossOrigin = "anonymous";
       convertedImage.src = tempCanvas.toDataURL("image/png");
 
       convertedImage.onload = () => {
@@ -89,6 +91,7 @@ function createAndConfigureFabricImage(convertedImage, fileName, canvas) {
     lockMovementX: false,
     lockMovementY: false,
     evented: true,
+    crossOrigin: "anonymous",
   });
 
   // Scale image if it's too large
