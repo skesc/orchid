@@ -71,53 +71,83 @@ export class CropManager {
     const cropWidth = (relativeWidth / imageRect.width) * originalWidth;
     const cropHeight = (relativeHeight / imageRect.height) * originalHeight;
 
-    const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = cropWidth;
-    tempCanvas.height = cropHeight;
-    const tempCtx = tempCanvas.getContext("2d");
+    return new Promise((resolve, reject) => {
+      // create a new image with crossOrigin set
+      const safeImg = new Image();
+      safeImg.crossOrigin = "anonymous";
+      safeImg.onload = () => {
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = cropWidth;
+        tempCanvas.height = cropHeight;
+        const tempCtx = tempCanvas.getContext("2d");
 
-    const img = imageObject.getElement();
+        try {
+          tempCtx.drawImage(
+            safeImg,
+            cropX / (imageObject.scaleX || 1),
+            cropY / (imageObject.scaleY || 1),
+            cropWidth / (imageObject.scaleX || 1),
+            cropHeight / (imageObject.scaleY || 1),
+            0,
+            0,
+            cropWidth,
+            cropHeight,
+          );
 
-    tempCtx.drawImage(
-      img,
-      cropX / (imageObject.scaleX || 1),
-      cropY / (imageObject.scaleY || 1),
-      cropWidth / (imageObject.scaleX || 1),
-      cropHeight / (imageObject.scaleY || 1),
-      0,
-      0,
-      cropWidth,
-      cropHeight,
-    );
+          // use data URL instead of blob
+          const dataURL = tempCanvas.toDataURL("image/png");
+          const croppedImg = new Image();
+          croppedImg.crossOrigin = "anonymous";
 
-    return new Promise((resolve) => {
-      const croppedImg = new Image();
-      croppedImg.src = tempCanvas.toDataURL("image/png");
+          croppedImg.onload = () => {
+            const croppedFabricImage = new FabricImage(croppedImg, {
+              crossOrigin: "anonymous",
+            });
 
-      croppedImg.onload = () => {
-        const croppedFabricImage = new FabricImage(croppedImg);
+            croppedFabricImage.set({
+              left: rect.left + rect.width / 2,
+              top: rect.top + rect.height / 2,
+              originX: "center",
+              originY: "center",
+              angle: currentAngle,
+              flipX: flipX,
+              flipY: flipY,
+              scaleX: 1,
+              scaleY: 1,
+            });
 
-        croppedFabricImage.set({
-          left: rect.left + rect.width / 2,
-          top: rect.top + rect.height / 2,
-          originX: "center",
-          originY: "center",
-          angle: currentAngle,
-          flipX: flipX,
-          flipY: flipY,
-          scaleX: 1,
-          scaleY: 1,
-        });
+            this.canvas.remove(imageObject);
+            this.canvas.remove(cropRect);
+            this.canvas.add(croppedFabricImage);
+            this.canvas.setActiveObject(croppedFabricImage);
 
-        this.canvas.remove(imageObject);
-        this.canvas.remove(cropRect);
-        this.canvas.add(croppedFabricImage);
-        this.canvas.setActiveObject(croppedFabricImage);
+            this.cleanup();
+            this.canvas.renderAll();
+            resolve(true);
+          };
 
-        this.cleanup();
-        this.canvas.renderAll();
-        resolve(true);
+          croppedImg.onerror = () => {
+            reject(new Error("Failed to load cropped image"));
+          };
+
+          croppedImg.src = dataURL;
+        } catch (error) {
+          console.error("Image processing error:", error);
+          reject(
+            new Error(
+              "Failed to crop image. The image might be from a different origin.",
+            ),
+          );
+        }
       };
+
+      safeImg.onerror = () => {
+        reject(new Error("Failed to load image for cropping"));
+      };
+
+      // get the original image source
+      const originalSrc = imageObject.getSrc();
+      safeImg.src = originalSrc;
     });
   }
 

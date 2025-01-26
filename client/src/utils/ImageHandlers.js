@@ -61,20 +61,29 @@ function convertToFabricImage(imgSrc, fileName, canvas) {
       tempCanvas.width = imageElement.width;
       tempCanvas.height = imageElement.height;
       const ctx = tempCanvas.getContext("2d");
-      ctx.drawImage(imageElement, 0, 0);
 
-      const convertedImage = new Image();
-      convertedImage.crossOrigin = "anonymous";
-      convertedImage.src = tempCanvas.toDataURL("image/png");
-
-      convertedImage.onload = () => {
-        const fabricImage = createAndConfigureFabricImage(
-          convertedImage,
-          fileName,
-          canvas,
+      try {
+        ctx.drawImage(imageElement, 0, 0);
+        const dataURL = tempCanvas.toDataURL("image/png");
+        const convertedImage = new Image();
+        convertedImage.crossOrigin = "anonymous";
+        convertedImage.onload = () => {
+          const fabricImage = createAndConfigureFabricImage(
+            convertedImage,
+            fileName,
+            canvas,
+          );
+          resolve(fabricImage);
+        };
+        convertedImage.src = dataURL;
+      } catch (error) {
+        console.error("Image processing error:", error);
+        reject(
+          new Error(
+            "Failed to process image. The image might be from a different origin.",
+          ),
         );
-        resolve(fabricImage);
-      };
+      }
     };
 
     imageElement.src = imgSrc;
