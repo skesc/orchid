@@ -10,6 +10,9 @@ services:
       - backend
     env_file:
       - ./client/.env
+    networks:
+      - public
+      - internal
 
   backend:
     build:
@@ -23,21 +26,31 @@ services:
       - image_cache:/app/cache
     env_file:
       - ./server/.env
+    networks:
+      - public
+      - internal
 
   rembg:
     build:
       context: ./server/rembg
       dockerfile: Dockerfile
     restart: always
+    networks:
+      - internal
 
   selenium-chrome:
     image: selenium/standalone-chrome:131.0
     shm_size: "2gb"
     restart: always
-    ports:
-      - "4444:4444"
+    networks:
+      - internal
 
 volumes:
   uploads:
   image_cache:
     driver: local
+
+networks:
+  public:
+  internal:
+    internal: true
