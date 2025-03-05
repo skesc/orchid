@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: orchid-frontend
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -13,8 +14,8 @@ services:
     networks:
       - public
       - internal
-
   backend:
+    container_name: orchid-backend
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -29,27 +30,25 @@ services:
     networks:
       - public
       - internal
-
   rembg:
+    container_name: orchid-rembg
     build:
       context: ./server/rembg
       dockerfile: Dockerfile
     restart: always
     networks:
       - internal
-
   selenium-chrome:
+    container_name: orchid-selenium
     image: selenium/standalone-chrome:131.0
     shm_size: "2gb"
     restart: always
     networks:
       - internal
-
 volumes:
   uploads:
   image_cache:
     driver: local
-
 networks:
   public:
   internal:
