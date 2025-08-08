@@ -95,10 +95,27 @@ function RouteComponent() {
         preserveObjectStacking: true,
       });
 
+      let lastClickTime = 0;
+      const dblClickDelay = 300; // ms
+
       // Add event listener for mouse down to handle group selection
       initCanvas.on("mouse:down", (opt) => {
         const evt = opt.e;
+        const target = opt.target;
         const activeObj = initCanvas.getActiveObject();
+
+        // Center canvas view to the center of double-clicked image
+        const now = Date.now();
+        let delay = (now - lastClickTime);
+        if (activeObj && activeObj.type === "image" && target && delay < dblClickDelay) {
+          const vpt = initCanvas.viewportTransform;
+          const objCenter = target.getCenterPoint();
+          vpt[4] = initCanvas.getWidth() / 2 - objCenter.x * vpt[0];
+          vpt[5] = initCanvas.getHeight() / 2 - objCenter.y * vpt[3];
+          target.setCoords();
+          initCanvas.requestRenderAll();
+        }
+        lastClickTime = now;
 
         // close marketplace when clicking on canvas
         if (!opt.target) {
@@ -138,6 +155,7 @@ function RouteComponent() {
             underline: false,
           });
         }
+
         if (evt.ctrlKey) {
           const target = opt.target;
           if (target && target.group) {
