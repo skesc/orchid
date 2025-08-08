@@ -71,6 +71,7 @@ export function createKeyboardHandler(
     handleCopy(event, canvas);
     handleObjectPaste(event, canvas);
     handleUngroup(event, canvas);
+    handleSelectAll(event, canvas);
 
     if (event.ctrlKey) {
       if (event.key === "z") {
@@ -276,6 +277,18 @@ function handleUngroup(event, canvas) {
 
   canvas.discardActiveObject();
   const selection = new ActiveSelection(items, { canvas });
+  canvas.setActiveObject(selection);
+  canvas.renderAll();
+}
+
+function handleSelectAll(event, canvas) {
+  if (!(event.ctrlKey && event.key === "a")) return;
+
+  event.preventDefault();
+  const allObjects = canvas.getObjects();
+  if (allObjects.length === 0) return;
+
+  const selection = new ActiveSelection(allObjects, { canvas: canvas });
   canvas.setActiveObject(selection);
   canvas.renderAll();
 }
